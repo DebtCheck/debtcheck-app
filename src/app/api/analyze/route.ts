@@ -1,5 +1,6 @@
+import { analyzeRepo } from "@/lib/analyser";
 import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
-import { RepoMetadata } from "@/types/repo";
+import { RepoFileTree, RepoMetadata } from "@/types/repo";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -31,16 +32,17 @@ export async function GET(req: NextRequest) {
       default_branch: res.default_branch,
       trees_url: res.trees_url,
     }
-    console.log(metadata);
 
     const fileTree = await fetchRepoFileTree(metadata.trees_url);
     
-    const filteredFiles = await filterFiles(fileTree);
-    console.log(filteredFiles);
+    const resFiltered = await filterFiles(fileTree);
+    const filteredFiles: RepoFileTree = {
+      tree: resFiltered,
+    }
 
-    // const analysis = await analyzeRepo(filteredFiles);
+    const analysis = await analyzeRepo(filteredFiles);
 
-    // return NextResponse.json(analysis, { status: 200 });
+    return NextResponse.json(analysis, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
