@@ -12,9 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const urlTest = "https://github.com/vercel/next.js";
-
-    const res = await fetchRepoMetadata(urlTest);
+    const res = await fetchRepoMetadata(url);
     const metadata: RepoMetadata = {
       owner: res.owner.login,
       name: res.name,
