@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { error: "Error fetching repo metadata" },
+      { error: "Error processing repo" },
       { status: 500 }
     );
   }
