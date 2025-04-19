@@ -5,7 +5,7 @@ export interface  RepoMetadata {
   created_at: string;
   updated_at: string;
   pushed_at: string;
-  size: string;
+  size: number;
   stargazers_count: number; 
   forks_count: number;
   watchers_count: number;
