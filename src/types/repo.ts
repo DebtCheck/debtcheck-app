@@ -10,6 +10,7 @@ export interface  RepoMetadata {
   forks_count: number;
   watchers_count: number;
   open_issues_count: number;  
+  total_issues_count: number;
   subscribers_count: number;
   pulls_url: string;  
   default_branch: string;
@@ -23,4 +24,11 @@ export interface RepoFileTree {
     mode: string;
     sha: string;
   }[];
+}
+
+export interface RepoPRs {
+  created_at: string;
+  number: number;
+  title: string;
+  html_url: string;
 }
