@@ -1,4 +1,4 @@
-import { analyzeRepo } from "@/lib/analyser";
+import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
 import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
 import { RepoFileTree, RepoMetadata } from "@/types/repo";
 import { NextRequest, NextResponse } from "next/server";
@@ -37,7 +37,9 @@ export async function POST(req: NextRequest) {
       tree: resFiltered,
     }
 
-    const analysis = await analyzeRepo(filteredFiles);
+    analyzeMetadata(metadata);
+
+    const analysis = await analyzeFileTree(filteredFiles);
 
     return NextResponse.json(analysis, { status: 200 });
   } catch (error) {
