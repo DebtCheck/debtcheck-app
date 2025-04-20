@@ -3,16 +3,15 @@ import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github"
 import { RepoFileTree, RepoMetadata } from "@/types/repo";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const url = searchParams.get("repo");
+export async function POST(req: NextRequest) {
+  const { repoUrl } = await req.json()
 
-  if (!url) {
+  if (!repoUrl) {
     return new Response("Missing repo URL", { status: 400 });
   }
 
   try {
-    const res = await fetchRepoMetadata(url);
+    const res = await fetchRepoMetadata(repoUrl	);
     const metadata: RepoMetadata = {
       owner: res.owner.login,
       name: res.name,
