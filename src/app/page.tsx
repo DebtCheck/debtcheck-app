@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Input } from "./components/ui/input"
 import { Button } from "./components/ui/button"
 import { Card, CardContent } from "./components/ui/card"
+import { Report } from "@/types/report";
 import { useState } from "react"
 
 export default function Home() {

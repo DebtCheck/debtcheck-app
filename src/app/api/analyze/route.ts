@@ -4,9 +4,9 @@ import { RepoFileTree, RepoMetadata } from "@/types/repo";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { repoUrl	 } = await req.json()
+  const { repoUrl	} = await req.json()
 
-  if (!repoUrl	) {
+  if (!repoUrl) {
     return new Response("Missing repo URL", { status: 400 });
   }
 
