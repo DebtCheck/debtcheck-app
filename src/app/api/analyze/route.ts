@@ -1,6 +1,7 @@
-import { analyzeRepo } from "@/lib/analyser";
+import { analyzeMetadata } from "@/lib/analyser";
 import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
 import { RepoFileTree, RepoMetadata } from "@/types/repo";
+import { Report } from "@/types/report";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const res = await fetchRepoMetadata(repoUrl	);
+    
     const metadata: RepoMetadata = {
       owner: res.owner.login,
       name: res.name,
@@ -24,6 +26,7 @@ export async function POST(req: NextRequest) {
       forks_count: res.forks_count,
       watchers_count: res.watchers_count,
       open_issues_count: res.open_issues_count,
+      total_issues_count: res.total_issues_count,
       subscribers_count: res.subscribers_count,
       pulls_url: res.pulls_url,
       default_branch: res.default_branch,
@@ -36,10 +39,22 @@ export async function POST(req: NextRequest) {
     const filteredFiles: RepoFileTree = {
       tree: resFiltered,
     }
+    console.log("Filtered files:", filteredFiles);  
+    
 
-    const analysis = await analyzeRepo(filteredFiles);
+    const resReport = await analyzeMetadata(metadata);
+    const report: Report = {
+      updatedAtReport: resReport.updatedAtReport,
+      pushedAtReport: resReport.pushedAtReport,
+      issuesReport: resReport.issuesReport,
+      prsReport: resReport.prsReport
+    }
 
-    return NextResponse.json(analysis, { status: 200 });
+    // const analysis = await analyzeFileTree(filteredFiles);
+    // console.log("Analysis result:", analysis);
+    
+
+    return NextResponse.json(report, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
