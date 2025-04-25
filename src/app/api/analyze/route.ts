@@ -1,4 +1,4 @@
-import { analyzeMetadata } from "@/lib/analyser";
+import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
 import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
 import { RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
       prsReport: resReport.prsReport
     }
 
-    // const analysis = await analyzeFileTree(filteredFiles);
-    // console.log("Analysis result:", analysis);
+    const analysis = await analyzeFileTree(filteredFiles);
+    console.log("Analysis result:", analysis);
     
 
     return NextResponse.json(report, { status: 200 });
