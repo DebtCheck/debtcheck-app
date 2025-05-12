@@ -5,6 +5,7 @@ import { Button } from "./components/ui/button"
 import { Card, CardContent } from "./components/ui/card"
 import { Report } from "@/types/report";
 import { useState } from "react"
+import GitHubAuth from "./components/ui/githubAuth"
 
 export default function Home() {
 
@@ -63,6 +64,7 @@ export default function Home() {
           )}
         </CardContent>
       </Card>
+      <GitHubAuth></GitHubAuth>
     </main>
   )
 }

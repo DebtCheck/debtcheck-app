@@ -1,4 +1,6 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { RepoFileTree, RepoPRs } from "@/types/repo";
+import { getServerSession } from "next-auth/next";
 
 function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   const match = url.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/)?$/);
@@ -9,6 +11,7 @@ function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
 }
 
 export async function fetchRepoMetadata(repoUrl: string) {
+  const session = await getServerSession(authOptions);
 
   const parsedUrl = parseGitHubUrl(repoUrl);  
 
@@ -19,7 +22,7 @@ export async function fetchRepoMetadata(repoUrl: string) {
   const response = await fetch(`https://api.github.com/repos/${parsedUrl?.owner}/${parsedUrl?.repo}`, {
     headers: {
       "Accept": "application/vnd.github+json",
-      // "Authorization": `Bearer ${token}`, // Uncomment if you need authentication
+      "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : "",
     },
   });
 
@@ -35,6 +38,8 @@ export async function fetchRepoMetadata(repoUrl: string) {
 }
 
 export async function fetchRepoIssues(repoUrl: string) {
+  const session = await getServerSession(authOptions);
+
   const parsedUrl = parseGitHubUrl(repoUrl);
 
   if (!parsedUrl) {
@@ -44,7 +49,7 @@ export async function fetchRepoIssues(repoUrl: string) {
   const response = await fetch(`https://api.github.com/search/issues?q=repo:${parsedUrl?.owner}/${parsedUrl?.repo}+type:issue`, {
     headers: {
       "Accept": "application/vnd.github+json",
-      // "Authorization": `Bearer ${token}`, // Uncomment if you need authentication
+      "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : ""
     },
   });
 
@@ -56,11 +61,13 @@ export async function fetchRepoIssues(repoUrl: string) {
 }
 
 export async function fetchRepoFileTree(url: string) {
+  const session = await getServerSession(authOptions);
+
   url = url.replace(/{\/sha}$/, "/HEAD");
   const response = await fetch(url, {
     headers: {
       "Accept": "application/vnd.github+json",
-      // "Authorization": `Bearer ${token}`, // Uncomment if you need authentication
+      "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : ""
     },
   });
 
@@ -72,6 +79,7 @@ export async function fetchRepoFileTree(url: string) {
 }
 
 export async function fetchRepoPR(owner: string, name: string) {
+  const session = await getServerSession(authOptions);
   let page = 1;
   const perPage = 100;
   let allPRs: RepoPRs[] = [];
@@ -83,7 +91,7 @@ export async function fetchRepoPR(owner: string, name: string) {
       {
         headers: {
           "Accept": "application/vnd.github+json",
-          // "Authorization": `Bearer ${token}`, // Uncomment if you need authentication
+          "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : ""
         },
       });
     if (!response.ok) { 
