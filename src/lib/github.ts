@@ -49,7 +49,7 @@ export async function fetchRepoIssues(repoUrl: string) {
   const response = await fetch(`https://api.github.com/search/issues?q=repo:${parsedUrl?.owner}/${parsedUrl?.repo}+type:issue`, {
     headers: {
       "Accept": "application/vnd.github+json",
-      "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : ""
+      ...(session?.accessToken && { "Authorization": `Bearer ${session?.accessToken}` }),
     },
   });
 

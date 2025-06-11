@@ -16,7 +16,7 @@ const GitHubAuth: React.FC = () => {
   return (
     <div>
       {!session ? (
-        <div
+        <button
           onClick={handleLogin}
           style={{
             width: '50px',
@@ -36,7 +36,7 @@ const GitHubAuth: React.FC = () => {
             width={24}
             height={24}
           />
-        </div>
+        </button>
       ) : (
         <div>
           <p>Welcome, {session.user?.name}</p>
