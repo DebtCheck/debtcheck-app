@@ -1,4 +1,4 @@
-import { analyzeMetadata } from "@/lib/analyser";
+import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
 import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
 import { RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
@@ -39,19 +39,20 @@ export async function POST(req: NextRequest) {
     const filteredFiles: RepoFileTree = {
       tree: resFiltered,
     }
-    console.log("Filtered files:", filteredFiles);  
+    // console.log("Filtered files:", filteredFiles);  
     
 
     const resReport = await analyzeMetadata(metadata);
+
+    const analysis = await analyzeFileTree(filteredFiles);
+
     const report: Report = {
       updatedAtReport: resReport.updatedAtReport,
       pushedAtReport: resReport.pushedAtReport,
       issuesReport: resReport.issuesReport,
-      prsReport: resReport.prsReport
+      prsReport: resReport.prsReport,
+      fileTreeReport: analysis,
     }
-
-    // const analysis = await analyzeFileTree(filteredFiles);
-    // console.log("Analysis result:", analysis);
     
 
     return NextResponse.json(report, { status: 200 });

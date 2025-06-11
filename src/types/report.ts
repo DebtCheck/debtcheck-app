@@ -3,6 +3,7 @@ export interface Report {
   pushedAtReport: AnalyzeStaleness;
   issuesReport: AnalyzeIssues;
   prsReport: AnalyzePrs;
+  fileTreeReport?: AnalyzeFileTree;
 }
 
 export interface AnalyzeStaleness {
@@ -21,4 +22,16 @@ export interface AnalyzeIssues {
 export interface AnalyzePrs {
   stalePRsCount: number;
   message: string;
+}
+
+export interface AnalyzeFileTree {
+  deprecatedLibs: DeprecatedLibs[];
+}
+
+export interface DeprecatedLibs {
+  name: string;
+  current: string;
+  latest: string;
+  status: string;
+  deprecated: boolean;
 }
