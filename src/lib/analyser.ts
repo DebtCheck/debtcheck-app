@@ -1,12 +1,16 @@
 import { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
 import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness } from "@/types/report";
 import { fetchRepoPR } from "./github";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function analyzeFileTree(files: RepoFileTree)  {
+export async function analyzeFileTree(files: RepoFileTree,)  {
+  const session = await getServerSession(authOptions);
   const response = await fetch(`${process.env.RUST_URL}/analyze`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : "",
     },
     body: JSON.stringify(files),
   });
