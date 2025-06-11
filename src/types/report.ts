@@ -25,7 +25,7 @@ export interface AnalyzePrs {
 }
 
 export interface AnalyzeFileTree {
-  depreccatedLibs: DeprecatedLibs[];
+  deprecatedLibs: DeprecatedLibs[];
 }
 
 export interface DeprecatedLibs {
