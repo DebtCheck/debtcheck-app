@@ -72,7 +72,7 @@ export async function fetchRepoIssues(repoUrl: string) {
 export async function fetchRepoFileTree(url: string) {
   const session = await getServerSession(authOptions);
 
-  url = url.replace(/{\/sha}$/, "/HEAD");
+  url = url.replace(/{\/sha}$/, "/HEAD") + "?recursive=1";
   const response = await fetch(url, {
     headers: {
       "Accept": "application/vnd.github+json",
