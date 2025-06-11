@@ -32,3 +32,8 @@ export interface RepoPRs {
   title: string;
   html_url: string;
 }
+
+export type ParsedGitHubUrl = {
+  owner: string;
+  repo: string;
+};

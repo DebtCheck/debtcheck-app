@@ -1,6 +1,6 @@
 import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
 import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
-import { RepoFileTree, RepoMetadata } from "@/types/repo";
+import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,6 +10,9 @@ export async function POST(req: NextRequest) {
   if (!repoUrl) {
     return new Response("Missing repo URL", { status: 400 });
   }
+
+  const parsedUrl = parseGitHubUrl(repoUrl);
+  const repoOwner = parsedUrl?.owner;
 
   try {
     const res = await fetchRepoMetadata(repoUrl	);
@@ -56,11 +59,77 @@ export async function POST(req: NextRequest) {
     
 
     return NextResponse.json(report, { status: 200 });
-  } catch (error) {
-    console.log(error);
+  } catch (err: unknown) {
+    if (isGitHubApiError(err)) {
+      const githubMessage = err.githubError?.message;
+      let type = "GITHUB_ERROR";
+      let docsUrl: string | undefined;
+
+      if (githubMessage?.includes("OAuth App access restrictions")) {
+        type = "OAUTH_APP_BLOCKED";
+        docsUrl =
+          "https://docs.github.com/articles/restricting-access-to-your-organization-s-data/";
+      } else if (githubMessage?.includes("SAML enforcement")) {
+        type = "SSO_NOT_AUTHORIZED";
+        docsUrl = `https://github.com/orgs/${repoOwner}/sso`;
+      }
+
+      return NextResponse.json(
+        {
+          error: githubMessage,
+          details: {
+            type,
+            docsUrl,
+            status: err.status ?? 403,
+          },
+        },
+        { status: err.status ?? 403 }
+      );
+    }
+
+    // fallback error
     return NextResponse.json(
-      { error: "Error processing repo" },
+      { error: "Unexpected error processing repo" },
       { status: 500 }
     );
   }
+}
+function parseGitHubUrl(repoUrl: string): ParsedGitHubUrl | null {
+  try {
+    const parsed = new URL(repoUrl);
+    if (
+      parsed.hostname !== "github.com" &&
+      parsed.hostname !== "www.github.com"
+    ) {
+      return null;
+    }
+
+    const parts = parsed.pathname.split("/").filter(Boolean); // removes empty segments
+
+    if (parts.length < 2) {
+      return null;
+    }
+
+    const [owner, repo] = parts;
+
+    // Remove ".git" if user pasted clone URL
+    const cleanedRepo = repo.endsWith(".git") ? repo.slice(0, -4) : repo;
+
+    return { owner, repo: cleanedRepo };
+  } catch {
+    return null;
+  }
+}
+
+type GitHubApiError = Error & {
+  status?: number;
+  githubError?: { message?: string };
+};
+
+function isGitHubApiError(err: unknown): err is GitHubApiError {
+  return (
+    err instanceof Error &&
+    "githubError" in err &&
+    typeof (err as { githubError?: unknown }).githubError === "object"
+  );
 }
