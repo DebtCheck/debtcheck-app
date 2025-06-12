@@ -25,8 +25,6 @@ export async function fetchRepoMetadata(repoUrl: string) {
       "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : "",
     },
   });
-
-  console.log(response);
   
   const metadata = await response.json();
 
