@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
     const filteredFiles: RepoFileTree = {
       tree: resFiltered,
     }
-    // console.log("Filtered files:", filteredFiles);  
     
 
     const resReport = await analyzeMetadata(metadata);

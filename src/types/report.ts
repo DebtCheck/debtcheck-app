@@ -26,6 +26,7 @@ export interface AnalyzePrs {
 
 export interface AnalyzeFileTree {
   deprecatedLibs: DeprecatedLibs[];
+  deadCode: DeadCode[];
 }
 
 export interface DeprecatedLibs {
@@ -34,4 +35,17 @@ export interface DeprecatedLibs {
   latest: string;
   status: string;
   deprecated: boolean;
+}
+
+export interface DeadCode {
+  name: string;
+  kind: DeadCodeKind;
+  file: string;
+  line: number;
+  column: number;
+}
+
+export enum DeadCodeKind {
+  Function = "function",
+  Variable = "variable",
 }
