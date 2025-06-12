@@ -25,12 +25,19 @@ export async function fetchRepoMetadata(repoUrl: string) {
       "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : "",
     },
   });
+  
+  const metadata = await response.json();
 
   if (!response.ok) {
-    throw new Error(`Error fetching repo metadata: ${response.statusText}`);
+    const error = new Error(metadata.message || response.statusText) as Error & { status?: number; githubError?: unknown };
+    error.status = response.status;
+    error.githubError = metadata;
+    console.log("Error fetching repo metadata:", error);
+    
+    throw error;
   }
 
-  const metadata = await response.json();
+  
 
   metadata.total_issues_count = await fetchRepoIssues(repoUrl).then((issues) => issues.total_count);
 
@@ -63,7 +70,7 @@ export async function fetchRepoIssues(repoUrl: string) {
 export async function fetchRepoFileTree(url: string) {
   const session = await getServerSession(authOptions);
 
-  url = url.replace(/{\/sha}$/, "/HEAD");
+  url = url.replace(/{\/sha}$/, "/HEAD") + "?recursive=1";
   const response = await fetch(url, {
     headers: {
       "Accept": "application/vnd.github+json",
