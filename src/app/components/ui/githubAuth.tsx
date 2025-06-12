@@ -1,12 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
 
 const GitHubAuth: React.FC = () => {
   const { data: session } = useSession(); 
 
+  const [githubUser, setGitHubUser] = useState<{ name?: string } | null>(null);
+
+  useEffect(() => {
+    if (session?.githubUser) {
+      setGitHubUser(session.githubUser);
+    } else {
+      // Fallback to localStorage if session doesn't have data
+      const stored = localStorage.getItem("githubUser");
+      if (stored) {
+        setGitHubUser(JSON.parse(stored));
+      }
+    }
+  }, [session]);
+  
+
   const handleLogin = () => {
-    signIn('github'); 
+    signIn('github');
   };
 
   const handleLogout = () => {
@@ -15,7 +30,7 @@ const GitHubAuth: React.FC = () => {
 
   return (
     <div>
-      {!session ? (
+      {!session?.githubAccessToken ? (
         <button
           onClick={handleLogin}
           style={{
@@ -39,7 +54,7 @@ const GitHubAuth: React.FC = () => {
         </button>
       ) : (
         <div>
-          <p>Welcome, {session.user?.name}</p>
+          <p>Welcome, {githubUser?.name || "Github User"}</p>
           <button onClick={handleLogout}>Sign out</button>
         </div>
       )}

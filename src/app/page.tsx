@@ -6,6 +6,7 @@ import { Card, CardContent } from "./components/ui/card"
 import { Report } from "@/types/report";
 import { useState } from "react"
 import GitHubAuth from "./components/ui/githubAuth"
+import ConnectJiraButton from "./components/ui/jiraAuth"
 
 export default function Home() {
 
@@ -65,6 +66,11 @@ export default function Home() {
         </CardContent>
       </Card>
       <GitHubAuth></GitHubAuth>
+
+      <div className="p-6">
+      <h2 className="text-xl font-bold mb-4">Jira Integration</h2>
+      <ConnectJiraButton />
+    </div>
     </main>
   )
 }
