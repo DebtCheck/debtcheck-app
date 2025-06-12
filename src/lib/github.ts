@@ -29,7 +29,7 @@ export async function fetchRepoMetadata(repoUrl: string) {
   const metadata = await response.json();
 
   if (!response.ok) {
-    const error = new Error(metadata.message || response.statusText) as Error & { status?: number; githubError?: never };
+    const error = new Error(metadata.message || response.statusText) as Error & { status?: number; githubError?: unknown };
     error.status = response.status;
     error.githubError = metadata;
     console.log("Error fetching repo metadata:", error);
