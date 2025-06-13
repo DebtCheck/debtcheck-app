@@ -47,3 +47,15 @@ export type JiraProfile = {
   name: string,
   image: string,
 }
+
+export interface extendedToken {
+  githubAccessToken?: string;
+  jiraAccessToken?: string;
+  jiraRefreshToken?: string;
+  jiraCloudId?: string;
+  githubUser?: GitHubProfile;
+  jiraSite?: {
+    name?: string;
+    image?: string;
+  };
+}

@@ -1,37 +1,8 @@
+import { getLatestToken, setLatestToken } from "@/lib/tokenStore";
 import { GitHubProfile, JiraAccessibleResource, JiraProfile } from "@/types/next-auth";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { OAuthConfig } from "next-auth/providers/oauth";
-
-// const JiraProvider: OAuthConfig<JiraProfile> = {
-//   id: "jira",
-//   name: "Jira",
-//   type: "oauth",
-//   version: "2.0",
-//   wellKnown: "https://auth.atlassian.com/.well-known/openid-configuration",
-//   clientId: process.env.JIRA_CLIENT_ID!,
-//   clientSecret: process.env.JIRA_CLIENT_SECRET!,
-//   authorization: {
-//     url: "https://auth.atlassian.com/authorize",
-//     params: {
-//       client_id: process.env.JIRA_CLIENT_ID!,
-//       response_type: "code",
-//       scope: "read:jira-user read:jira-work write:jira-work offline_access",
-//       prompt: "consent",
-//     },
-//   },
-//   token: "https://auth.atlassian.com/oauth/token",
-//   userinfo: "https://api.atlassian.com/me",
-//   checks: ["none"], // 👈 THIS LINE fixes the issue
-//   profile(profile) {
-//     return {
-//       id: profile.account_id,
-//       name: profile.name,
-//       email: profile.email,
-//       image: null,
-//     };
-//   },
-// };
 
 const JiraProvider: OAuthConfig<JiraAccessibleResource[]> = {
   id: "jira",
@@ -82,10 +53,13 @@ export const authOptions: NextAuthOptions = {
     }),
     JiraProvider
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, account, profile }) {
-      
-      
+      const previousToken = getLatestToken();
+
       if (account?.provider === "github" && profile) {
         token.githubAccessToken = account.access_token;
         token.githubUser = {
@@ -93,6 +67,12 @@ export const authOptions: NextAuthOptions = {
           email: profile.email ?? "",
           login: (profile as GitHubProfile).login,
         };
+
+        // garder Jira de la dernière session
+        token.jiraAccessToken = previousToken.jiraAccessToken;
+        token.jiraRefreshToken = previousToken.jiraRefreshToken;
+        token.jiraCloudId = previousToken.jiraCloudId;
+        token.jiraSite = previousToken.jiraSite;
       }
 
       if (account?.provider === "jira" && profile) {
@@ -103,22 +83,29 @@ export const authOptions: NextAuthOptions = {
           name: token.name ?? "",
           image: token.picture ?? "",
         };
+
+        // garder GitHub de la dernière session
+        token.githubAccessToken = previousToken.githubAccessToken;
+        token.githubUser = previousToken.githubUser;
       }
+
+      setLatestToken(token);
 
       return token;
     },
+
     async session({ session, token }) {
       session.githubAccessToken = token.githubAccessToken;
-      session.jiraAccessToken = token.jiraAccessToken;
-      session.jiraCloudId = token.jiraCloudId;
-      
-
       session.githubUser = token.githubUser;
+
+      session.jiraAccessToken = token.jiraAccessToken;
+      session.jiraRefreshToken = token.jiraRefreshToken;
+      session.jiraCloudId = token.jiraCloudId;
       session.jiraSite = token.jiraSite;
 
       return session;
-    }
-  }
+    },
+  },
 }
 
 const handler =  NextAuth(authOptions);
