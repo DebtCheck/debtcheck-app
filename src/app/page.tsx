@@ -22,6 +22,7 @@ export default function Home() {
 
   const [jiraProjects, setJiraProjects] = useState<Projects | null>(null)
   const [hasFetchedProjects, setHasFetchedProjects] = useState(false);
+  const [, setLoadingProjects] = useState(false)
 
   const handleAnalyze = async () => {
     setLoading(true);
@@ -39,7 +40,7 @@ export default function Home() {
   }
 
   const handleProjects = async () => {
-    setLoading(true);
+    setLoadingProjects(true);
     setError(null);
     setJiraProjects(null);
 
@@ -62,7 +63,7 @@ export default function Home() {
     } catch (e) {
       setError({ error: "Unexpected error", details: e });
     } finally {
-      setLoading(false);
+      setLoadingProjects(false);
     }
   };
   

@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   
   if (!issueActions.length) {
     console.log("✅ Aucun problème détecté, aucun ticket Jira à créer.");
-    return;
+    return NextResponse.json({ message: "No issues detected" });
   }
   
   
