@@ -4,19 +4,27 @@ import { Input } from "./components/ui/input"
 import { Button } from "./components/ui/button"
 import { Card, CardContent } from "./components/ui/card"
 import { Report } from "@/types/report";
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import GitHubAuth from "./components/ui/githubAuth"
 import ConnectJiraButton from "./components/ui/jiraAuth"
+import { useSession } from "next-auth/react"
+import JiraProjects from "./components/ui/jiraProjects"
+import { Projects } from "@/types/jira"
 
 export default function Home() {
+
+  const session = useSession();
 
   const [repoUrl, setRepoUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<Report | null>(null)
+  const [, setError] = useState<unknown>(null);
+
+  const [jiraProjects, setJiraProjects] = useState<Projects | null>(null)
+  const [hasFetchedProjects, setHasFetchedProjects] = useState(false);
 
   const handleAnalyze = async () => {
     setLoading(true);
-    setResult(null);
 
     const response = await fetch("/api/analyze", {
       method: "POST",
@@ -26,8 +34,44 @@ export default function Home() {
 
     const data = await response.json();
     setResult(data);
+    handleProjects();
     setLoading(false);
   }
+
+  const handleProjects = async () => {
+    setLoading(true);
+    setError(null);
+    setJiraProjects(null);
+
+    try {
+      const res = await fetch("/api/jira/projects", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      const data = await res.json();
+      
+
+      if (!res.ok) {
+        setError(data);
+      } else {
+        setJiraProjects(data);
+      }
+    } catch (e) {
+      setError({ error: "Unexpected error", details: e });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (session.data?.jiraAccessToken && !hasFetchedProjects) {
+      handleProjects();
+      setHasFetchedProjects(true);
+    }
+  }, [session.data?.jiraAccessToken, hasFetchedProjects]);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 font-[family-name:var(--font-geist-sans)]">
@@ -70,6 +114,24 @@ export default function Home() {
       <div className="p-6">
       <h2 className="text-xl font-bold mb-4">Jira Integration</h2>
       <ConnectJiraButton />
+
+      <p className="text-gray-600 mt-2">
+        Connect your Jira account to track issues and technical debt.
+      </p>
+
+      {session.data?.jiraAccessToken && (
+        <>
+          {jiraProjects && Array.isArray(jiraProjects.values) ? (
+            jiraProjects.values.length > 0 ? (
+              <JiraProjects values={jiraProjects.values} report={result} />
+            ) : (
+              <p className="text-gray-600 mt-4">You have no Jira projects available.</p>
+            )
+          ) : (
+            <p className="text-gray-500 mt-4">Loading projects...</p>
+          )}
+        </>
+        )}
     </div>
     </main>
   )

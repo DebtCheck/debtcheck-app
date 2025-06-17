@@ -46,6 +46,8 @@ export type JiraProfile = {
   id: string,
   name: string,
   image: string,
+  email: string,
+  cloudId: string,
 }
 
 export interface extendedToken {

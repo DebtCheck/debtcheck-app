@@ -15,7 +15,7 @@ const JiraProvider: OAuthConfig<JiraAccessibleResource[]> = {
     params: {
       client_id: process.env.JIRA_CLIENT_ID!,
       response_type: "code",
-      scope: "read:jira-user read:jira-work write:jira-work offline_access",
+      scope: "read:jira-user read:jira-work write:jira-work read:me offline_access ",
       prompt: "consent",
     },
   },
@@ -31,9 +31,10 @@ const JiraProvider: OAuthConfig<JiraAccessibleResource[]> = {
     }
 
     return {
-      id: jira.id,
-      name: jira.name ?? "Jira Site",
-      email: "", // not available
+      id: jira.id,            // this becomes session.user.id
+      name: jira.name,
+      cloudId: jira.id,       // custom: use in session
+      jiraUrl: jira.url,      // optional
       image: jira.avatarUrl ?? null,
     };
   }
@@ -59,6 +60,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account, profile }) {
       const previousToken = getLatestToken();
+      
 
       if (account?.provider === "github" && profile) {
         token.githubAccessToken = account.access_token;
@@ -78,7 +80,7 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "jira" && profile) {
         token.jiraAccessToken = account.access_token;
         token.jiraRefreshToken = account.refresh_token;
-        token.jiraCloudId = (profile as JiraProfile).id;
+        token.jiraCloudId = (profile as JiraProfile).cloudId;
         token.jiraSite = {
           name: token.name ?? "",
           image: token.picture ?? "",
