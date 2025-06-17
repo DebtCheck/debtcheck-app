@@ -1,12 +1,13 @@
 import React from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signOut, signIn } from 'next-auth/react';
 import Image from 'next/image';
 
 const GitHubAuth: React.FC = () => {
-  const { data: session } = useSession(); 
+  const { data: session } = useSession();
+  
 
   const handleLogin = () => {
-    signIn('github'); 
+    signIn("github", { callbackUrl: "/" });
   };
 
   const handleLogout = () => {
@@ -15,7 +16,7 @@ const GitHubAuth: React.FC = () => {
 
   return (
     <div>
-      {!session ? (
+      {!session?.githubAccessToken ? (
         <button
           onClick={handleLogin}
           style={{
@@ -39,7 +40,7 @@ const GitHubAuth: React.FC = () => {
         </button>
       ) : (
         <div>
-          <p>Welcome, {session.user?.name}</p>
+          <p>Welcome, {session?.githubUser?.name || "Github User"}</p>
           <button onClick={handleLogout}>Sign out</button>
         </div>
       )}

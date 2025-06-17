@@ -22,7 +22,7 @@ export async function fetchRepoMetadata(repoUrl: string) {
   const response = await fetch(`https://api.github.com/repos/${parsedUrl?.owner}/${parsedUrl?.repo}`, {
     headers: {
       "Accept": "application/vnd.github+json",
-      "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : "",
+      "Authorization": session?.githubAccessToken ? `Bearer ${session?.githubAccessToken}` : "",
     },
   });
   
@@ -56,7 +56,7 @@ export async function fetchRepoIssues(repoUrl: string) {
   const response = await fetch(`https://api.github.com/search/issues?q=repo:${parsedUrl?.owner}/${parsedUrl?.repo}+type:issue`, {
     headers: {
       "Accept": "application/vnd.github+json",
-      ...(session?.accessToken && { "Authorization": `Bearer ${session?.accessToken}` }),
+      ...(session?.githubAccessToken && { "Authorization": `Bearer ${session?.githubAccessToken}` }),
     },
   });
 
@@ -74,7 +74,7 @@ export async function fetchRepoFileTree(url: string) {
   const response = await fetch(url, {
     headers: {
       "Accept": "application/vnd.github+json",
-      "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : ""
+      "Authorization": session?.githubAccessToken ? `Bearer ${session?.githubAccessToken}` : ""
     },
   });
 
@@ -98,7 +98,7 @@ export async function fetchRepoPR(owner: string, name: string) {
       {
         headers: {
           "Accept": "application/vnd.github+json",
-          "Authorization": session?.accessToken ? `Bearer ${session?.accessToken}` : ""
+          "Authorization": session?.githubAccessToken ? `Bearer ${session?.githubAccessToken}` : ""
         },
       });
     if (!response.ok) { 

@@ -10,7 +10,7 @@ export async function analyzeFileTree(files: RepoFileTree,)  {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(session?.accessToken && { "Authorization": `Bearer ${session.accessToken}` }),
+      ...(session?.githubAccessToken && { "Authorization": `Bearer ${session.githubAccessToken}` }),
     },
     body: JSON.stringify(files),
   });
