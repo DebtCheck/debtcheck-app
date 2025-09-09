@@ -19,3 +19,17 @@ export interface JiraButtonsProps {
   projectId: string;
   report: Report | null;
 }
+
+export type JiraProfile = 
+{ cloudId: string; 
+  name?: string; 
+  image?: string 
+};
+
+export type JiraAccessibleResource = {
+  id: string;
+  name: string;
+  url: string;
+  scopes: string[];
+  avatarUrl?: string;
+};

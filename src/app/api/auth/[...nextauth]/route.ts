@@ -1,10 +1,31 @@
-import { getLatestToken, setLatestToken } from "@/lib/tokenStore";
-import { GitHubProfile, JiraAccessibleResource, JiraProfile } from "@/types/next-auth";
-import NextAuth, { NextAuthOptions } from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
+// /app/api/auth/[...nextauth]/route.ts
+import NextAuth from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import { OAuthConfig } from "next-auth/providers/oauth";
+import { JiraProfile } from "@/types/jira";
+import { GitHubProfileLite } from "@/types/github";
+import { authOptions } from "@/lib/auth";
 
-const JiraProvider: OAuthConfig<JiraAccessibleResource[]> = {
+// --- Jira Provider (Atlassian) ---
+type JiraAccessibleResource = {
+  id: string;
+  name: string;
+  url: string;
+  avatarUrl?: string;
+  scopes: string[];
+};
+
+export function isJiraProfile(p: unknown): p is JiraProfile {
+  return !!p && typeof (p as Record<string, unknown>).cloudId === "string";
+}
+
+export const isGitHubProfile = (p: unknown): p is GitHubProfileLite => {
+  if (!p || typeof p !== "object") return false;
+  const obj = p as Partial<GitHubProfileLite>;
+  return typeof obj.login === "string" || typeof obj.name === "string";
+};
+
+export const JiraProvider: OAuthConfig<JiraAccessibleResource[]> = {
   id: "jira",
   name: "Jira",
   type: "oauth",
@@ -13,103 +34,64 @@ const JiraProvider: OAuthConfig<JiraAccessibleResource[]> = {
   authorization: {
     url: "https://auth.atlassian.com/authorize",
     params: {
-      client_id: process.env.JIRA_CLIENT_ID!,
-      response_type: "code",
-      scope: "read:jira-user read:jira-work write:jira-work read:me offline_access ",
+      audience: "api.atlassian.com",
+      scope: "read:jira-user read:jira-work write:jira-work read:me offline_access",
       prompt: "consent",
     },
   },
   token: "https://auth.atlassian.com/oauth/token",
   userinfo: "https://api.atlassian.com/oauth/token/accessible-resources",
   profile(resources) {
-    const jira = resources.find(
-      (r) => r.id && r.url && r.scopes?.includes("read:jira-work")
-    );
-
-    if (!jira) {
-      throw new Error("No accessible Jira site found for this user.");
-    }
-
+    const jira = resources.find(r => r.scopes?.includes("read:jira-work"));
+    if (!jira) throw new Error("No accessible Jira site found");
     return {
-      id: jira.id,            // this becomes session.user.id
+      id: jira.id,
       name: jira.name,
-      cloudId: jira.id,       // custom: use in session
-      jiraUrl: jira.url,      // optional
+      cloudId: jira.id,      // 🔑 make sure this is here
+      jiraUrl: jira.url,
       image: jira.avatarUrl ?? null,
     };
-  }
+  },
 };
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-      authorization: {
-        params: {
-          scope: "read:user repo read:org", 
-          prompt: "consent",
-        },
+// --- helper: refresh Jira ---
+
+export async function refreshAtlassianAccessToken(prev: JWT): Promise<JWT> {
+  try {
+    const res = await fetch("https://auth.atlassian.com/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        grant_type: "refresh_token",
+        client_id: process.env.JIRA_CLIENT_ID,
+        client_secret: process.env.JIRA_CLIENT_SECRET,
+        refresh_token: prev.jira?.refreshToken,
+      }),
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    const data: { access_token: string; expires_in: number; refresh_token?: string; scope?: string } = await res.json();
+
+    return {
+      ...prev,
+      jira: {
+        ...(prev.jira ?? {}),
+        accessToken: data.access_token,
+        expiresAt: Math.floor(Date.now() / 1000) + (data.expires_in ?? 3600) - 60,
+        refreshToken: data.refresh_token ?? prev.jira?.refreshToken,
+        scope: data.scope ?? prev.jira?.scope,
       },
-    }),
-    JiraProvider
-  ],
-  session: {
-    strategy: "jwt",
-  },
-  callbacks: {
-    async jwt({ token, account, profile }) {
-      const previousToken = getLatestToken();
-      
-
-      if (account?.provider === "github" && profile) {
-        token.githubAccessToken = account.access_token;
-        token.githubUser = {
-          name: profile.name ?? "",
-          email: profile.email ?? "",
-          login: (profile as GitHubProfile).login,
-        };
-
-        // garder Jira de la dernière session
-        token.jiraAccessToken = previousToken.jiraAccessToken;
-        token.jiraRefreshToken = previousToken.jiraRefreshToken;
-        token.jiraCloudId = previousToken.jiraCloudId;
-        token.jiraSite = previousToken.jiraSite;
-      }
-
-      if (account?.provider === "jira" && profile) {
-        token.jiraAccessToken = account.access_token;
-        token.jiraRefreshToken = account.refresh_token;
-        token.jiraCloudId = (profile as JiraProfile).cloudId;
-        token.jiraSite = {
-          name: token.name ?? "",
-          image: token.picture ?? "",
-        };
-
-        // garder GitHub de la dernière session
-        token.githubAccessToken = previousToken.githubAccessToken;
-        token.githubUser = previousToken.githubUser;
-      }
-
-      setLatestToken(token);
-
-      return token;
-    },
-
-    async session({ session, token }) {
-      session.githubAccessToken = token.githubAccessToken;
-      session.githubUser = token.githubUser;
-
-      session.jiraAccessToken = token.jiraAccessToken;
-      session.jiraRefreshToken = token.jiraRefreshToken;
-      session.jiraCloudId = token.jiraCloudId;
-      session.jiraSite = token.jiraSite;
-
-      return session;
-    },
-  },
+    };
+  } catch {
+    return {
+      ...prev,
+      jira: {
+        ...(prev.jira ?? {}),
+        accessToken: prev.jira?.accessToken ?? "", // keep string to satisfy types
+        error: "RefreshAccessTokenError",
+      },
+    };
+  }
 }
 
-const handler =  NextAuth(authOptions);
-
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

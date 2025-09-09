@@ -16,7 +16,7 @@ const GitHubAuth: React.FC = () => {
 
   return (
     <div>
-      {!session?.githubAccessToken ? (
+      {!session?.githubUser ? (
         <button
           onClick={handleLogin}
           style={{

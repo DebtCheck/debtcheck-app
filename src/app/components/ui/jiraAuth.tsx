@@ -4,23 +4,22 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function ConnectJiraButton() {
   const { data: session } = useSession();
+  const jiraLinked = !!session?.providers?.jira;
 
-  const handleConnect = async () => {
+  const handleConnect = () => {
     signIn("jira", { callbackUrl: "/" });
   };
 
   const handleLogout = () => {
-    signOut(); 
+    signOut();
   };
 
-  if (session?.jiraAccessToken) {
+  if (jiraLinked) {
     return (
-      <div className="p-2 text-green-600 font-semibold flex flex-col">
-        ✅ {session?.jiraSite?.name ?? "Jira User"} Connected 
-        <button onClick={handleLogout}> Sign out</button>
+      <div className="p-2 text-green-600 font-semibold flex items-center gap-3">
+        <span>✅ {jiraLinked ?? "Jira Connected"}</span>
+        <button onClick={handleLogout} className="underline">Sign out</button>
       </div>
-        
-      
     );
   }
 
