@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { DeadCode, DeprecatedLibs } from "@/types/report";
-import { fetchMe } from "../projects/route";
 import { getToken, JWT } from "next-auth/jwt";
 import { authOptions } from "@/lib/auth";
+import { fetchMe } from "@/lib/jira";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
