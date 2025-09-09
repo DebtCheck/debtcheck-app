@@ -1,75 +1,33 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import type { Projects } from "@/types/jira";
-import { NextResponse } from "next/server";
+import type { JiraAccessibleResource } from "@/types/jira";
+import type { JWT } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { fetchProjects } from "@/lib/jira";
 
-export async function fetchMe()  {
-  const session = await getServerSession(authOptions);
 
-  if (!session) {
-    throw new Error("No session found");
-  }
+export async function GET(req: NextRequest) {
+  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
+  const jira = token?.jira;
 
-  const response = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
-    headers: {
-      "Authorization": `Bearer ${session.jiraAccessToken}`,
-      "Accept": "application/json",
-    },
-  });
+  if (!jira?.accessToken) return NextResponse.json({ error: "Not linked with Jira" }, { status: 401 });
+  if (jira.error)        return NextResponse.json({ error: "Re-auth Jira" }, { status: 401 });
 
-  if (!response.ok) {
-    const error = new Error(`Failed to fetch user info: ${response.statusText}`) as Error & { status?: number; jiraError?: unknown };
-    error.status = response.status;
-    error.jiraError = await response.json();
-    throw error;
-  }
-
-  const user = await response.json();
-
-  const site = user.find((r: { id: unknown; url: unknown; scopes: string | string[]; }) => r.id && r.url && r.scopes?.includes("read:jira-work"));
-  
-  return {
-    id: site.id,
-    name: site.name,
-  };
-}
-
-export async function Projects(id: string): Promise<Projects> {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-      throw new Error("No session found");
-  }
-  
-  const jiraAccessToken = session.jiraAccessToken;
-
-  const projectsRes = await fetch(
-    `https://api.atlassian.com/ex/jira/${id}/rest/api/3/project/search`,
-    {
-      headers: {
-        Authorization: `Bearer ${jiraAccessToken}`,
-        Accept: "application/json",
-      },
+  // Fallback: fetch cloudId if missing
+  let cloudId = jira.cloudId;
+  if (!cloudId) {
+    const res = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
+      headers: { Authorization: `Bearer ${jira.accessToken}` },
+    });
+    const resources = (await res.json()) as JiraAccessibleResource[];
+    const site = resources.find(
+      (r) => r.id && r.url && r.scopes.includes("read:jira-work")
+    );
+    if (!site) {
+      return NextResponse.json({ error: "No Jira site found" }, { status: 400 });
     }
-  );
-
-  const projects = await projectsRes.json();
-
-  return projects;
-  
-}
-
-export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    throw new Error("No session found");
+    cloudId = site.id;
   }
 
-  const user = await fetchMe();
-
-  const projects = await Projects(user.id);
-
+  const projects = await fetchProjects(req, cloudId);
   return NextResponse.json(projects);
-
 }

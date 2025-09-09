@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   const repoOwner = parsedUrl?.owner;
 
   try {
-    const res = await fetchRepoMetadata(repoUrl	);
+    const res = await fetchRepoMetadata(req, repoUrl	);
     
     const metadata: RepoMetadata = {
       owner: res.owner.login,
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       trees_url: res.trees_url,
     }
 
-    const fileTree = await fetchRepoFileTree(metadata.trees_url);
+    const fileTree = await fetchRepoFileTree(req, metadata.trees_url);
     
     const resFiltered = await filterFiles(fileTree);
     const filteredFiles: RepoFileTree = {
@@ -44,9 +44,9 @@ export async function POST(req: NextRequest) {
     }
     
 
-    const resReport = await analyzeMetadata(metadata);
+    const resReport = await analyzeMetadata(req, metadata);
 
-    const analysis = await analyzeFileTree(filteredFiles);
+    const analysis = await analyzeFileTree(req, filteredFiles);
 
     const report: Report = {
       updatedAtReport: resReport.updatedAtReport,

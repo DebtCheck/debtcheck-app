@@ -1,6 +1,5 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { RepoFileTree, RepoPRs } from "@/types/repo";
-import { getServerSession } from "next-auth/next";
+import { getToken, JWT } from "next-auth/jwt";
 
 function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   const match = url.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/)?$/);
@@ -10,8 +9,11 @@ function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   return { owner, repo };
 }
 
-export async function fetchRepoMetadata(repoUrl: string) {
-  const session = await getServerSession(authOptions);
+import { NextRequest } from "next/server";
+
+export async function fetchRepoMetadata(req: NextRequest, repoUrl: string) {
+  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
+  const gh = token?.github?.accessToken;
 
   const parsedUrl = parseGitHubUrl(repoUrl);  
 
@@ -22,7 +24,7 @@ export async function fetchRepoMetadata(repoUrl: string) {
   const response = await fetch(`https://api.github.com/repos/${parsedUrl?.owner}/${parsedUrl?.repo}`, {
     headers: {
       "Accept": "application/vnd.github+json",
-      "Authorization": session?.githubAccessToken ? `Bearer ${session?.githubAccessToken}` : "",
+      ...(gh ? { Authorization: `Bearer ${gh}` } : {}),
     },
   });
   
@@ -39,13 +41,14 @@ export async function fetchRepoMetadata(repoUrl: string) {
 
   
 
-  metadata.total_issues_count = await fetchRepoIssues(repoUrl).then((issues) => issues.total_count);
+  metadata.total_issues_count = await fetchRepoIssues(req, repoUrl).then((issues) => issues.total_count);
 
   return metadata;
 }
 
-export async function fetchRepoIssues(repoUrl: string) {
-  const session = await getServerSession(authOptions);
+export async function fetchRepoIssues(req: NextRequest, repoUrl: string) {
+  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
+  const gh = token?.github?.accessToken;
 
   const parsedUrl = parseGitHubUrl(repoUrl);
 
@@ -56,7 +59,7 @@ export async function fetchRepoIssues(repoUrl: string) {
   const response = await fetch(`https://api.github.com/search/issues?q=repo:${parsedUrl?.owner}/${parsedUrl?.repo}+type:issue`, {
     headers: {
       "Accept": "application/vnd.github+json",
-      ...(session?.githubAccessToken && { "Authorization": `Bearer ${session?.githubAccessToken}` }),
+      ...(gh ? { Authorization: `Bearer ${gh}` } : {}),
     },
   });
 
@@ -67,14 +70,15 @@ export async function fetchRepoIssues(repoUrl: string) {
   return issues;
 }
 
-export async function fetchRepoFileTree(url: string) {
-  const session = await getServerSession(authOptions);
+export async function fetchRepoFileTree(req: NextRequest, url: string) {
+  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
+  const gh = token?.github?.accessToken;
 
   url = url.replace(/{\/sha}$/, "/HEAD") + "?recursive=1";
   const response = await fetch(url, {
     headers: {
       "Accept": "application/vnd.github+json",
-      "Authorization": session?.githubAccessToken ? `Bearer ${session?.githubAccessToken}` : ""
+      ...(gh ? { Authorization: `Bearer ${gh}` } : {}),
     },
   });
 
@@ -85,8 +89,9 @@ export async function fetchRepoFileTree(url: string) {
   return fileTree;
 }
 
-export async function fetchRepoPR(owner: string, name: string) {
-  const session = await getServerSession(authOptions);
+export async function fetchRepoPR(req: NextRequest, owner: string, name: string) {
+  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
+  const gh = token?.github?.accessToken;
   let page = 1;
   const perPage = 100;
   let allPRs: RepoPRs[] = [];
@@ -98,7 +103,7 @@ export async function fetchRepoPR(owner: string, name: string) {
       {
         headers: {
           "Accept": "application/vnd.github+json",
-          "Authorization": session?.githubAccessToken ? `Bearer ${session?.githubAccessToken}` : ""
+          ...(gh ? { Authorization: `Bearer ${gh}` } : {}),
         },
       });
     if (!response.ok) { 

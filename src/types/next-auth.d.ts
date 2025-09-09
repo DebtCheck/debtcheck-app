@@ -2,25 +2,42 @@ import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    githubAccessToken?: string;
-    jiraAccessToken?: string;
-    jiraRefreshToken?: string;
-    jiraCloudId?: string;
-    githubUser?: GitHubProfile;
-    jiraSite?: {
+    providers?: {
+      github: boolean;
+      jira: boolean;
+    };
+    githubUser?: {
       name?: string;
-      image?: string;
+      email?: string;
+      login?: string;
+    };
+    jiraCloudId?: string;
+    jiraSite?: { 
+      name?: string; 
+      image?: string 
     };
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    githubAccessToken?: string;
-    jiraAccessToken?: string;
-    jiraRefreshToken?: string;
-    jiraCloudId?: string;
-    githubUser?: GitHubProfile;
+    github?: {
+      accessToken: string;
+      expiresAt: number | null;
+    };
+    githubUser?: {
+      name?: string;
+      email?: string;
+      login?: string;
+    };
+    jira?: {
+      accessToken: string;
+      refreshToken?: string;
+      expiresAt?: number;
+      scope?: string;
+      cloudId?: string;
+      error?: string;
+    };
     jiraSite?: {
       name?: string;
       image?: string;
