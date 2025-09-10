@@ -1,7 +1,9 @@
 import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
-import { fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
+import { authOptions } from "@/lib/auth/auth";
+import { ensureFreshGithubAccessToken, fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
 import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -14,8 +16,20 @@ export async function POST(req: NextRequest) {
   const parsedUrl = parseGitHubUrl(repoUrl);
   const repoOwner = parsedUrl?.owner;
 
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  let accessToken: string;
   try {
-    const res = await fetchRepoMetadata(req, repoUrl	);
+    ({ accessToken } = await ensureFreshGithubAccessToken(userId));
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "GitHub not linked";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
+  try {
+    const res = await fetchRepoMetadata(req, repoUrl, accessToken	);
     
     const metadata: RepoMetadata = {
       owner: res.owner.login,
@@ -36,7 +50,7 @@ export async function POST(req: NextRequest) {
       trees_url: res.trees_url,
     }
 
-    const fileTree = await fetchRepoFileTree(req, metadata.trees_url);
+    const fileTree = await fetchRepoFileTree(req, metadata.trees_url, accessToken);
     
     const resFiltered = await filterFiles(fileTree);
     const filteredFiles: RepoFileTree = {
@@ -44,9 +58,9 @@ export async function POST(req: NextRequest) {
     }
     
 
-    const resReport = await analyzeMetadata(req, metadata);
+    const resReport = await analyzeMetadata(req, metadata, accessToken);
 
-    const analysis = await analyzeFileTree(req, filteredFiles);
+    const analysis = await analyzeFileTree(req, filteredFiles, accessToken);
 
     const report: Report = {
       updatedAtReport: resReport.updatedAtReport,

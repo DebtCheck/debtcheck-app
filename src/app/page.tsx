@@ -7,8 +7,8 @@ import { Input } from "./components/ui/input";
 import { Button } from "./components/ui/button";
 import { Card, CardContent } from "./components/ui/card";
 import GitHubAuth from "./components/ui/githubAuth";
-import ConnectJiraButton from "./components/ui/jiraAuth";
-import JiraProjects from "./components/ui/jiraProjects";
+import ConnectJiraButton, { DisconnectJiraButton } from "./components/ui/jira/jiraAuth";
+import JiraProjects from "./components/ui/jira/jiraProjects";
 import type { Report } from "@/types/report";
 import type { Projects } from "@/types/jira";
 
@@ -155,6 +155,7 @@ export default function Home() {
                 <p className="text-gray-600 mt-4">You have no Jira projects available.</p>
               )
             ) : null}
+            <DisconnectJiraButton />
           </>
         )}
 

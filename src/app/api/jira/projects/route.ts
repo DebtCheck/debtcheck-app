@@ -1,33 +1,32 @@
 import type { JiraAccessibleResource } from "@/types/jira";
-import type { JWT } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { fetchProjects } from "@/lib/jira";
+import { ensureFreshJiraAccessToken, fetchProjects } from "@/lib/jira";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
 
 
 export async function GET(req: NextRequest) {
-  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
-  const jira = token?.jira;
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (!jira?.accessToken) return NextResponse.json({ error: "Not linked with Jira" }, { status: 401 });
-  if (jira.error)        return NextResponse.json({ error: "Re-auth Jira" }, { status: 401 });
+  const { accessToken } = await ensureFreshJiraAccessToken(userId);
 
-  // Fallback: fetch cloudId if missing
-  let cloudId = jira.cloudId;
-  if (!cloudId) {
-    const res = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
-      headers: { Authorization: `Bearer ${jira.accessToken}` },
-    });
-    const resources = (await res.json()) as JiraAccessibleResource[];
-    const site = resources.find(
-      (r) => r.id && r.url && r.scopes.includes("read:jira-work")
+  const res = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    cache: "no-store"
+  });
+  if (!res.ok) {
+    const j = await res.json().catch(() => ({}));
+    return NextResponse.json(
+      { error: j?.error ?? `Jira resources error ${res.status}` },
+      { status: res.status }
     );
-    if (!site) {
-      return NextResponse.json({ error: "No Jira site found" }, { status: 400 });
-    }
-    cloudId = site.id;
   }
+  const resources = (await res.json()) as JiraAccessibleResource[];
+  const site = resources.find((r) => r.id && r.url && r.scopes.includes("read:jira-work"));
+  if (!site) return NextResponse.json({ error: "No Jira site found" }, { status: 400 });
 
-  const projects = await fetchProjects(req, cloudId);
+  const projects = await fetchProjects(req, site.id, accessToken);
   return NextResponse.json(projects);
 }

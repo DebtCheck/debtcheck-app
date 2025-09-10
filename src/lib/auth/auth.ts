@@ -1,9 +1,11 @@
 import { GitHubProfileLite } from "@/types/github";
-import { NextAuthOptions } from "next-auth";
+import { Account, NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import GitHubProvider from "next-auth/providers/github";
+import GitHub from "next-auth/providers/github";
 import { OAuthConfig } from "next-auth/providers/oauth";
 import { JiraProfile } from "@/types/jira";
+import { prisma } from "@/lib/prisma";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 type JiraAccessibleResource = {
   id: string;
   name: string;
@@ -51,8 +53,6 @@ export const JiraProvider: OAuthConfig<JiraAccessibleResource[]> = {
   },
 };
 
-// --- helper: refresh Jira ---
-
 export async function refreshAtlassianAccessToken(prev: JWT): Promise<JWT> {
   try {
     const res = await fetch("https://auth.atlassian.com/oauth/token", {
@@ -91,11 +91,10 @@ export async function refreshAtlassianAccessToken(prev: JWT): Promise<JWT> {
 }
 
 export const authOptions: NextAuthOptions = {
-  debug: true,
-  session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: "database" }, // small cookie, accounts stored in DB
   providers: [
-    GitHubProvider({
+    GitHub({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
       authorization: { params: { scope: "read:user repo read:org", prompt: "consent" } },
@@ -103,64 +102,20 @@ export const authOptions: NextAuthOptions = {
     JiraProvider,
   ],
   callbacks: {
-    async jwt({ token, account, profile }) {
-      // Always start by copying the previous token
-      let next: JWT = { ...token };
+    // Add useful flags to the session so the client knows what’s linked
+    async session({ session, user }) {
+      // session.user.id for convenience
+      session.user.id = user.id;
 
-      if (account?.provider === "github") {
-        console.log("[jwt] signing in with GitHub");
-        next = {
-          ...next,
-          github: {
-            accessToken: account.access_token!,         // set/replace only GitHub block
-            expiresAt: account.expires_at ?? null,
-          },
-          githubUser: isGitHubProfile(profile)
-            ? { name: profile.name, email: profile.email, login: profile.login }
-            : { name: "", email: "", login: "" },
-        };
-      }
-
-      if (account?.provider === "jira") {
-        console.log("[jwt] signing in with Jira");
-        next = {
-          ...next,
-          jira: {
-            ...(next.jira ?? {}),
-            accessToken: account.access_token!,
-            refreshToken: account.refresh_token!,
-            expiresAt: account.expires_at!,
-            scope: account.scope,
-            cloudId: isJiraProfile(profile) ? profile.cloudId : next.jira?.cloudId,
-          },
-          jiraSite: {
-            name: (next.name as string) ?? "",
-            image: (next.picture as string) ?? "",
-          },
-        };
-      }
-
-      // Refresh Jira if needed (this preserves GitHub fields)
-      if (next.jira?.expiresAt && Math.floor(Date.now() / 1000) > next.jira.expiresAt) {
-        next = await refreshAtlassianAccessToken(next);
-      }
-
-      console.log("[jwt] merged token providers:", {
-        hasGH: !!next.github?.accessToken,
-        hasJira: !!next.jira?.accessToken,
+      const accounts: Pick<Account, "provider">[] = await prisma.account.findMany({
+        where: { userId: user.id },
+        select: { provider: true },
       });
-
-      return next;
-    },
-
-    async session({ session, token }) {
+      const has = (p: "github" | "atlassian" | "jira") => accounts.some((a) => a.provider === p);
       session.providers = {
-        github: Boolean(token.github?.accessToken),
-        jira: Boolean(token.jira?.accessToken) && !token.jira?.error,
+        github: has("github"),
+        jira: has("atlassian") || has("jira"),
       };
-      session.githubUser = token.githubUser;
-      session.jiraCloudId = token.jira?.cloudId;
-      session.jiraSite = token.jiraSite;
       return session;
     },
   },
