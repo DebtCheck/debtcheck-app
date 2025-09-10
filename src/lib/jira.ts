@@ -1,19 +1,8 @@
-import type { JiraAccessibleResource, Projects as JiraProjectsType } from "@/types/jira";
-import { NextRequest } from "next/server";
+import type { JiraAccessibleResource, JiraAccount, Projects as JiraProjectsType } from "@/types/jira";
 import { prisma } from "./prisma";
 
 const JIRA_PROVIDERS = ["atlassian", "jira"] as const;
 type JiraProvider = (typeof JIRA_PROVIDERS)[number];
-
-export type JiraAccount = {
-  id: string;
-  userId: string;
-  provider: string;
-  providerAccountId: string;
-  access_token: string | null;
-  refresh_token: string | null;
-  expires_at: number | null;
-};
 
 export async function getJiraAccount(userId: string): Promise<JiraAccount | null> {
   return prisma.account.findFirst({
@@ -94,7 +83,7 @@ export async function ensureFreshJiraAccessToken(userId: string): Promise<{
   return { accessToken: refreshed.access_token, account: refreshed };
 }
 
-export async function fetchMe(req: NextRequest, accessToken: string)  {
+export async function fetchAccessibleRessources(accessToken: string)  {
 
   const response = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
     headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
@@ -120,7 +109,7 @@ export async function fetchMe(req: NextRequest, accessToken: string)  {
   return { id: site.id, name: site.name };
 }
 
-export async function fetchProjects(req: NextRequest, cloudId: string, accessToken: string): Promise<JiraProjectsType> {
+export async function fetchProjects(cloudId: string, accessToken: string): Promise<JiraProjectsType> {
   const projectsRes = await fetch(
     `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search`,
     {

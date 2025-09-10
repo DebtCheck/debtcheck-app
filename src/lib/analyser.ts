@@ -1,6 +1,6 @@
 import { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
 import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness, IssuesAnalysis } from "@/types/report";
-import { fetchRepoPR } from "./github";
+import { fetchRepoPR } from "./github/github";
 import { NextRequest } from "next/server";
 
 export async function analyzeFileTree(files: RepoFileTree, accessToken: string)  {
@@ -83,7 +83,7 @@ async function analyzePRs(req: NextRequest, metadata: RepoMetadata, accessToken:
 
   const currentDate = new Date();
   
-  const allPRs: RepoPRs[] = await fetchRepoPR(req, metadata.owner, metadata.name, accessToken);
+  const allPRs: RepoPRs[] = await fetchRepoPR(metadata.owner, metadata.name, accessToken);
 
   const stalePRsCount = allPRs.reduce((count, pr: { created_at: string }) => {
     const created_at = new Date(pr.created_at);

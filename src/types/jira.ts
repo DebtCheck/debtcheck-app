@@ -41,3 +41,13 @@ export type JiraCloudSite = {
   avatarUrl?: string;
   scopes: string[];
 };
+
+export type JiraAccount = {
+  id: string;
+  userId: string;
+  provider: string;
+  providerAccountId: string;
+  access_token: string | null;
+  refresh_token: string | null;
+  expires_at: number | null;
+};

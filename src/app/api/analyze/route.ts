@@ -5,7 +5,7 @@ import {
   fetchRepoFileTree,
   fetchRepoMetadata,
   filterFiles,
-} from "@/lib/github";
+} from "@/lib/github/github";
 import { jsonError, jsonOk } from "@/lib/http/response";
 import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const repoMetadataRaw = await fetchRepoMetadata(req, repoOwner, repoName, accessToken);
+    const repoMetadataRaw = await fetchRepoMetadata(repoOwner, repoName, accessToken);
 
     const metadata: RepoMetadata = {
       owner: repoMetadataRaw.owner.login,
@@ -75,13 +75,13 @@ export async function POST(req: NextRequest) {
       return jsonError("Repository too large to analyze safely.", 413);
     }
 
-    const rawTree = await fetchRepoFileTree(req, metadata.trees_url, accessToken);
+    const rawTree = await fetchRepoFileTree(metadata.trees_url, accessToken);
     const filteredTree = await filterFiles(rawTree);
     const filteredFiles: RepoFileTree = { tree: filteredTree };
 
     const [metaReport, fileTreeReport] = await Promise.all([
       analyzeMetadata(req, metadata, accessToken),
-      analyzeFileTree(req, filteredFiles, accessToken),
+      analyzeFileTree(filteredFiles, accessToken),
     ]);
 
     const report: Report = {

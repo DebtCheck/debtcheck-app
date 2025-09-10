@@ -1,12 +1,12 @@
 import type { JiraAccessibleResource } from "@/types/jira";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { ensureFreshJiraAccessToken, fetchProjects } from "@/lib/jira";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { jsonError, jsonOk } from "@/lib/http/response";
 
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   if (!userId) return jsonError("Unauthorized", 401);
@@ -25,6 +25,6 @@ export async function GET(req: NextRequest) {
   const site = resources.find((r) => r.id && r.url && r.scopes.includes("read:jira-work"));
   if (!site) return NextResponse.json({ error: "No Jira site found" }, { status: 400 });
 
-  const projects = await fetchProjects(req, site.id, accessToken);
+  const projects = await fetchProjects(site.id, accessToken);
   return jsonOk(projects)
 }
