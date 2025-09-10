@@ -1,19 +1,36 @@
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { DeadCode, DeprecatedLibs } from "@/types/report";
 import { authOptions } from "@/lib/auth/auth";
 import { ensureFreshJiraAccessToken, fetchMe } from "@/lib/jira";
+import { jsonError, jsonOk } from "@/lib/http/response";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-    const userId = session?.user?.id;
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const userId = session?.user?.id;
+  if (!userId) return jsonError("Unauthorized", 401);
   
-    const { accessToken } = await ensureFreshJiraAccessToken(userId);
+  const { accessToken } = await ensureFreshJiraAccessToken(userId);
+
+  if (!accessToken) {
+    return jsonError("Unauthorized", 401);
+  }
 
   const { projectId, report } = await req.json();
-  
+
+  if (!report) {
+    return jsonError("Invalid report", 400);
+  }
+
+  if (!projectId) {
+    return jsonError("Invalid project ID", 400);
+  }
+
   const user = await fetchMe(req, accessToken);
+
+  if (!user) {
+    return jsonError("Unauthorized", 401);
+  }
 
   const issueActions = [
     report?.updatedAtReport?.stale && {
@@ -56,13 +73,13 @@ export async function POST(req: NextRequest) {
   
   if (!issueActions.length) {
     console.log("✅ Aucun problème détecté, aucun ticket Jira à créer.");
-    return NextResponse.json({ message: "No issues detected" });
+    return jsonOk("No issues detected, no Jira tickets created.");
   }
   
   
   for (const action of issueActions) {
     try {
-      const res = await fetch(`https://api.atlassian.com/ex/jira/${user.id}/rest/api/3/issue`, {
+      const requestJira = await fetch(`https://api.atlassian.com/ex/jira/${user.id}/rest/api/3/issue`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,8 +110,8 @@ export async function POST(req: NextRequest) {
       });
       
 
-      const data = await res.json();
-      if (!res.ok) {
+      const data = await requestJira.json();
+      if (!requestJira.ok) {
         console.error(`Failed to create ticket:`, data);
       } else {
         console.log(`Created ticket: ${data.key}`);
@@ -104,5 +121,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({message: "created ticket"});
+  return jsonOk("Jira tickets created successfully.");
 }
