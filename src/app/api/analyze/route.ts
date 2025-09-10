@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(report, { status: 200 });
   } catch (err: unknown) {
     if (isGitHubApiError(err)) {
+      // If it tries to access a repo from an organization that didn't allow the API
       const githubMessage = err.githubError?.message;
       let type = "GITHUB_ERROR";
       let docsUrl: string | undefined;
