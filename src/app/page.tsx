@@ -1,55 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState, useCallback } from "react";
-import { useSession, signIn } from "next-auth/react";
+import { useState, useCallback } from "react";
 import { Input } from "./components/ui/input";
 import { Button } from "./components/ui/button";
 import { Card, CardContent } from "./components/ui/card";
 import GitHubAuth from "./components/ui/githubAuth";
-import ConnectJiraButton, { DisconnectJiraButton } from "./components/ui/jira/jiraAuth";
-import JiraProjects from "./components/ui/jira/jiraProjects";
+import JiraAuth from "./components/ui/jira/jiraAuth";
 import type { Report } from "@/types/report";
-import type { Projects } from "@/types/jira";
 
 export default function Home() {
-  const { data: session, status } = useSession();
 
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Report | null>(null);
-
-  const [jiraProjects, setJiraProjects] = useState<Projects | null>(null);
-  const [hasFetchedProjects, setHasFetchedProjects] = useState(false);
-  const [loadingProjects, setLoadingProjects] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const jiraLinked = !!session?.providers?.jira; // <-- new flag from session callback
-
-  const handleProjects = useCallback(async () => {
-    if (!jiraLinked) return;
-
-    setLoadingProjects(true);
-    setError(null);
-    setJiraProjects(null);
-
-    try {
-      const res = await fetch("/api/jira/projects", { method: "GET", cache: "no-store" });
-      const data = await res.json();
-
-      if (!res.ok) {
-        // data is likely { error: "message" } – pick a string
-        setError(typeof data?.error === "string" ? data.error : "Failed to fetch Jira projects");
-        return; // <- do NOT setJiraProjects on error
-      }
-
-      setJiraProjects(data as Projects);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unexpected error");
-    } finally {
-      setLoadingProjects(false);
-    }
-  }, [jiraLinked]);
 
   const handleAnalyze = useCallback(async () => {
     setLoading(true);
@@ -65,10 +30,6 @@ export default function Home() {
       const data = await response.json();
       setResult(data);
 
-      // If Jira is linked, refresh projects after analyze (optional)
-      if (jiraLinked) {
-        await handleProjects();
-      }
     } catch (e) {
       if (e instanceof Error) {
         setError(e.message);
@@ -78,19 +39,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [repoUrl, jiraLinked, handleProjects]);
-
-  // Fetch Jira projects once per session (and when user links Jira)
-  useEffect(() => {
-    if (status === "authenticated" && jiraLinked && !hasFetchedProjects) {
-      handleProjects().finally(() => setHasFetchedProjects(true));
-    }
-    // Reset flag if user logs out or unlinks
-    if (status !== "authenticated" || !jiraLinked) {
-      setHasFetchedProjects(false);
-      setJiraProjects(null);
-    }
-  }, [status, jiraLinked, hasFetchedProjects, handleProjects]);
+  }, [repoUrl]);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 font-[family-name:var(--font-geist-sans)]">
@@ -134,36 +83,7 @@ export default function Home() {
       <div className="p-6 w-full max-w-2xl">
         <h2 className="text-xl font-bold mb-4">Jira Integration</h2>
 
-        {status === "loading" && <p className="text-gray-500">Checking session…</p>}
-
-        {status === "authenticated" && !jiraLinked && (
-          <>
-            <ConnectJiraButton />
-            <p className="text-gray-600 mt-2">
-              Connect your Jira account to track issues and technical debt.
-            </p>
-          </>
-        )}
-
-        {status === "authenticated" && jiraLinked && (
-          <>
-            {loadingProjects && <p className="text-gray-500 mt-4">Loading projects…</p>}
-            {!loadingProjects && jiraProjects && Array.isArray(jiraProjects.values) ? (
-              jiraProjects.values.length > 0 ? (
-                <JiraProjects values={jiraProjects.values} report={result} />
-              ) : (
-                <p className="text-gray-600 mt-4">You have no Jira projects available.</p>
-              )
-            ) : null}
-            <DisconnectJiraButton />
-          </>
-        )}
-
-        {status === "unauthenticated" && (
-          <Button className="mt-2" onClick={() => signIn(undefined, { callbackUrl: window.location.href })}>
-            Sign in to continue
-          </Button>
-        )}
+        <JiraAuth report={result} />
       </div>
     </main>
   );
