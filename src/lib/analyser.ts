@@ -49,7 +49,7 @@ function analyzeStaleness(dateStr: string, label: string) {
     daysSinceUpdate: daysAgo,
     message: isStale
       ? `${label} is stale: last activity was ${daysAgo} days ago.`
-      : `${label} is fresh: last activity was ${daysAgo} ${daysAgo > 1 ? "day" : "days"} ago.`,
+      : `${label} is fresh: last activity was ${daysAgo} ${daysAgo === 1 ? "day" : "days"} ago.`,
   }
 }
 
