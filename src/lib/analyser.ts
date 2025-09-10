@@ -1,14 +1,14 @@
 import { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
-import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness } from "@/types/report";
+import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness, IssuesAnalysis } from "@/types/report";
 import { fetchRepoPR } from "./github";
 import { NextRequest } from "next/server";
 
-export async function analyzeFileTree(req: NextRequest, files: RepoFileTree, accessToken: string)  {
+export async function analyzeFileTree(files: RepoFileTree, accessToken: string)  {
   const response = await fetch(`${process.env.RUST_URL}/analyze`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${accessToken}`,
+      "X-Github-Access-Token": accessToken
     },
     body: JSON.stringify(files),
   });
@@ -40,7 +40,7 @@ function analyzeStaleness(dateStr: string, label: string) {
   const date = new Date(dateStr);
   const currentDate = new Date();
   const timeDiff = (currentDate.getTime() - date.getTime()) / (1000 * 3600 * 24);
-  const daysAgo = Math.round(timeDiff);
+  const daysAgo = Math.floor(timeDiff);
   const isStale = timeDiff > 90;
 
   return {
@@ -49,21 +49,34 @@ function analyzeStaleness(dateStr: string, label: string) {
     daysSinceUpdate: daysAgo,
     message: isStale
       ? `${label} is stale: last activity was ${daysAgo} days ago.`
-      : `${label} is fresh: last activity was ${daysAgo} days ago.`,
+      : `${label} is fresh: last activity was ${daysAgo} ${daysAgo > 1 ? "day" : "days"} ago.`,
   }
 }
 
-function analyzeIssues(openIssuesCount: number, totalIssuesCount: number) {
-  const IssuesRatio = openIssuesCount / totalIssuesCount;
-  const isManyIssuesUnresolved = IssuesRatio > 0.5;
+export function analyzeIssues(
+  openIssuesCount: number,
+  totalIssuesCount: number
+): IssuesAnalysis {
+  const total = Math.max(0, totalIssuesCount | 0);
+  let open = Math.max(0, openIssuesCount | 0);
+  if (total > 0) open = Math.min(open, total);
 
-  return {
-    IssuesRatio,
-    isManyIssuesUnresolved,
-    message: isManyIssuesUnresolved
-      ? `There are many unresolved issues: ${IssuesRatio * 100}% of issues are open.`
-      : `The issue resolution rate is good: ${IssuesRatio * 100}% of issues are open.`,
+  const issuesRatio = total === 0 ? 0 : open / total;
+  const isManyIssuesUnresolved = issuesRatio > 0.5;
+
+  const toPercent = (x: number) =>
+    `${Math.round(Math.max(0, Math.min(100, x * 100)) * 10) / 10}%`;
+
+  let message: string;
+  if (total === 0) {
+    message = "No issues to analyze.";
+  } else if (isManyIssuesUnresolved) {
+    message = `Many unresolved issues: ${toPercent(issuesRatio)} of issues are open.`;
+  } else {
+    message = `Good resolution rate: ${toPercent(issuesRatio)} of issues are open.`;
   }
+
+  return { issuesRatio, isManyIssuesUnresolved, message };
 }
 
 async function analyzePRs(req: NextRequest, metadata: RepoMetadata, accessToken: string) {
