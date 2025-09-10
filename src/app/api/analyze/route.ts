@@ -6,6 +6,7 @@ import {
   fetchRepoMetadata,
   filterFiles,
 } from "@/lib/github";
+import { jsonError, jsonOk } from "@/lib/http/response";
 import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
 import { getServerSession } from "next-auth";
@@ -20,32 +21,32 @@ export async function POST(req: NextRequest) {
   const { repoUrl } = await req.json();
 
   if (!repoUrl) {
-    return NextJsonError("Missing repo URL", 400);
+    return jsonError("Missing repo URL", 400);
   }
 
   const parsedUrl = parseGitHubUrl(repoUrl);
 
   if (!parsedUrl) {
-    return NextJsonError("Invalid GitHub URL", 400);
+    return jsonError("Invalid GitHub URL", 400);
   }
 
   const { owner: repoOwner, repo: repoName } = parsedUrl;
 
   if (!repoOwner) {
-    return NextJsonError("Invalid GitHub URL. Expected https://github.com/<owner>/<repo>", 400);
+    return jsonError("Invalid GitHub URL. Expected https://github.com/<owner>/<repo>", 400);
   }
 
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   if (!userId)
-    return NextJsonError("Unauthorized", 401);
+    return jsonError("Unauthorized", 401);
 
   let accessToken: string;
   try {
     ({ accessToken } = await ensureFreshGithubAccessToken(userId));
   } catch (e) {
     const msg = e instanceof Error ? e.message : "GitHub not linked";
-    return NextJsonError(msg, 401);
+    return jsonError(msg, 401);
   }
 
   try {
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
     };
 
     if (metadata.size > 2000000) {
-      return NextJsonError("Repository too large to analyze safely.", 413);
+      return jsonError("Repository too large to analyze safely.", 413);
     }
 
     const rawTree = await fetchRepoFileTree(req, metadata.trees_url, accessToken);
@@ -91,7 +92,7 @@ export async function POST(req: NextRequest) {
       fileTreeReport,
     };
 
-    return NextResponse.json(report, { status: 200 });
+    return jsonOk(report, { status: 200 })
   } catch (err: unknown) {
     if (isGitHubApiError(err)) {
       // If it tries to access a repo from an organization that didn't allow the API
@@ -115,12 +116,8 @@ export async function POST(req: NextRequest) {
     }
 
     // fallback error
-    return NextJsonError("Unexpected error processing repo", 500);
+    return jsonError("Unexpected error processing repo", 500);
   }
-}
-
-function NextJsonError(error: string, status = 400) {
-  return NextResponse.json({ error }, { status });
 }
 
 function parseGitHubUrl(repoUrl: string): ParsedGitHubUrl | null {
