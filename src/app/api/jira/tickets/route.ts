@@ -1,20 +1,19 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { DeadCode, DeprecatedLibs } from "@/types/report";
-import { getToken, JWT } from "next-auth/jwt";
-import { authOptions } from "@/lib/auth";
-import { fetchMe } from "@/lib/jira";
+import { authOptions } from "@/lib/auth/auth";
+import { ensureFreshJiraAccessToken, fetchMe } from "@/lib/jira";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-
-  if (!session || !session.providers?.jira) {
-    return NextResponse.json({ error: "Unauthorized: Missing Jira access token." }, { status: 401 });
-  }
+    const userId = session?.user?.id;
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  
+    const { accessToken } = await ensureFreshJiraAccessToken(userId);
 
   const { projectId, report } = await req.json();
   
-  const user = await fetchMe(req);
+  const user = await fetchMe(req, accessToken);
 
   const issueActions = [
     report?.updatedAtReport?.stale && {
@@ -63,16 +62,11 @@ export async function POST(req: NextRequest) {
   
   for (const action of issueActions) {
     try {
-      const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
-      const jira = token?.jira;
-
-      if (!jira?.accessToken) throw new Error("Jira access token not found");
-      
       const res = await fetch(`https://api.atlassian.com/ex/jira/${user.id}/rest/api/3/issue`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${jira.accessToken}`
+          "Authorization": `Bearer ${accessToken}`
         },
         body: JSON.stringify({
           fields: {

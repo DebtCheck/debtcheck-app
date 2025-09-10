@@ -1,21 +1,31 @@
-import { DefaultSession } from "next-auth";
+// declare module "next-auth" {
+//   interface Session extends DefaultSession {
+//     providers?: {
+//       github: boolean;
+//       jira: boolean;
+//     };
+//     githubUser?: {
+//       name?: string;
+//       email?: string;
+//       login?: string;
+//     };
+//     jiraCloudId?: string;
+//     jiraSite?: { 
+//       name?: string; 
+//       image?: string 
+//     };
+//   }
+// }
 
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    providers?: {
-      github: boolean;
-      jira: boolean;
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
     };
-    githubUser?: {
-      name?: string;
-      email?: string;
-      login?: string;
-    };
-    jiraCloudId?: string;
-    jiraSite?: { 
-      name?: string; 
-      image?: string 
-    };
+    providers?: { github: boolean; jira: boolean };
   }
 }
 

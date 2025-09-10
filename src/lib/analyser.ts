@@ -2,17 +2,13 @@ import { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
 import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness } from "@/types/report";
 import { fetchRepoPR } from "./github";
 import { NextRequest } from "next/server";
-import { getToken, JWT } from "next-auth/jwt";
 
-export async function analyzeFileTree(req: NextRequest, files: RepoFileTree,)  {
-  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as JWT | null;
-  const gh = token?.github?.accessToken;
-
+export async function analyzeFileTree(req: NextRequest, files: RepoFileTree, accessToken: string)  {
   const response = await fetch(`${process.env.RUST_URL}/analyze`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(gh ? { Authorization: `Bearer ${gh}` } : {}),
+      "Authorization": `Bearer ${accessToken}`,
     },
     body: JSON.stringify(files),
   });
@@ -24,13 +20,13 @@ export async function analyzeFileTree(req: NextRequest, files: RepoFileTree,)  {
   return response.json();
 }
 
-export async function analyzeMetadata(req: NextRequest, metadata: RepoMetadata) {
+export async function analyzeMetadata(req: NextRequest, metadata: RepoMetadata, accessToken: string) {
   const updatedAtReport: AnalyzeStaleness =  analyzeStaleness(metadata.updated_at, "updated_at"); 
   const pushedAtReport: AnalyzeStaleness = analyzeStaleness(metadata.pushed_at, "pushed_at");
 
   const issuesReport: AnalyzeIssues =  analyzeIssues(metadata.open_issues_count, metadata.total_issues_count);
 
-  const prsReport: AnalyzePrs = await analyzePRs(req, metadata); 
+  const prsReport: AnalyzePrs = await analyzePRs(req, metadata, accessToken); 
 
   return {
     updatedAtReport,
@@ -70,11 +66,11 @@ function analyzeIssues(openIssuesCount: number, totalIssuesCount: number) {
   }
 }
 
-async function analyzePRs(req: NextRequest, metadata: RepoMetadata) {
+async function analyzePRs(req: NextRequest, metadata: RepoMetadata, accessToken: string) {
 
   const currentDate = new Date();
   
-  const allPRs: RepoPRs[] = await fetchRepoPR(req, metadata.owner, metadata.name);
+  const allPRs: RepoPRs[] = await fetchRepoPR(req, metadata.owner, metadata.name, accessToken);
 
   const stalePRsCount = allPRs.reduce((count, pr: { created_at: string }) => {
     const created_at = new Date(pr.created_at);

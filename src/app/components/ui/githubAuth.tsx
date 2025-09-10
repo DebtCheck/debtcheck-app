@@ -1,22 +1,40 @@
-import React from 'react';
-import { useSession, signOut, signIn } from 'next-auth/react';
+import React, { useState } from 'react';
+import { useSession, signIn } from 'next-auth/react';
 import Image from 'next/image';
+import { useRouter } from "next/navigation";
 
 const GitHubAuth: React.FC = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
+  const [busy, setBusy] = useState(false);
+  const router = useRouter();
+
+  const githubLinked = !!session?.providers?.github;
   
 
   const handleLogin = () => {
     signIn("github", { callbackUrl: "/" });
   };
 
-  const handleLogout = () => {
-    signOut(); 
+  const disconnect = async () => {
+    setBusy(true);
+    try {
+      const res = await fetch("/api/github", { method: "DELETE" });
+      // Optional: handle errors
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        console.error("Failed to disconnect GitHub:", data ?? res.statusText);
+      }
+      await update();       // <— refresh next-auth session
+      router.refresh();
+    } finally {
+      setBusy(false);
+    }
   };
+
 
   return (
     <div>
-      {!session?.githubUser ? (
+      {!githubLinked ? (
         <button
           onClick={handleLogin}
           style={{
@@ -40,8 +58,8 @@ const GitHubAuth: React.FC = () => {
         </button>
       ) : (
         <div>
-          <p>Welcome, {session?.githubUser?.name || "Github User"}</p>
-          <button onClick={handleLogout}>Sign out</button>
+          <p>Welcome, {session.user.name || "Github User"}</p>
+          <button onClick={disconnect}>{busy ? "Disconnecting…" : "Disconnect GitHub"}</button>
         </div>
       )}
     </div>
