@@ -58,7 +58,7 @@ const GitHubAuth: React.FC = () => {
         </button>
       ) : (
         <div>
-          <p>Welcome, {githubLinked || "Github User"}</p>
+          <p>Welcome, {session.user.name || "Github User"}</p>
           <button onClick={disconnect}>{busy ? "Disconnecting…" : "Disconnect GitHub"}</button>
         </div>
       )}
