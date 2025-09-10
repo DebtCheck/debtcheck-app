@@ -1,4 +1,6 @@
 import { RepoFileTree, RepoPRs } from "@/types/repo";
+import { NextRequest } from "next/server";
+import { prisma } from "./prisma";
 
 const GITHUB_PROVIDER = "github";
 
@@ -116,25 +118,9 @@ export async function ensureFreshGithubAccessToken(userId: string): Promise<{
   return { accessToken: refreshed.access_token, account: refreshed };
 }
 
-function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
-  const match = url.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/)?$/);
-  if (!match) return null;
+export async function fetchRepoMetadata(req: NextRequest, repoOwner: string, repoName: string, accessToken: string) {
 
-  const [, owner, repo] = match;
-  return { owner, repo };
-}
-
-import { NextRequest } from "next/server";
-import { prisma } from "./prisma";
-
-export async function fetchRepoMetadata(req: NextRequest, repoUrl: string, accessToken: string) {
-  const parsedUrl = parseGitHubUrl(repoUrl);  
-
-  if (!parsedUrl) {
-    throw new Error("Invalid GitHub URL");
-  }
-
-  const response = await fetch(`https://api.github.com/repos/${parsedUrl?.owner}/${parsedUrl?.repo}`, {
+  const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, {
     headers: {
       "Accept": "application/vnd.github+json",
       "Authorization": `Bearer ${accessToken}`,
@@ -154,19 +140,14 @@ export async function fetchRepoMetadata(req: NextRequest, repoUrl: string, acces
 
   
 
-  metadata.total_issues_count = await fetchRepoIssues(req, repoUrl, accessToken).then((issues) => issues.total_count);
+  metadata.total_issues_count = await fetchRepoIssues(req, repoOwner, repoName, accessToken).then((issues) => issues.total_count);
 
   return metadata;
 }
 
-export async function fetchRepoIssues(req: NextRequest, repoUrl: string, accessToken: string) {
-  const parsedUrl = parseGitHubUrl(repoUrl);
+export async function fetchRepoIssues(req: NextRequest, repoOwner: string, repoName: string, accessToken: string) {
 
-  if (!parsedUrl) {
-    throw new Error("Invalid GitHub URL");
-  }
-
-  const response = await fetch(`https://api.github.com/search/issues?q=repo:${parsedUrl?.owner}/${parsedUrl?.repo}+type:issue`, {
+  const response = await fetch(`https://api.github.com/search/issues?q=repo:${repoOwner}/${repoName}+type:issue`, {
     headers: {
       "Accept": "application/vnd.github+json",
       "Authorization": `Bearer ${accessToken}`,
@@ -196,7 +177,7 @@ export async function fetchRepoFileTree(req: NextRequest, url: string, accessTok
   return fileTree;
 }
 
-export async function fetchRepoPR(req: NextRequest, owner: string, name: string, accessToken: string) {
+export async function fetchRepoPR(req: NextRequest, repoOwner: string, repoName: string, accessToken: string) {
   let page = 1;
   const perPage = 100;
   let allPRs: RepoPRs[] = [];
@@ -204,7 +185,7 @@ export async function fetchRepoPR(req: NextRequest, owner: string, name: string,
 
   while (hasMore) {
     const response = await fetch(
-      `https://api.github.com/repos/${owner}/${name}/pulls?state=open&per_page=${perPage}&page=${page}`,
+      `https://api.github.com/repos/${repoOwner}/${repoName}/pulls?state=open&per_page=${perPage}&page=${page}`,
       {
         headers: {
           "Accept": "application/vnd.github+json",
