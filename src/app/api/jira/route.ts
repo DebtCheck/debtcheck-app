@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/prisma";
+import { jsonError } from "@/lib/http/response";
 
 export async function DELETE() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!userId) return jsonError("Unauthorized", 401);
 
   const acc = await prisma.account.findFirst({
     where: { userId, provider: { in: ["atlassian", "jira"] } },

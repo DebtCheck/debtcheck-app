@@ -1,81 +1,103 @@
 import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
 import { authOptions } from "@/lib/auth/auth";
-import { ensureFreshGithubAccessToken, fetchRepoFileTree, fetchRepoMetadata, filterFiles } from "@/lib/github";
+import {
+  ensureFreshGithubAccessToken,
+  fetchRepoFileTree,
+  fetchRepoMetadata,
+  filterFiles,
+} from "@/lib/github/github";
+import { jsonError, jsonOk } from "@/lib/http/response";
 import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+type GitHubApiError = Error & {
+  status?: number;
+  githubError?: { message?: string };
+};
+
 export async function POST(req: NextRequest) {
-  const { repoUrl } = await req.json()
+  const { repoUrl } = await req.json();
 
   if (!repoUrl) {
-    return new Response("Missing repo URL", { status: 400 });
+    return jsonError("Missing repo URL", 400);
   }
 
   const parsedUrl = parseGitHubUrl(repoUrl);
-  const repoOwner = parsedUrl?.owner;
+
+  if (!parsedUrl) {
+    return jsonError("Invalid GitHub URL", 400);
+  }
+
+  const { owner: repoOwner, repo: repoName } = parsedUrl;
+
+  if (!repoOwner) {
+    return jsonError("Invalid GitHub URL. Expected https://github.com/<owner>/<repo>", 400);
+  }
 
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!userId)
+    return jsonError("Unauthorized", 401);
 
   let accessToken: string;
   try {
     ({ accessToken } = await ensureFreshGithubAccessToken(userId));
   } catch (e) {
     const msg = e instanceof Error ? e.message : "GitHub not linked";
-    return NextResponse.json({ error: msg }, { status: 401 });
+    return jsonError(msg, 401);
   }
 
   try {
-    const res = await fetchRepoMetadata(req, repoUrl, accessToken	);
-    
+    const repoMetadataRaw = await fetchRepoMetadata(repoOwner, repoName, accessToken);
+
     const metadata: RepoMetadata = {
-      owner: res.owner.login,
-      name: res.name,
-      description: res.description,
-      created_at: res.created_at,
-      updated_at: res.updated_at,
-      pushed_at: res.pushed_at,
-      size: res.size,
-      stargazers_count: res.stargazers_count,
-      forks_count: res.forks_count,
-      watchers_count: res.watchers_count,
-      open_issues_count: res.open_issues_count,
-      total_issues_count: res.total_issues_count,
-      subscribers_count: res.subscribers_count,
-      pulls_url: res.pulls_url,
-      default_branch: res.default_branch,
-      trees_url: res.trees_url,
+      owner: repoMetadataRaw.owner.login,
+      name: repoMetadataRaw.name,
+      description: repoMetadataRaw.description,
+      created_at: repoMetadataRaw.created_at,
+      updated_at: repoMetadataRaw.updated_at,
+      pushed_at: repoMetadataRaw.pushed_at,
+      size: repoMetadataRaw.size,
+      stargazers_count: repoMetadataRaw.stargazers_count,
+      forks_count: repoMetadataRaw.forks_count,
+      watchers_count: repoMetadataRaw.watchers_count,
+      open_issues_count: repoMetadataRaw.open_issues_count,
+      total_issues_count: repoMetadataRaw.total_issues_count,
+      subscribers_count: repoMetadataRaw.subscribers_count,
+      pulls_url: repoMetadataRaw.pulls_url,
+      default_branch: repoMetadataRaw.default_branch,
+      trees_url: repoMetadataRaw.trees_url,
+    };
+
+    if (metadata.size > 2000000) {
+      return jsonError("Repository too large to analyze safely.", 413);
     }
 
-    const fileTree = await fetchRepoFileTree(req, metadata.trees_url, accessToken);
-    
-    const resFiltered = await filterFiles(fileTree);
-    const filteredFiles: RepoFileTree = {
-      tree: resFiltered,
-    }
-    
+    const rawTree = await fetchRepoFileTree(metadata.trees_url, accessToken);
+    const filteredTree = await filterFiles(rawTree);
+    const filteredFiles: RepoFileTree = { tree: filteredTree };
 
-    const resReport = await analyzeMetadata(req, metadata, accessToken);
-
-    const analysis = await analyzeFileTree(req, filteredFiles, accessToken);
+    const [metaReport, fileTreeReport] = await Promise.all([
+      analyzeMetadata(req, metadata, accessToken),
+      analyzeFileTree(filteredFiles, accessToken),
+    ]);
 
     const report: Report = {
-      updatedAtReport: resReport.updatedAtReport,
-      pushedAtReport: resReport.pushedAtReport,
-      issuesReport: resReport.issuesReport,
-      prsReport: resReport.prsReport,
-      fileTreeReport: analysis,
-    }
-    
+      updatedAtReport: metaReport.updatedAtReport,
+      pushedAtReport: metaReport.pushedAtReport,
+      issuesReport: metaReport.issuesReport,
+      prsReport: metaReport.prsReport,
+      fileTreeReport,
+    };
 
-    return NextResponse.json(report, { status: 200 });
+    return jsonOk(report, { status: 200 })
   } catch (err: unknown) {
     if (isGitHubApiError(err)) {
+      // If it tries to access a repo from an organization that didn't allow the API
       const githubMessage = err.githubError?.message;
-      let type = "GITHUB_ERROR";
+      let type: "GITHUB_ERROR" | "OAUTH_APP_BLOCKED" | "SSO_NOT_AUTHORIZED" = "GITHUB_ERROR";
       let docsUrl: string | undefined;
 
       if (githubMessage?.includes("OAuth App access restrictions")) {
@@ -88,25 +110,16 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(
-        {
-          error: githubMessage,
-          details: {
-            type,
-            docsUrl,
-            status: err.status ?? 403,
-          },
-        },
-        { status: err.status ?? 403 }
+        { error: githubMessage ?? "GitHub API error", details: { type, docsUrl, status: err.status ?? 403 } },
+        { status: err.status ?? 403 },
       );
     }
 
     // fallback error
-    return NextResponse.json(
-      { error: "Unexpected error processing repo" },
-      { status: 500 }
-    );
+    return jsonError("Unexpected error processing repo", 500);
   }
 }
+
 function parseGitHubUrl(repoUrl: string): ParsedGitHubUrl | null {
   try {
     const parsed = new URL(repoUrl);
@@ -133,11 +146,6 @@ function parseGitHubUrl(repoUrl: string): ParsedGitHubUrl | null {
     return null;
   }
 }
-
-type GitHubApiError = Error & {
-  status?: number;
-  githubError?: { message?: string };
-};
 
 function isGitHubApiError(err: unknown): err is GitHubApiError {
   return (

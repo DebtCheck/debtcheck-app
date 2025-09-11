@@ -33,3 +33,21 @@ export type JiraAccessibleResource = {
   scopes: string[];
   avatarUrl?: string;
 };
+
+export type JiraCloudSite = {
+  cloudId: string;    
+  name: string;
+  url: string;
+  avatarUrl?: string;
+  scopes: string[];
+};
+
+export type JiraAccount = {
+  id: string;
+  userId: string;
+  provider: string;
+  providerAccountId: string;
+  access_token: string | null;
+  refresh_token: string | null;
+  expires_at: number | null;
+};

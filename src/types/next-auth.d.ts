@@ -1,22 +1,3 @@
-// declare module "next-auth" {
-//   interface Session extends DefaultSession {
-//     providers?: {
-//       github: boolean;
-//       jira: boolean;
-//     };
-//     githubUser?: {
-//       name?: string;
-//       email?: string;
-//       login?: string;
-//     };
-//     jiraCloudId?: string;
-//     jiraSite?: { 
-//       name?: string; 
-//       image?: string 
-//     };
-//   }
-// }
-
 declare module "next-auth" {
   interface Session {
     user: {

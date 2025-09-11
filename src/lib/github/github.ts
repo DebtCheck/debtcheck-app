@@ -1,18 +1,9 @@
 import { RepoFileTree, RepoPRs } from "@/types/repo";
+import { prisma } from "../prisma";
+import { GithubAccount } from "@/types/github";
+import { githubFetch } from "./http";
 
 const GITHUB_PROVIDER = "github";
-
-export type GithubAccount = {
-  id: string;
-  userId: string;
-  provider: string;
-  providerAccountId: string;
-  access_token: string | null;
-  refresh_token: string | null;
-  expires_at: number | null;
-  scope: string | null;
-  token_type: string | null;
-};
 
 export async function getGithubAccount(userId: string): Promise<GithubAccount | null> {
   return prisma.account.findFirst({
@@ -116,87 +107,20 @@ export async function ensureFreshGithubAccessToken(userId: string): Promise<{
   return { accessToken: refreshed.access_token, account: refreshed };
 }
 
-function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
-  const match = url.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/)?$/);
-  if (!match) return null;
-
-  const [, owner, repo] = match;
-  return { owner, repo };
+export async function fetchRepoMetadata(repoOwner: string, repoName: string, accessToken: string) {
+  return githubFetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, accessToken);
 }
 
-import { NextRequest } from "next/server";
-import { prisma } from "./prisma";
-
-export async function fetchRepoMetadata(req: NextRequest, repoUrl: string, accessToken: string) {
-  const parsedUrl = parseGitHubUrl(repoUrl);  
-
-  if (!parsedUrl) {
-    throw new Error("Invalid GitHub URL");
-  }
-
-  const response = await fetch(`https://api.github.com/repos/${parsedUrl?.owner}/${parsedUrl?.repo}`, {
-    headers: {
-      "Accept": "application/vnd.github+json",
-      "Authorization": `Bearer ${accessToken}`,
-    },
-  });
-  
-  const metadata = await response.json();
-
-  if (!response.ok) {
-    const error = new Error(metadata.message || response.statusText) as Error & { status?: number; githubError?: unknown };
-    error.status = response.status;
-    error.githubError = metadata;
-    console.log("Error fetching repo metadata:", error);
-    
-    throw error;
-  }
-
-  
-
-  metadata.total_issues_count = await fetchRepoIssues(req, repoUrl, accessToken).then((issues) => issues.total_count);
-
-  return metadata;
+export async function fetchRepoIssues(repoOwner: string, repoName: string, accessToken: string) {
+  return githubFetch(`https://api.github.com/search/issues?q=repo:${repoOwner}/${repoName}+type:issue`, accessToken);
 }
 
-export async function fetchRepoIssues(req: NextRequest, repoUrl: string, accessToken: string) {
-  const parsedUrl = parseGitHubUrl(repoUrl);
-
-  if (!parsedUrl) {
-    throw new Error("Invalid GitHub URL");
-  }
-
-  const response = await fetch(`https://api.github.com/search/issues?q=repo:${parsedUrl?.owner}/${parsedUrl?.repo}+type:issue`, {
-    headers: {
-      "Accept": "application/vnd.github+json",
-      "Authorization": `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error fetching repo issues: ${response.statusText}`);
-  }
-  const issues = await response.json();
-  return issues;
-}
-
-export async function fetchRepoFileTree(req: NextRequest, url: string, accessToken: string) {
+export async function fetchRepoFileTree(url: string, accessToken: string) {
   url = url.replace(/{\/sha}$/, "/HEAD") + "?recursive=1";
-  const response = await fetch(url, {
-    headers: {
-      "Accept": "application/vnd.github+json",
-      "Authorization": `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error fetching repo file tree: ${response.statusText}`);
-  }
-  const fileTree = await response.json();
-  return fileTree;
+  return githubFetch(url, accessToken);
 }
 
-export async function fetchRepoPR(req: NextRequest, owner: string, name: string, accessToken: string) {
+export async function fetchRepoPR(repoOwner: string, repoName: string, accessToken: string) {
   let page = 1;
   const perPage = 100;
   let allPRs: RepoPRs[] = [];
@@ -204,7 +128,7 @@ export async function fetchRepoPR(req: NextRequest, owner: string, name: string,
 
   while (hasMore) {
     const response = await fetch(
-      `https://api.github.com/repos/${owner}/${name}/pulls?state=open&per_page=${perPage}&page=${page}`,
+      `https://api.github.com/repos/${repoOwner}/${repoName}/pulls?state=open&per_page=${perPage}&page=${page}`,
       {
         headers: {
           "Accept": "application/vnd.github+json",

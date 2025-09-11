@@ -14,7 +14,7 @@ export interface AnalyzeStaleness {
 }
 
 export interface AnalyzeIssues {
-  IssuesRatio: number;
+  issuesRatio: number;
   isManyIssuesUnresolved: boolean;
   message: string;
 }
@@ -49,3 +49,9 @@ export enum DeadCodeKind {
   Function = "function",
   Variable = "variable",
 }
+
+export type IssuesAnalysis = {
+  issuesRatio: number;             // 0..1
+  isManyIssuesUnresolved: boolean; // rule-of-thumb threshold
+  message: string;
+};
