@@ -1,15 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import GitHubAuth from "./components/ui/githubAuth";
+import { useCallback, useState } from "react";
+import { Card, CardContent } from "./components/ui/card";
 import { Input } from "./components/ui/input";
 import { Button } from "./components/ui/button";
-import { Card, CardContent } from "./components/ui/card";
-import GitHubAuth from "./components/ui/githubAuth";
 import JiraAuth from "./components/ui/jira/jiraAuth";
 import type { Report } from "@/types/report";
 
+
 export default function Home() {
+
+  const { data: session } = useSession();
+  const githubLinked = !!session?.providers?.github;
 
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,7 +48,12 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 font-[family-name:var(--font-geist-sans)]">
-      <Card className="w-full max-w-2xl shadow-xl">
+      {/*  */}
+      {!githubLinked ? (
+        <GitHubAuth />
+      ) : (
+        <>
+          <Card className="w-full max-w-2xl shadow-xl">
         <CardContent className="p-6 space-y-4">
           <h1 className="text-3xl font-bold text-center flex items-center justify-center gap-2">
             <Image src="/github.svg" alt="DebtCheck Logo" width={40} height={40} />
@@ -85,6 +95,10 @@ export default function Home() {
 
         <JiraAuth report={result} />
       </div>
+        </>
+      )
+
+      }
     </main>
   );
 }
