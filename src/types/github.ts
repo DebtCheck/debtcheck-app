@@ -15,3 +15,12 @@ export type GithubAccount = {
   scope: string | null;
   token_type: string | null;
 };
+
+export type Repo = {
+  id: number;
+  full_name: string;
+  private: boolean;
+  language: string | null;
+  html_url: string;
+  pushed_at: string;
+};
