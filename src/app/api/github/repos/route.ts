@@ -22,14 +22,9 @@ function key(userId: string, page: number, perPage: number) {
   return `dc:repos:v1:user:${userId}:page:${page}:per:${perPage}`;
 }
 
-function hasNextFromLink(link: string | null) {
-  if (!link) return false;
-  return link.split(",").some(part => /rel="next"/.test(part));
-}
-
-function parseHasNext(link: string | null, fallback: boolean) {
+function hasNextFromLinkHeader(link: string | null, fallback: boolean) {
   if (!link) return fallback;
-  return link.split(",").some(p => /rel="next"/.test(p));
+  return link.split(",").some(part => /rel="next"/.test(part));
 }
 
 export async function GET(req: Request) {
@@ -76,14 +71,14 @@ export async function GET(req: Request) {
 
   if (res.status === 304 && cached) {
     const link = res.headers.get("link");
-    const hasNext = parseHasNext(link, cached.hasNext);
+    const hasNext = hasNextFromLinkHeader(link, cached.hasNext);
     const fresh = { ...cached, fetchedAt: Date.now(), hasNext };
     await kv.set(cacheKey, fresh, { ex: REDIS_TTL_S });
     return NextResponse.json({
       data: fresh.payload,
       stale: false,
       page,
-      hasNext: hasNextFromLink(res.headers.get("link")),
+      hasNext: hasNextFromLinkHeader(res.headers.get("link"), cached.hasNext),
       source: "kv-304",
     });
   }
@@ -92,14 +87,14 @@ export async function GET(req: Request) {
     const data = await res.json();
     const etag = res.headers.get("etag") ?? undefined;
     const link = res.headers.get("link");
-    const hasNext = parseHasNext(link, data.length === perPage);
+    const hasNext = hasNextFromLinkHeader(link, data.length === perPage);
     const toStore: CacheValue = { etag, payload: data, fetchedAt: Date.now(), hasNext };
     await kv.set(cacheKey, toStore, { ex: REDIS_TTL_S });
     return NextResponse.json({
       data,
       stale: false,
       page,
-      hasNext: hasNextFromLink(res.headers.get("link")),
+      hasNext: hasNextFromLinkHeader(res.headers.get("link"), hasNext),
       source: "github-200",
     });
   }
