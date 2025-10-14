@@ -98,7 +98,7 @@ export default function Home() {
             </CardContent>
           </Card>
           <GitHubAuth />
-          <ReposPage />
+          <ReposPage onSelectRepo={(url) => setRepoUrl(url)}/>
         </>
       )
 

@@ -23,4 +23,8 @@ export type Repo = {
   language: string | null;
   html_url: string;
   pushed_at: string;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
 };
