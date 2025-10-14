@@ -78,7 +78,7 @@ export async function GET(req: Request) {
       data: fresh.payload,
       stale: false,
       page,
-      hasNext: hasNextFromLinkHeader(res.headers.get("link"), cached.hasNext),
+      hasNext: hasNextFromLinkHeader(res.headers.get("link"), hasNext),
       source: "kv-304",
     });
   }

@@ -37,38 +37,38 @@ export default function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: strin
   const reqIdRef = useRef(0);
 
   async function load(p = 1) {
-  setLoading(true);
-  const myId = ++reqIdRef.current;
+    const myId = ++reqIdRef.current;
 
-  controllerRef.current?.abort();
-  const controller = new AbortController();
-  controllerRef.current = controller;
+    controllerRef.current?.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
 
-  try {
-    const r = await fetch(`/api/github/repos?page=${p}`, {
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    const json : ApiResponse = await r.json();
+    try {
+      setLoading(true);
+      const r = await fetch(`/api/github/repos?page=${p}`, {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      const json: ApiResponse = await r.json();
 
-    if (myId !== reqIdRef.current) return;
+      if (myId !== reqIdRef.current) return;
 
-    const data = json.data ?? [];
-    const hasNext =
-      (typeof json.hasNext === "boolean" ? json.hasNext : data.length === PER_PAGE);
+      const data = json.data ?? [];
+      const hasNext =
+        (typeof json.hasNext === "boolean" ? json.hasNext : data.length === PER_PAGE);
 
-    setData(data);
-    setHasNext(hasNext);
-    setStale(Boolean(json.stale));
-    setPage(p);
-  } catch (e) {
-    if (typeof e === "object" && e !== null && "name" in e && (e as { name?: string }).name !== "AbortError") {
-      console.error("fetch repos error:", e);
+      setData(data);
+      setHasNext(hasNext);
+      setStale(Boolean(json.stale));
+      setPage(p);
+    } catch (e) {
+      if (typeof e === "object" && e !== null && "name" in e && (e as { name?: string }).name !== "AbortError") {
+        console.error("fetch repos error:", e);
+      }
+    } finally {
+      if (myId === reqIdRef.current) setLoading(false);
     }
-  } finally {
-    if (myId === reqIdRef.current) setLoading(false);
   }
-}
 
   useEffect(() => { load(1); }, []);
 
@@ -103,7 +103,7 @@ export default function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: strin
                   <div className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
                     {r.owner?.avatar_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img alt="" src={r.owner.avatar_url} className="h-full w-full object-cover" />
+                      <img alt={r.owner.login} src={r.owner.avatar_url} className="h-full w-full object-cover" />
                     ) : (
                       <GitBranch className="h-4 w-4 opacity-70" />
                     )}
