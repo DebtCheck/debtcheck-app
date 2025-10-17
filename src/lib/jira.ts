@@ -83,7 +83,7 @@ export async function ensureFreshJiraAccessToken(userId: string): Promise<{
   return { accessToken: refreshed.access_token, account: refreshed };
 }
 
-export async function fetchAccessibleRessources(accessToken: string)  {
+export async function fetchAccessibleResources(accessToken: string)  {
 
   const response = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
     headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },

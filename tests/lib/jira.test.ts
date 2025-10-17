@@ -20,7 +20,7 @@ import {
   getJiraAccount,
   refreshJira,
   ensureFreshJiraAccessToken,
-  fetchAccessibleRessources,
+  fetchAccessibleResources,
   fetchProjects,
 } from "@/lib/jira";
 
@@ -214,8 +214,8 @@ describe("lib/jira", () => {
     vi.useRealTimers();
   });
 
-  // ---------- fetchAccessibleRessources ----------
-  it("fetchAccessibleRessources returns id/name for a site with read:jira-work", async () => {
+  // ---------- fetchAccessibleResources ----------
+  it("fetchAccessibleResources returns id/name for a site with read:jira-work", async () => {
     const resources: JiraAccessibleResource[] = [
       { id: "x", name: "Nope", url: "u", scopes: ["read:me"] },
       { id: "cloud-1", name: "My Jira", url: "u2", scopes: ["read:jira-work", "read:me"] },
@@ -223,29 +223,29 @@ describe("lib/jira", () => {
     vi.spyOn(global, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(resources), { status: 200 })
     );
-    const out = await fetchAccessibleRessources("token");
+    const out = await fetchAccessibleResources("token");
     expect(out).toEqual({ id: "cloud-1", name: "My Jira" });
   });
 
-  it("fetchAccessibleRessources throws with status and jiraError on non-OK", async () => {
+  it("fetchAccessibleResources throws with status and jiraError on non-OK", async () => {
     vi.spyOn(global, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify({ error: "bad" }), { status: 401, statusText: "Unauthorized" })
     );
-    await expect(fetchAccessibleRessources("token")).rejects.toMatchObject({
+    await expect(fetchAccessibleResources("token")).rejects.toMatchObject({
       message: expect.stringContaining("Failed to fetch user info"),
       status: 401,
       jiraError: { error: "bad" },
     });
   });
 
-  it("fetchAccessibleRessources throws when no acceptable site", async () => {
+  it("fetchAccessibleResources throws when no acceptable site", async () => {
     const resources: JiraAccessibleResource[] = [
       { id: "x", name: "Nope", url: "u", scopes: ["read:me"] },
     ];
     vi.spyOn(global, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(resources), { status: 200 })
     );
-    await expect(fetchAccessibleRessources("token")).rejects.toThrow("No accessible Jira site found");
+    await expect(fetchAccessibleResources("token")).rejects.toThrow("No accessible Jira site found");
   });
 
   // ---------- fetchProjects ----------
