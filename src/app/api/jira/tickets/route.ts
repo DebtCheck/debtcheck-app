@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 import { DeadCode, DeprecatedLibs } from "@/types/report";
 import { authOptions } from "@/lib/auth/auth";
-import { ensureFreshJiraAccessToken, fetchAccessibleRessources } from "@/lib/jira";
+import { ensureFreshJiraAccessToken, fetchAccessibleResources } from "@/lib/jira";
 import { jsonError, jsonOk } from "@/lib/http/response";
 
 export async function POST(req: NextRequest) {
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     return jsonError("Invalid project ID", 400);
   }
 
-  const user = await fetchAccessibleRessources(accessToken);
+  const user = await fetchAccessibleResources(accessToken);
 
   if (!user) {
     return jsonError("Unauthorized", 401);
