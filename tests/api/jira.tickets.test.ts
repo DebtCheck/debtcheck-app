@@ -4,7 +4,7 @@ import type { Report, DeadCodeKind } from "@/types/report";
 // ── Hoisted mocks ──────────────────────────────────────────────────────────────
 const getServerSessionMock = vi.hoisted(() => vi.fn());
 const ensureFreshJiraAccessTokenMock = vi.hoisted(() => vi.fn());
-const fetchAccessibleRessourcesMock = vi.hoisted(() => vi.fn());
+const fetchAccessibleResourcesMock = vi.hoisted(() => vi.fn());
 
 const sessionAuthed = { user: { id: "u1" } } as const;
 const sessionNone = null;
@@ -24,7 +24,7 @@ vi.mock("@/lib/auth/auth", () => ({
 
 vi.mock("@/lib/jira", () => ({
   ensureFreshJiraAccessToken: ensureFreshJiraAccessTokenMock,
-  fetchAccessibleRessources: fetchAccessibleRessourcesMock,
+  fetchAccessibleResources: fetchAccessibleResourcesMock,
 }));
 
 // Import AFTER mocks
@@ -117,7 +117,7 @@ describe("/api/jira/tickets (POST)", () => {
   it("200 and NO external calls when no issues detected", async () => {
     getServerSessionMock.mockResolvedValueOnce(sessionAuthed);
     ensureFreshJiraAccessTokenMock.mockResolvedValueOnce({ accessToken: "tok" });
-    fetchAccessibleRessourcesMock.mockResolvedValueOnce({ id: "site-1" });
+    fetchAccessibleResourcesMock.mockResolvedValueOnce({ id: "site-1" });
 
     const cleanReport: Report = {
       ...reportWithIssues,
@@ -144,7 +144,7 @@ describe("/api/jira/tickets (POST)", () => {
   it("creates one Jira issue per detected problem", async () => {
     getServerSessionMock.mockResolvedValueOnce(sessionAuthed);
     ensureFreshJiraAccessTokenMock.mockResolvedValueOnce({ accessToken: "tok" });
-    fetchAccessibleRessourcesMock.mockResolvedValueOnce({ id: "site-1" });
+    fetchAccessibleResourcesMock.mockResolvedValueOnce({ id: "site-1" });
 
     // Every Jira POST responds 201 with a key
     globalFetchSpy.mockImplementation(async (input: RequestInfo | URL) => {
