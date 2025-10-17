@@ -6,7 +6,7 @@ import {
   fireEvent,
   within,
 } from "@testing-library/react";
-import ReposPage from "@/app/components/dashboard/repos/page"; // adjust import if your path differs
+import { ReposPage } from "@/components/dashboard/repos/page"; // adjust import if your path differs
 import type { GithubReposResponse, Repo } from "@/types/github";
 
 const makeRepo = (id: number, overrides: Partial<Repo> = {}): Repo => ({

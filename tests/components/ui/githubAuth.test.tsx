@@ -1,7 +1,7 @@
 import type { Session } from "next-auth";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import GitHubAuth from "@/app/components/ui/githubAuth";
+import GitHubAuth from "@/components/ui/githubAuth";
 
 // Hoisted spies
 const signInMock = vi.hoisted(() => vi.fn());

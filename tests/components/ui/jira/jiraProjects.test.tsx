@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import JiraProjects from "@/app/components/ui/jira/jiraProjects";
+import JiraProjects from "@/components/ui/jira/jiraProjects";
 import type { Report } from "@/types/report";
 import type { JiraProjects as JiraProjectsType } from "@/types/jira";
 

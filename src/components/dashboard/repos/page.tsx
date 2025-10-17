@@ -16,7 +16,7 @@ function timeAgo(iso: string) {
   return `${months} mois`;
 }
 
-export default function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?: Repo) => void;}) {
+export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?: Repo) => void;}) {
   const [page, setPage] = useState(1);
   const [data, setData] = useState<Repo[]>([]);
   const [hasNext, setHasNext] = useState(false);

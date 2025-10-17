@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { describe, expect, it } from "vitest";
 
 describe("<Card />", () => {

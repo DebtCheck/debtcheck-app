@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import GitHubAuth from "./components/ui/githubAuth";
+import GitHubAuth from "../components/ui/githubAuth";
 import { useCallback, useState } from "react";
-import { Card, CardContent } from "./components/ui/card";
-import { Input } from "./components/ui/input";
-import { Button } from "./components/ui/button";
-import JiraAuth from "./components/ui/jira/jiraAuth";
+import { Card, CardContent } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import JiraAuth from "../components/ui/jira/jiraAuth";
 import type { Report } from "@/types/report";
-import ReposPage from "./components/dashboard/repos/page";
+import { ReposPage } from "../components/dashboard/repos/page";
 
 
 export default function Home() {
