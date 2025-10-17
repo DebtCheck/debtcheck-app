@@ -22,6 +22,7 @@ export default function ProjectCards({ values, report }: Props) {
         >
           <div className="flex items-center gap-4">
             {project.avatarUrls?.["48x48"] && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={project.avatarUrls["48x48"]}
                 alt={`${project.name} avatar`}

@@ -6,7 +6,7 @@ import {
   fetchRepoMetadata,
   filterFiles,
 } from "@/lib/github/github";
-import { jsonError, jsonOk } from "@/lib/http/response";
+import { jsonError } from "@/lib/http/response";
 import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
 import { getServerSession } from "next-auth";
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       fileTreeReport,
     };
 
-    return jsonOk(report, { status: 200 })
+    return NextResponse.json({ ok: true, data: report }, { status: 200 });
   } catch (err: unknown) {
     if (isGitHubApiError(err)) {
       // If it tries to access a repo from an organization that didn't allow the API

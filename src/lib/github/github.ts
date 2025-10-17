@@ -1,7 +1,7 @@
 import { RepoFileTree, RepoPRs } from "@/types/repo";
-import { prisma } from "../prisma";
+import { prisma } from "@/lib/prisma";
 import { GithubAccount } from "@/types/github";
-import { githubFetch } from "./http";
+import { githubFetch } from "@/lib/github/http";
 
 const GITHUB_PROVIDER = "github";
 
@@ -116,8 +116,14 @@ export async function fetchRepoIssues(repoOwner: string, repoName: string, acces
 }
 
 export async function fetchRepoFileTree(url: string, accessToken: string) {
-  url = url.replace(/{\/sha}$/, "/HEAD") + "?recursive=1";
-  return githubFetch(url, accessToken);
+  let normalized = url
+    .replace(/\{\/sha\}$/, "/HEAD")
+    .replace(/\{sha\}$/, "/HEAD");
+
+  // Collapse accidental double slashes but keep protocol intact (https://)
+  normalized = normalized.replace(/([^:]\/)\/+/g, "$1");
+
+  return githubFetch(`${normalized}?recursive=1`, accessToken);
 }
 
 export async function fetchRepoPR(repoOwner: string, repoName: string, accessToken: string) {

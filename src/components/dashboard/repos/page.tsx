@@ -1,15 +1,7 @@
 "use client";
-import { Repo } from "@/types/github";
+import { GithubReposResponse, Repo } from "@/types/github";
 import { ChevronLeft, ChevronRight, Clock, GitBranch, Globe, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-
-type ApiResponse = {
-  data: Repo[];
-  hasNext: boolean;
-  stale: boolean;
-  source?: string;
-  page: number;
-};
 
 function timeAgo(iso: string) {
   const d = new Date(iso).getTime();
@@ -24,7 +16,7 @@ function timeAgo(iso: string) {
   return `${months} mois`;
 }
 
-export default function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?: Repo) => void;}) {
+export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?: Repo) => void;}) {
   const [page, setPage] = useState(1);
   const [data, setData] = useState<Repo[]>([]);
   const [hasNext, setHasNext] = useState(false);
@@ -49,7 +41,7 @@ export default function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: strin
         cache: "no-store",
         signal: controller.signal,
       });
-      const json: ApiResponse = await r.json();
+      const json: GithubReposResponse = await r.json();
 
       if (myId !== reqIdRef.current) return;
 
