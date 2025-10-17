@@ -55,7 +55,7 @@ jobs:
 
       - name: Run tests (Vitest)
         run: |
-          npm run test -- --run --coverage
+          npm run test --run --coverage
 
       - name: Upload coverage
         if: always()
