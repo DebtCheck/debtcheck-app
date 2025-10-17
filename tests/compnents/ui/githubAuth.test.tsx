@@ -19,6 +19,7 @@ const routerMock = vi.hoisted(() => ({ refresh: vi.fn() }));
 // Mock next/image to a simple <img>
 vi.mock("next/image", () => ({
   default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
     <img {...props} />
   ),
 }));

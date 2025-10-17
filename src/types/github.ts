@@ -28,3 +28,11 @@ export type Repo = {
     avatar_url: string;
   };
 };
+
+export type GithubReposResponse = {
+  data: Repo[];
+  hasNext: boolean;
+  stale: boolean;
+  source?: string;
+  page: number;
+};
