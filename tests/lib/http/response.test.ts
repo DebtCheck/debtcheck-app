@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { jsonError, jsonOk, ApiError, toErrorResponse } from "@/lib/http/response";
 import { NextResponse } from "next/server";
-import { error } from "console";
 
 describe("lib/http/response", () => {
   it("jsonError returns NextResponse with error structure", async () => {
