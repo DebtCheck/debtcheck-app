@@ -10,6 +10,7 @@ import { Button } from "../components/ui/button";
 import JiraAuth from "../components/ui/jira/jiraAuth";
 import type { Report } from "@/types/report";
 import { ReposPage } from "../components/dashboard/repos/page";
+import { fetchJsonOrThrow } from "@/lib/http/rust-error";
 
 
 export default function Home() {
@@ -27,13 +28,11 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch("/api/analyze", {
+      const data = await fetchJsonOrThrow<Report>("/api/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({ repoUrl }),
       });
-
-      const data = await response.json();
       setResult(data);
 
     } catch (e) {

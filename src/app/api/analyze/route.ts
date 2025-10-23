@@ -6,11 +6,14 @@ import {
   fetchRepoMetadata,
   filterFiles,
 } from "@/lib/github/github";
-import { jsonError } from "@/lib/http/response";
+import { jsonError, toErrorResponse } from "@/lib/http/response";
 import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
 import { Report } from "@/types/report";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 type GitHubApiError = Error & {
   status?: number;
@@ -79,10 +82,11 @@ export async function POST(req: NextRequest) {
     const filteredTree = await filterFiles(rawTree);
     const filteredFiles: RepoFileTree = { tree: filteredTree };
 
-    const [metaReport, fileTreeReport] = await Promise.all([
+    const [metaReport, fileTreeReportRaw] = await Promise.all([
       analyzeMetadata(req, metadata, accessToken),
       analyzeFileTree(filteredFiles, accessToken),
     ]);
+    const fileTreeReport = fileTreeReportRaw as import("@/types/report").AnalyzeFileTree;
 
     const report: Report = {
       updatedAtReport: metaReport.updatedAtReport,
@@ -115,8 +119,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // fallback error
-    return jsonError("Unexpected error processing repo", 500);
+    return toErrorResponse(err);
   }
 }
 

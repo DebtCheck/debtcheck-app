@@ -2,22 +2,20 @@ import { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
 import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness, IssuesAnalysis } from "@/types/report";
 import { fetchRepoPR } from "./github/github";
 import { NextRequest } from "next/server";
+import { fetchJsonOrThrow } from "./http/rust-error";
 
 export async function analyzeFileTree(files: RepoFileTree, accessToken: string)  {
-  const response = await fetch(`${process.env.RUST_URL}/analyze`, {
+  const url = `${process.env.RUST_URL}/analyze`;
+  return fetchJsonOrThrow<unknown>(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Github-Access-Token": accessToken
+      "Accept": "application/json",
+      "X-Github-Access-Token": accessToken, // server-side only
     },
     body: JSON.stringify(files),
+    // cache: "no-store", // optional if you want to avoid any caching
   });
-
-  if (!response.ok) {
-    throw new Error(`Error analyzing repo: ${response.statusText}`);
-  } 
-
-  return response.json();
 }
 
 export async function analyzeMetadata(req: NextRequest, metadata: RepoMetadata, accessToken: string) {
