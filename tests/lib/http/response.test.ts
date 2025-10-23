@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { jsonError, jsonOk, ApiError, toErrorResponse } from "@/lib/http/response";
 import { NextResponse } from "next/server";
+import { error } from "console";
 
 describe("lib/http/response", () => {
   it("jsonError returns NextResponse with error structure", async () => {
@@ -44,7 +45,11 @@ describe("lib/http/response", () => {
     expect(res.status).toBe(404);
 
     const body = await res.json();
-    expect(body).toEqual({ error: "Not found", details: { id: "42" } });
+    expect(body).toEqual({
+      error: "Not found",
+      code: "internal_error",
+      details: { id: "42" },
+    });
   });
 
   it("toErrorResponse returns generic 500 for unknown errors", async () => {

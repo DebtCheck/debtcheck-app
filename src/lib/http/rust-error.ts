@@ -18,17 +18,40 @@ function safeJson(text: string) {
   try { return JSON.parse(text); } catch { return null; }
 }
 
-function isApiCode(v: ApiErrorCode | undefined): v is ApiErrorCode {
-  return typeof v === "string" && [
-    "bad_request","validation_failed","unauthorized","forbidden",
-    "not_found","rate_limited","upstream_error","timeout","internal_error",
-  ].includes(v);
-}
+function extractRustError(body: RustErrorBody | null): {
+  code: ApiErrorCode;
+  message: string;
+  hint: string | undefined;
+  meta: Record<string, unknown> | undefined;
+} {
+  if (!body) {
+    return { code: "internal_error", message: "Backend error" as string, hint: undefined, meta: undefined };
+  }
 
-function extractRustError(body: RustErrorBody | null) {
-  const src = (body?.error ?? body) ?? {};
-  const code = isApiCode(src.code) ? src.code : "internal_error";
-  return { code, message: src.message ?? "Backend error", hint: src.hint, meta: src.meta };
+  // If body.error is a STRING -> legacy/simple shape: treat as the message
+  if (typeof body.error === "string") {
+    return {
+      code: (body.code ?? "internal_error") as ApiErrorCode,
+      message: body.error,
+      hint: body.hint,
+      meta: body.meta,
+    };
+  }
+
+  // Normal shapes: nested { error: {...} } OR flat top-level fields
+  const src = (body.error ?? body) as RustErrorBody["error"];
+
+  const message =
+    (src && "message" in src && src.message) ||
+    (typeof body.error === "string" ? body.error : undefined) ||
+    "Backend error";
+
+  return {
+    code: ((src && "code" in src && src.code) || body.code || "internal_error") as ApiErrorCode,
+    message,
+    hint: (src && "hint" in src ? src.hint : undefined) ?? body.hint,
+    meta: (src && "meta" in src ? src.meta : undefined) ?? body.meta,
+  };
 }
 
 export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit): Promise<T> {

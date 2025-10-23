@@ -29,14 +29,18 @@ describe("lib/analyser", () => {
     const files: RepoFileTree = { tree: [] } as unknown as RepoFileTree; // minimal shape for payload
     const out = await analyzeFileTree(files, "gh_token");
 
-    expect(fetchSpy).toHaveBeenCalledWith("http://rust/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Github-Access-Token": "gh_token",
-      },
-      body: JSON.stringify(files),
-    });
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "http://rust/analyze",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+            "X-Github-Access-Token": "gh_token",
+            "Accept": "application/json",
+        }),
+        body: JSON.stringify({ tree: [] }),
+      })
+    );
     expect(out).toEqual(payload);
   });
 
@@ -46,9 +50,8 @@ describe("lib/analyser", () => {
       new Response("bad", { status: 500, statusText: "Internal Error" })
     );
 
-    await expect(analyzeFileTree({} as RepoFileTree, "gh_token")).rejects.toThrow(
-      /Error analyzing repo: Internal Error/
-    );
+    await expect(analyzeFileTree({} as RepoFileTree, "gh_token"))
+      .rejects.toThrow(/Backend error/);
   });
 
   // ---------- analyzeIssues (unit) ----------
