@@ -25,7 +25,7 @@ function extractRustError(body: RustErrorBody | null): {
   meta: Record<string, unknown> | undefined;
 } {
   if (!body) {
-    return { code: "internal_error", message: "Backend error" as string, hint: undefined, meta: undefined };
+    return { code: "internal_error", message: "Backend error", hint: undefined, meta: undefined };
   }
 
   // If body.error is a STRING -> legacy/simple shape: treat as the message
@@ -75,7 +75,7 @@ export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit
     const errParsed = extractRustError(asJson);
     // capture Retry-After if present
     const raSeconds = parseRetryAfter(res.headers.get("Retry-After"));
-    const meta = { ...(errParsed.meta||{}), ...(raSeconds!=null ? { retry_after_secs: raSeconds } : {}) };
+    const meta = { ...(errParsed.meta || {}), ...(raSeconds != null ? { retry_after_secs: raSeconds } : {}) };
 
     throw new ApiError(
       errParsed.message || `Backend error ${res.status}`,

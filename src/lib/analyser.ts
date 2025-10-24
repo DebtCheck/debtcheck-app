@@ -14,7 +14,6 @@ export async function analyzeFileTree(files: RepoFileTree, accessToken: string) 
       "X-Github-Access-Token": accessToken, // server-side only
     },
     body: JSON.stringify(files),
-    // cache: "no-store", // optional if you want to avoid any caching
   });
 }
 
