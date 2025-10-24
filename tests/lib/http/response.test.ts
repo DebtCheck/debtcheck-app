@@ -44,7 +44,11 @@ describe("lib/http/response", () => {
     expect(res.status).toBe(404);
 
     const body = await res.json();
-    expect(body).toEqual({ error: "Not found", details: { id: "42" } });
+    expect(body).toEqual({
+      error: "Not found",
+      code: "internal_error",
+      details: { id: "42" },
+    });
   });
 
   it("toErrorResponse returns generic 500 for unknown errors", async () => {

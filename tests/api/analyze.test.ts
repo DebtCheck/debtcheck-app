@@ -258,6 +258,6 @@ describe("/api/analyze (POST)", () => {
 
     const res = await POST(makeReq({ repoUrl: "https://github.com/owner/repo" }));
     expect(res.status).toBe(500);
-    expect(await res.json()).toEqual({ error: "Unexpected error processing repo" });
+    expect(await res.json()).toEqual({ error: "Unexpected error" });
   });
 });

@@ -10,6 +10,8 @@ import { Button } from "../components/ui/button";
 import JiraAuth from "../components/ui/jira/jiraAuth";
 import type { Report } from "@/types/report";
 import { ReposPage } from "../components/dashboard/repos/page";
+import { fetchJsonOrThrow } from "@/lib/http/rust-error";
+import { ApiError } from "@/lib/http/response";
 
 
 export default function Home() {
@@ -27,20 +29,26 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch("/api/analyze", {
+      // 🔽 use the helper: it throws ApiError with parsed {message, hint, code, meta}
+      const data = await fetchJsonOrThrow<{ ok: true; data: Report }>("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repoUrl }),
       });
 
-      const data = await response.json();
-      setResult(data);
-
-    } catch (e) {
-      if (e instanceof Error) {
-        setError(e.message);
+      // if we’re here, it was 2xx and JSON
+      setResult(data.data);
+    } catch (e: unknown) {
+      // 🔽 build a nice string for UI from ApiError
+      if (e instanceof ApiError) {
+        const hint = e.hint ? ` — ${e.hint}` : "";
+        const code = e.code ? ` (${e.code})` : "";
+        setError(`${e.message}${hint}${code}`);
+      } else if (e instanceof Error) {
+        // e.g. network abort, etc.
+        setError(`Network error calling backend: ${e.message}`);
       } else {
-        setError(String(e));
+        setError("Unexpected error");
       }
     } finally {
       setLoading(false);
@@ -90,7 +98,7 @@ export default function Home() {
               )}
 
               {error && (
-                <div className="mt-2 text-sm text-red-600">
+                <div role="alert" className="mt-2 text-sm text-red-600">
                   {error}
                 </div>
               )}
