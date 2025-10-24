@@ -65,8 +65,8 @@ export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?
     <>
       <Section
         className="bg-card/80 border-border/10 mx-auto max-w-4xl p-4 shadow-2xl rounded-2xl"
-        title="Mes dépôts GitHub"
-        subtitle="Sélectionne un dépôt pour l’analyser."
+        title="MMy Github repositories"
+        subtitle="Select a repository to analyze its technical debt."
         actions={
           <Button onClick={() => load(page)} disabled={loading}>
             Refresh
@@ -77,8 +77,8 @@ export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?
           <InlineAlert
             className="mb-3"
             variant="info"
-            title="Cache potentiellement périmé"
-            description="Les données affichées peuvent avoir été servies depuis le cache. Rafraîchis pour recharger."
+            title="Cache potentially stale, refreshed data may be available."
+            description="The displayed data may have been served from the cache. Refresh to reload."
           />
         )}
 
@@ -86,7 +86,7 @@ export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?
           className="mb-4"
           left={
             <Input
-              placeholder="Rechercher un dépôt…"
+              placeholder="Search a repository…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />

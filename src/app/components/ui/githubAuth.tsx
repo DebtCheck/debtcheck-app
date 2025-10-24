@@ -2,14 +2,12 @@
 
 import React, { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "./utilities/buttons/button";
 import { useTheme } from "next-themes";
 
 export default function GitHubAuth() {
-  const { data: session, update, status } = useSession();
-  const router = useRouter();
+  const { data: session, status } = useSession();
   const [busy, setBusy] = useState(false);
 
   const { resolvedTheme } = useTheme();

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "./components/ui/utilities/base/card";
 import { Input } from "./components/ui/utilities/base/input";
 import { Button } from "./components/ui/utilities/buttons/button";
@@ -24,6 +24,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Report | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [withoutLog, setWithoutLog] = useState(false);
   const { resolvedTheme } = useTheme(); // "light" | "dark"
 
   const isValidRepoUrl = useMemo(() => {
@@ -66,11 +67,22 @@ export default function Home() {
     }
   }, [repoUrl]);
 
-  if (!githubLinked) {
+  const handleWithoutLog = () => {
+    setWithoutLog(true);
+  };
+
+  useEffect(() => {
+    if (githubLinked && withoutLog) setWithoutLog(false);
+  }, [githubLinked, withoutLog]);
+
+  if (!githubLinked && !withoutLog) {
     // Show ONLY the auth gate when not linked
     return (
       <main className="min-h-screen flex items-center justify-center p-8">
         <GitHubAuth />
+        <Button onClick={handleWithoutLog} className="ml-4">
+          {withoutLog ? "Continue without login…" : "Continue without login"}
+        </Button>
       </main>
     );
   }
@@ -82,9 +94,13 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-6 md:p-10 space-y-8">
-      <div className="max-w-3xl mx-auto flex justify-end">
-        <ThemeToggle />
+      <div className="max-w-3xl mx-auto flex justify-between items-center mb-4">
+        <GitHubAuth />
+        <div className=" flex justify-end">
+          <ThemeToggle />
+        </div>
       </div>
+
       {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
       <section className="max-w-3xl mx-auto">
         <Card
@@ -104,13 +120,14 @@ export default function Home() {
             </h1>
 
             <p className="[color:var(--muted-60)] text-center">
-              Paste a repo URL and we’ll analyze technical debt.
+              Paste a repo URL and we’ll analyze the technical debt.
             </p>
 
             <form
               className="flex gap-2"
               onSubmit={(e) => {
                 e.preventDefault();
+                if (!loading && isValidRepoUrl) void handleAnalyze();
               }}
             >
               <Input
@@ -124,7 +141,6 @@ export default function Home() {
                      focus-visible:ring-[var(--primary-40)]"
               />
               <Button
-                onClick={handleAnalyze}
                 type="submit"
                 disabled={loading || !isValidRepoUrl}
                 className="cursor-pointer bg-[rgb(var(--foreground))] 
@@ -135,13 +151,20 @@ export default function Home() {
                 {loading ? "Analyzing..." : "Analyze"}
               </Button>
             </form>
+            {withoutLog && (
+              <InlineAlert
+                variant="warning"
+                title="You are analyzing without logging in."
+                description="Some features may be limited. You won't be able to analyze private repositories. You'll be limited in the number of requests per hour."
+              />
+            )}
             {error && (
               <InlineAlert variant="error" title="Error" description={error} />
             )}
 
             {result && (
               <>
-                <Card className="bg-neutral-800/70 border-white/10 text-gray-100">
+                <Card className="border border-border/10 bg-card">
                   <CardContent>
                     <h2 className="text-lg font-semibold mb-2">
                       Analysis Result
@@ -157,12 +180,11 @@ export default function Home() {
           </CardContent>
         </Card>
       </section>
-
-      <GitHubAuth />
-
-      <section className="max-w-5xl mx-auto">
-        <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
-      </section>
+      {!withoutLog && (
+        <section className="max-w-5xl mx-auto">
+          <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
+        </section>
+      )}
     </main>
   );
 }
