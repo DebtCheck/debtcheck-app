@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { JiraAccessibleResource, Projects } from "@/types/jira";
+import type { JiraAccessibleResource, Projects } from "@/app/types/jira";
 
 // ── Hoisted spies & fixtures ───────────────────────────────────────────────────
 const getServerSessionMock = vi.hoisted(() => vi.fn());

@@ -1,4 +1,4 @@
-import { Report } from "@/types/report";
+import { Report } from "@/app/types/report";
 
 export type JiraProjects = {
   id: string;

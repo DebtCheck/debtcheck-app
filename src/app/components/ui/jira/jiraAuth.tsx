@@ -1,11 +1,11 @@
 "use client";
 
-import { Projects } from "@/types/jira";
+import { Projects } from "@/app/types/jira";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import JiraProjects from "./jiraProjects";
-import { Report } from "@/types/report";
+import { Report } from "@/app/types/report";
 
 type Props = {
   report: Report | null;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "@/app/api/analyze/route";
-import type { Report } from "@/types/report";
+import type { Report } from "@/app/types/report";
 import { NextRequest } from "next/server";
 
 // ---- Hoisted spies (must be declared with vi.hoisted) ----

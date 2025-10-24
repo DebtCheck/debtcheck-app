@@ -1,7 +1,7 @@
-import { RepoFileTree, RepoPRs } from "@/types/repo";
-import { prisma } from "@/lib/prisma";
-import { GithubAccount } from "@/types/github";
-import { githubFetch } from "@/lib/github/http";
+import { RepoFileTree, RepoPRs } from "@/app/types/repo";
+import { prisma } from "@/app/lib/prisma";
+import { GithubAccount } from "@/app/types/github";
+import { githubFetch } from "@/app/lib/github/http";
 
 const GITHUB_PROVIDER = "github";
 

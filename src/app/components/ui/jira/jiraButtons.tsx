@@ -1,6 +1,6 @@
 "use client";
 
-import { JiraButtonsProps } from "@/types/jira";
+import { JiraButtonsProps } from "@/app/types/jira";
 import { useState } from "react";
 
 export default function JiraButtons({projectId, report}: JiraButtonsProps) {

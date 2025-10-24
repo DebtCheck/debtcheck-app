@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET } from "@/app/api/github/repos/route";
 import type { Session } from "next-auth";
-import { Repo } from "@/types/github";
+import { Repo } from "@/app/types/github";
 
 // --- Helpers ---
 const makeReq = (url = "http://local/api/github/repos?page=1"): Request =>

@@ -1,5 +1,5 @@
-import { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
-import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness, IssuesAnalysis } from "@/types/report";
+import { RepoFileTree, RepoMetadata, RepoPRs } from "@/app/types/repo";
+import { AnalyzeIssues, AnalyzePrs, AnalyzeStaleness, IssuesAnalysis } from "@/app/types/report";
 import { fetchRepoPR } from "./github/github";
 import { NextRequest } from "next/server";
 import { fetchJsonOrThrow } from "./http/rust-error";

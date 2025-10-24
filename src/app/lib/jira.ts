@@ -1,4 +1,4 @@
-import type { JiraAccessibleResource, JiraAccount, Projects as JiraProjectsType } from "@/types/jira";
+import type { JiraAccessibleResource, JiraAccount, Projects as JiraProjectsType } from "@/app/types/jira";
 import { prisma } from "./prisma";
 
 const JIRA_PROVIDERS = ["atlassian", "jira"] as const;

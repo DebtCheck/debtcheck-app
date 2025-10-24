@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Report, DeadCodeKind } from "@/types/report";
+import type { Report, DeadCodeKind } from "@/app/types/report";
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────────
 const getServerSessionMock = vi.hoisted(() => vi.fn());

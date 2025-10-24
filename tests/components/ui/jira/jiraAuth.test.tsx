@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import type { Session } from "next-auth";
-import JiraAuth from "@/components/ui/jira/jiraAuth";
+import JiraAuth from "@/app/components/ui/jira/jiraAuth";
 
 // ---------- Hoisted/stable mocks ----------
 const useSessionMock = vi.hoisted(() =>

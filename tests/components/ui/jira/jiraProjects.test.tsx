@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import JiraProjects from "@/components/ui/jira/jiraProjects";
-import type { Report } from "@/types/report";
-import type { JiraProjects as JiraProjectsType } from "@/types/jira";
+import JiraProjects from "@/app/components/ui/jira/jiraProjects";
+import type { Report } from "@/app/types/report";
+import type { JiraProjects as JiraProjectsType } from "@/app/types/jira";
 
 describe("<JiraProjects />", () => {
   it("shows empty state when no values", () => {

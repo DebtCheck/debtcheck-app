@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { githubFetch } from "@/lib/github/http";
+import { githubFetch } from "@/app/lib/github/http";
 
 afterEach(() => {
   vi.restoreAllMocks();

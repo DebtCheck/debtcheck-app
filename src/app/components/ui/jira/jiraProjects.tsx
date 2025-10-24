@@ -1,6 +1,6 @@
-import { Projects } from "@/types/jira";
+import { Projects } from "@/app/types/jira";
 import JiraButtons from "./jiraButtons";
-import { Report } from "@/types/report";
+import { Report } from "@/app/types/report";
 
 type Props = Projects & {
   report: Report | null;

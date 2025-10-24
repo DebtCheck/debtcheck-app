@@ -3,7 +3,7 @@ import type {
   JiraAccessibleResource,
   JiraAccount,
   Projects as JiraProjectsType,
-} from "@/types/jira";
+} from "@/app/types/jira";
 
 // ---- Hoisted mocks (avoid hoisting traps)
 const prismaMock = vi.hoisted(() => ({
@@ -22,7 +22,7 @@ import {
   ensureFreshJiraAccessToken,
   fetchAccessibleResources,
   fetchProjects,
-} from "@/lib/jira";
+} from "@/app/lib/jira";
 
 describe("lib/jira", () => {
   beforeEach(() => {

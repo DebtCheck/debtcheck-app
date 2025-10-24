@@ -1,5 +1,5 @@
 "use client";
-import { GithubReposResponse, Repo } from "@/types/github";
+import { GithubReposResponse, Repo } from "@/app/types/github";
 import { ChevronLeft, ChevronRight, Clock, GitBranch, Globe, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 

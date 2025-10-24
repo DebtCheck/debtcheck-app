@@ -3,7 +3,7 @@ import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import type { AdapterUser } from "next-auth/adapters";
 import type { Account } from "@prisma/client";
-import { authOptions } from "@/lib/auth/auth";
+import { authOptions } from "@/app/lib/auth/auth";
 
 // Mocked Prisma client
 const prismaMock = vi.hoisted(() => ({

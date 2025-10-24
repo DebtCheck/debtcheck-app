@@ -1,14 +1,14 @@
-import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
-import { authOptions } from "@/lib/auth/auth";
+import { analyzeFileTree, analyzeMetadata } from "@/app/lib/analyser";
+import { authOptions } from "@/app/lib/auth/auth";
 import {
   ensureFreshGithubAccessToken,
   fetchRepoFileTree,
   fetchRepoMetadata,
   filterFiles,
-} from "@/lib/github/github";
-import { jsonError, toErrorResponse } from "@/lib/http/response";
-import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
-import { Report } from "@/types/report";
+} from "@/app/lib/github/github";
+import { jsonError, toErrorResponse } from "@/app/lib/http/response";
+import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/app/types/repo";
+import { Report } from "@/app/types/report";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
       analyzeMetadata(req, metadata, accessToken),
       analyzeFileTree(filteredFiles, accessToken),
     ]);
-    const rustAnalysisReport = rustAnalysisReportRaw as import("@/types/report").RustAnalysisReport;
+    const rustAnalysisReport = rustAnalysisReportRaw as import("@/app/types/report").RustAnalysisReport;
 
     const report: Report = {
       updatedAtReport: metaReport.updatedAtReport,

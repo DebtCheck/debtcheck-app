@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
-import { DeadCode, DeprecatedLibs } from "@/types/report";
-import { authOptions } from "@/lib/auth/auth";
-import { ensureFreshJiraAccessToken, fetchAccessibleResources } from "@/lib/jira";
-import { jsonError, jsonOk } from "@/lib/http/response";
+import { DeadCode, DeprecatedLibs } from "@/app/types/report";
+import { authOptions } from "@/app/lib/auth/auth";
+import { ensureFreshJiraAccessToken, fetchAccessibleResources } from "@/app/lib/jira";
+import { jsonError, jsonOk } from "@/app/lib/http/response";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);

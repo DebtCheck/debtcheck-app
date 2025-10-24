@@ -25,9 +25,9 @@ import {
   fetchRepoFileTree,
   fetchRepoPR,
   filterFiles,
-} from "@/lib/github/github";
-import type { GithubAccount } from "@/types/github";
-import type { RepoFileTree } from "@/types/repo";
+} from "@/app/lib/github/github";
+import type { GithubAccount } from "@/app/types/github";
+import type { RepoFileTree } from "@/app/types/repo";
 
 beforeEach(() => {
   vi.useRealTimers();

@@ -1,7 +1,7 @@
 import { Account, NextAuthOptions } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import { OAuthConfig } from "next-auth/providers/oauth";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
 type JiraProfile = {

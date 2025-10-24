@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchJsonOrThrow } from "@/lib/http/rust-error";
-import { ApiError } from "@/lib/http/response";
+import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
+import { ApiError } from "@/app/lib/http/response";
 
 /** Helper: JSON Response with correct headers */
 function jsonResponse(body: unknown, init?: ResponseInit): Response {

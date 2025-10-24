@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { analyzeFileTree, analyzeMetadata, analyzeIssues } from "@/lib/analyser";
-import type { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
+import { analyzeFileTree, analyzeMetadata, analyzeIssues } from "@/app/lib/analyser";
+import type { RepoFileTree, RepoMetadata, RepoPRs } from "@/app/types/repo";
 import { NextRequest } from "next/server";
 
 // --- Hoisted/mocked deps ---
