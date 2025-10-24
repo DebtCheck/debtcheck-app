@@ -21,7 +21,7 @@ type GitHubApiError = Error & {
 };
 
 export async function POST(req: NextRequest) {
-  const { repoUrl } = await req.json();
+  const { repoUrl, demo } = await req.json();
 
   if (!repoUrl) {
     return jsonError("Missing repo URL", 400);
@@ -39,17 +39,21 @@ export async function POST(req: NextRequest) {
     return jsonError("Invalid GitHub URL. Expected https://github.com/<owner>/<repo>", 400);
   }
 
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
-  if (!userId)
-    return jsonError("Unauthorized", 401);
+   const isDemo = Boolean(demo);
+  let accessToken = ""; // empty by default for demo
 
-  let accessToken: string;
-  try {
-    ({ accessToken } = await ensureFreshGithubAccessToken(userId));
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "GitHub not linked";
-    return jsonError(msg, 401);
+  if (!isDemo) {
+    // only require session/token when NOT demo
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+    if (!userId) return jsonError("Unauthorized", 401);
+
+    try {
+      ({ accessToken } = await ensureFreshGithubAccessToken(userId));
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "GitHub not linked";
+      return jsonError(msg, 401);
+    }
   }
 
   try {
@@ -74,17 +78,13 @@ export async function POST(req: NextRequest) {
       trees_url: repoMetadataRaw.trees_url,
     };
 
-    if (metadata.size > 2000000) {
-      return jsonError("Repository too large to analyze safely.", 413);
-    }
-
     const rawTree = await fetchRepoFileTree(metadata.trees_url, accessToken);
     const filteredTree = await filterFiles(rawTree);
     const filteredFiles: RepoFileTree = { tree: filteredTree };
 
     const [metaReport, rustAnalysisReportRaw] = await Promise.all([
       analyzeMetadata(req, metadata, accessToken),
-      analyzeFileTree(filteredFiles, accessToken),
+      analyzeFileTree(filteredFiles, accessToken, isDemo),
     ]);
     const rustAnalysisReport = rustAnalysisReportRaw as import("@/app/types/report").RustAnalysisReport;
 
@@ -118,6 +118,21 @@ export async function POST(req: NextRequest) {
         { status: err.status ?? 403 },
       );
     }
+
+    if (isGhRateLimited(err)) {
+    const secs = retryAfterSecondsFromHeaders(err.headers);
+    return NextResponse.json(
+      {
+        error: {
+          code: "rate_limited",
+          message: "GitHub rate limited (unauthenticated).",
+          hint: "Sign in with GitHub for a higher quota or retry later.",
+          meta: { retry_after_secs: secs },
+        },
+      },
+      { status: 429, headers: { "Retry-After": String(secs) } }
+    );
+  }
 
     return toErrorResponse(err);
   }
@@ -156,4 +171,33 @@ function isGitHubApiError(err: unknown): err is GitHubApiError {
     "githubError" in err &&
     typeof (err as { githubError?: unknown }).githubError === "object"
   );
+}
+
+function isGhRateLimited(err: unknown): err is { isGithubRateLimited: true; headers: Headers } {
+  return Boolean(err && typeof err === "object" && (err as { isGithubRateLimited?: unknown }).isGithubRateLimited && (err as { headers?: Headers }).headers);
+}
+
+
+function retryAfterSecondsFromHeaders(h: Headers): number {
+  // 1) Prefer Retry-After if present
+  const ra = h.get("Retry-After");
+  if (ra) {
+    const n = Number(ra);
+    if (Number.isFinite(n)) return Math.max(0, Math.ceil(n)); // delta-seconds
+    const d = Date.parse(ra); // HTTP-date
+    if (!Number.isNaN(d)) return Math.max(0, Math.ceil((d - Date.now()) / 1000));
+  }
+
+  // 2) Fallback to X-RateLimit-Reset (UNIX seconds)
+  const reset = h.get("X-RateLimit-Reset");
+  if (reset) {
+    const until = parseInt(reset, 10);
+    if (Number.isFinite(until)) {
+      const secs = until - Math.floor(Date.now() / 1000);
+      return Math.max(0, Math.ceil(secs));
+    }
+  }
+
+  // 3) Sensible default
+  return 60;
 }

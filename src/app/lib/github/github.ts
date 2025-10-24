@@ -133,13 +133,16 @@ export async function fetchRepoPR(repoOwner: string, repoName: string, accessTok
   let hasMore = true;
 
   while (hasMore) {
+    const headers = {
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "your-app-name",
+      ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
+    };
     const response = await fetch(
       `https://api.github.com/repos/${repoOwner}/${repoName}/pulls?state=open&per_page=${perPage}&page=${page}`,
       {
-        headers: {
-          "Accept": "application/vnd.github+json",
-          "Authorization": `Bearer ${accessToken}`,
-        },
+        headers: headers
       });
     if (!response.ok) { 
       throw new Error(`Error fetching repo PRs: ${response.statusText}`);

@@ -25,7 +25,18 @@ export default function Home() {
   const [result, setResult] = useState<Report | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [withoutLog, setWithoutLog] = useState(false);
+  const [cooldown, setCooldown] = useState<number>(0);
   const { resolvedTheme } = useTheme(); // "light" | "dark"
+
+  useEffect(() => {
+    if (githubLinked && withoutLog) setWithoutLog(false);
+  }, [githubLinked, withoutLog]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setInterval(() => setCooldown((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(id);
+  }, [cooldown]);
 
   const isValidRepoUrl = useMemo(() => {
     // lightweight GH repo URL check: owner/repo, optional trailing parts ignored
@@ -38,6 +49,7 @@ export default function Home() {
   }, [repoUrl]);
 
   const handleAnalyze = useCallback(async () => {
+    if (cooldown > 0) return;
     setLoading(true);
     setError(null);
     setResult(null);
@@ -48,12 +60,19 @@ export default function Home() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ repoUrl }),
+          body: JSON.stringify({
+            repoUrl,
+            demo: !githubLinked || withoutLog, // <-- add this
+          }),
         }
       );
       setResult(data.data);
     } catch (e: unknown) {
       if (e instanceof ApiError) {
+        const ra = (e.meta as { retry_after_secs?: number })?.retry_after_secs;
+        if (e.status === 429 && ra && Number.isFinite(ra)) {
+          setCooldown(ra);
+        }
         const hint = e.hint ? ` — ${e.hint}` : "";
         const code = e.code ? ` (${e.code})` : "";
         setError(`${e.message}${hint}${code}`);
@@ -65,15 +84,11 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [repoUrl]);
+  }, [repoUrl, cooldown]);
 
   const handleWithoutLog = () => {
     setWithoutLog(true);
   };
-
-  useEffect(() => {
-    if (githubLinked && withoutLog) setWithoutLog(false);
-  }, [githubLinked, withoutLog]);
 
   if (!githubLinked && !withoutLog) {
     // Show ONLY the auth gate when not linked
@@ -93,10 +108,10 @@ export default function Home() {
       : "/github-mark-dark.svg";
 
   return (
-    <main className="min-h-screen p-6 md:p-10 space-y-8">
-      <div className="max-w-3xl mx-auto flex justify-between items-center mb-4">
-        <GitHubAuth />
-        <div className=" flex justify-end">
+    <main className="min-h-screen space-y-8">
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b border-border/10">
+        <div className="max-w-3xl mx-auto flex justify-between items-center pt-4 mb-4">
+          <GitHubAuth />
           <ThemeToggle />
         </div>
       </div>
@@ -133,33 +148,52 @@ export default function Home() {
               <Input
                 placeholder="https://github.com/user/your-repo"
                 value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
+                onChange={(e) => {
+                  setRepoUrl(e.target.value);
+                  if (error) setError(null);
+                }}
                 className="flex-1 [background:rgb(var(--card))] 
-                     [border-color:var(--border-10)] 
-                     [color:rgb(var(--foreground))] 
-                     placeholder:[color:var(--muted-60)] 
-                     focus-visible:ring-[var(--primary-40)]"
+                  [border-color:var(--border-10)] 
+                  [color:rgb(var(--foreground))] 
+                  placeholder:[color:var(--muted-60)] 
+                  focus-visible:ring-[var(--primary-40)]"
               />
               <Button
                 type="submit"
-                disabled={loading || !isValidRepoUrl}
-                className="cursor-pointer bg-[rgb(var(--foreground))] 
-                     text-[rgb(var(--background))] 
-                     hover:opacity-90 
-                     focus:ring-[var(--primary-40)]"
+                disabled={loading || !isValidRepoUrl || cooldown > 0}
+                className="cursor-pointer bg-[rgb(var(--foreground))] text-[rgb(var(--background))] hover:opacity-90 focus:ring-[var(--primary-40)]"
               >
-                {loading ? "Analyzing..." : "Analyze"}
+                {cooldown > 0
+                  ? `Retry in ${Math.ceil(cooldown)}s`
+                  : loading
+                  ? "Analyzing..."
+                  : "Analyze"}
               </Button>
             </form>
+            {(error || cooldown > 0) && (
+              <InlineAlert
+                variant={cooldown > 0 ? "warning" : "error"}
+                title={cooldown > 0 ? "Rate limited" : "Error"}
+                description={
+                  cooldown > 0
+                    ? `Too many requests. Please wait ${Math.ceil(
+                        cooldown
+                      )} seconds before retrying.`
+                    : error ?? ""
+                }
+                className="mt-3"
+                // optional: SR-friendly announcements
+                aria-live="polite"
+              />
+            )}
+
             {withoutLog && (
               <InlineAlert
                 variant="warning"
                 title="You are analyzing without logging in."
                 description="Some features may be limited. You won't be able to analyze private repositories. You'll be limited in the number of requests per hour."
+                className="mt-3"
               />
-            )}
-            {error && (
-              <InlineAlert variant="error" title="Error" description={error} />
             )}
 
             {result && (

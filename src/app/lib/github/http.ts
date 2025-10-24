@@ -11,15 +11,15 @@ export async function githubFetch(
   const t = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
+    const headers = {
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": GITHUB_API_VERSION,
+      "User-Agent": "your-app-name",
+      ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
+    };
     const res = await fetch(url, {
       ...init,
-      headers: {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": GITHUB_API_VERSION,
-        "User-Agent": "your-app-name",
-        "Authorization": `Bearer ${accessToken}`,
-        ...(init.headers || {}),
-      },
+      headers: headers,
       cache: "no-store",
       signal: controller.signal,
     });

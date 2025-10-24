@@ -70,8 +70,24 @@ export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit
 
   const text = await res.text();
   const asJson = text ? safeJson(text) : null;
+  const ctype = res.headers.get("content-type") || "";
 
   if (!res.ok) {
+
+    if (res.status === 403 && text.includes("API rate limit exceeded")) {
+      const reset = res.headers.get("X-RateLimit-Reset");
+      const secs = reset ? Math.max(0, Math.ceil(parseInt(reset, 10) - Date.now() / 1000)) : 60;
+      // Normalize as 429 for your UI cooldown
+      throw new ApiError(
+        "GitHub rate limited (unauthenticated).",
+        429,
+        { raw: text },
+        "rate_limited",
+        "Sign in with GitHub for a higher quota or retry later.",
+        { retry_after_secs: secs }
+      );
+    }
+
     const errParsed = extractRustError(asJson);
     // capture Retry-After if present
     const raSeconds = parseRetryAfter(res.headers.get("Retry-After"));
@@ -80,14 +96,13 @@ export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit
     throw new ApiError(
       errParsed.message || `Backend error ${res.status}`,
       res.status,
-      asJson ?? text,                 // keep raw body in details for debugging
+      asJson ?? text,                 
       errParsed.code,
       errParsed.hint,
       meta
     );
   }
 
-  const ctype = res.headers.get("content-type") || "";
   if (!asJson && ctype.includes("application/json")) {
     throw new ApiError("Invalid JSON from backend", 502, { raw: text, ctype }, "upstream_error");
   }
