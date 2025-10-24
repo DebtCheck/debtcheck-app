@@ -82,18 +82,18 @@ export async function POST(req: NextRequest) {
     const filteredTree = await filterFiles(rawTree);
     const filteredFiles: RepoFileTree = { tree: filteredTree };
 
-    const [metaReport, fileTreeReportRaw] = await Promise.all([
+    const [metaReport, rustAnalysisReportRaw] = await Promise.all([
       analyzeMetadata(req, metadata, accessToken),
       analyzeFileTree(filteredFiles, accessToken),
     ]);
-    const fileTreeReport = fileTreeReportRaw as import("@/types/report").AnalyzeFileTree;
+    const rustAnalysisReport = rustAnalysisReportRaw as import("@/types/report").RustAnalysisReport;
 
     const report: Report = {
       updatedAtReport: metaReport.updatedAtReport,
       pushedAtReport: metaReport.pushedAtReport,
       issuesReport: metaReport.issuesReport,
       prsReport: metaReport.prsReport,
-      fileTreeReport,
+      rustAnalysisReport,
     };
 
     return NextResponse.json({ ok: true, data: report }, { status: 200 });

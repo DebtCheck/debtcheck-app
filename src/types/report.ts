@@ -3,7 +3,7 @@ export interface Report {
   pushedAtReport: AnalyzeStaleness;
   issuesReport: AnalyzeIssues;
   prsReport: AnalyzePrs;
-  fileTreeReport?: AnalyzeFileTree;
+  rustAnalysisReport?: RustAnalysisReport;
 }
 
 export interface AnalyzeStaleness {
@@ -24,9 +24,11 @@ export interface AnalyzePrs {
   message: string;
 }
 
-export interface AnalyzeFileTree {
+export interface RustAnalysisReport {
   deprecated_libs: DeprecatedLibs[];
-  dead_code: DeadCode[];
+  reportParse: ReportParse;
+
+  is_env_present: boolean;
 }
 
 export interface DeprecatedLibs {
@@ -37,10 +39,24 @@ export interface DeprecatedLibs {
   deprecated: boolean;
 }
 
-export interface DeadCode {
+export interface ReportParse {
+  dead_code: DeadCodeItem[];
+  secrets: SecretItem[];
+}
+
+export interface DeadCodeItem {
   name: string;
   kind: DeadCodeKind;
   file: string;
+  line: number;
+  column: number;
+}
+
+export interface SecretItem {
+  file: string;
+  kind: string;
+  name: string;
+  value_preview: string;
   line: number;
   column: number;
 }
