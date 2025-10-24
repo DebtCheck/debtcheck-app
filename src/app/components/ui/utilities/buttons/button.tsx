@@ -9,6 +9,7 @@ const Button = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex items-center justify-center rounded-xl px-5 py-2 text-sm font-semibold transition",
+      "cursor-pointer",
       "bg-foreground text-background hover:opacity-90",
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
       "ring-offset-background focus-visible:ring-offset-2",
