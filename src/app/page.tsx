@@ -15,6 +15,7 @@ import { ApiError } from "@/app/lib/http/response";
 import { InlineAlert } from "./components/ui/utilities";
 import { ThemeToggle } from "./components/ui/theme-toggle";
 import { useTheme } from "next-themes";
+import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -26,6 +27,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [withoutLog, setWithoutLog] = useState(false);
   const [cooldown, setCooldown] = useState<number>(0);
+  const [uiError, setUiError] = useState<UiError | null>(null);
   const { resolvedTheme } = useTheme(); // "light" | "dark"
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function Home() {
   const handleAnalyze = useCallback(async () => {
     if (cooldown > 0) return;
     setLoading(true);
-    setError(null);
+    setUiError(null);
     setResult(null);
 
     try {
@@ -67,19 +69,21 @@ export default function Home() {
         }
       );
       setResult(data.data);
-    } catch (e: unknown) {
-      if (e instanceof ApiError) {
-        const ra = (e.meta as { retry_after_secs?: number })?.retry_after_secs;
-        if (e.status === 429 && ra && Number.isFinite(ra)) {
-          setCooldown(ra);
-        }
-        const hint = e.hint ? ` — ${e.hint}` : "";
-        const code = e.code ? ` (${e.code})` : "";
-        setError(`${e.message}${hint}${code}`);
-      } else if (e instanceof Error) {
-        setError(`Network error calling backend: ${e.message}`);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const mapped = mapApiErrorToUi(err, {
+          githubLinked,
+          startCooldown: (secs) => setCooldown(secs),
+        });
+        setUiError(mapped);
+      } else if (err instanceof Error) {
+        setUiError({
+          variant: "error",
+          title: "Network error",
+          description: err.message,
+        });
       } else {
-        setError("Unexpected error");
+        setUiError({ variant: "error", title: "Unexpected error" });
       }
     } finally {
       setLoading(false);
@@ -170,20 +174,16 @@ export default function Home() {
                   : "Analyze"}
               </Button>
             </form>
-            {(error || cooldown > 0) && (
+            {(uiError || cooldown > 0) && (
               <InlineAlert
-                variant={cooldown > 0 ? "warning" : "error"}
-                title={cooldown > 0 ? "Rate limited" : "Error"}
-                description={
+                variant={cooldown > 0 ? "warning" : uiError?.variant ?? "error"}
+                title={
                   cooldown > 0
-                    ? `Too many requests. Please wait ${Math.ceil(
-                        cooldown
-                      )} seconds before retrying.`
-                    : error ?? ""
+                    ? `You're hitting the anonymous GitHub quota. Sign in for a higher limit or wait ${Math.ceil(cooldown)}s and try again.`
+                    : uiError!.title
                 }
+                description={cooldown > 0 ? undefined : uiError?.description}
                 className="mt-3"
-                // optional: SR-friendly announcements
-                aria-live="polite"
               />
             )}
 
