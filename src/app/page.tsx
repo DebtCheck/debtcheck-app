@@ -4,10 +4,8 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "./components/ui/utilities/base/card";
-import { Input } from "./components/ui/utilities/base/input";
 import { Button } from "./components/ui/utilities/buttons/button";
 import GitHubAuth from "./components/ui/githubAuth";
-import JiraAuth from "./components/ui/jira/jiraAuth";
 import type { Report } from "@/app/types/report";
 import { ReposPage } from "./components/repos/page";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
@@ -17,7 +15,6 @@ import { ThemeToggle } from "./components/ui/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import DebtCheckReportView from "./components/report/page";
-import router from "next/router";
 import { ChevronLeft } from "lucide-react";
 
 export default function Home() {
@@ -27,7 +24,6 @@ export default function Home() {
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Report | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [withoutLog, setWithoutLog] = useState(false);
   const [cooldown, setCooldown] = useState<number>(0);
   const [uiError, setUiError] = useState<UiError | null>(null);
@@ -201,11 +197,6 @@ export default function Home() {
             </Card>
           </section>
 
-          {!withoutLog && (
-            <section className="max-w-5xl mx-auto">
-              <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
-            </section>
-          )}
           {!withoutLog && (
             <section className="max-w-5xl mx-auto">
               <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />

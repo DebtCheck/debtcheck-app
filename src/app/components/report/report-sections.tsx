@@ -258,10 +258,9 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
         )}
 
         {hasSecretsReport && (
-          <Section
+          <Collapsible
             title="Secrets details"
-            subtitle="Showing file, name and preview"
-            padded={false}
+            defaultOpen={hasSecretsReport ? true : false}
           >
             <DataTable
               columns={[
@@ -291,14 +290,13 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
                 <Card className="p-4 text-sm">No secrets detected.</Card>
               }
             />
-          </Section>
+          </Collapsible>
         )}
 
         {hasDeadReport && (
-          <Section
+          <Collapsible
             title="Dead code details"
-            subtitle="Unused functions & variables"
-            padded={false}
+            defaultOpen={hasDeadReport ? true : false}
           >
             <DataTable
               columns={[
@@ -321,7 +319,7 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
                 <Card className="p-4 text-sm">No dead code detected.</Card>
               }
             />
-          </Section>
+          </Collapsible>
         )}
       </div>
     </Collapsible>

@@ -1,7 +1,6 @@
 // components/ui/utilities/hero/AnalyzeHero.tsx
 import { Input } from "../base/input";
 import { Button } from "../buttons/button";
-import Image from "next/image";
 import { useId } from "react";
 
 type AnalyzeHeroVariant = "header" | "card";
@@ -34,7 +33,6 @@ export function AnalyzeHero({
   hint,
   variant = "card",
   size = "md",
-  showIcon = true,
   ctaLabel = "Analyze",
   loadingLabel = "Analyzing…",
   className,
