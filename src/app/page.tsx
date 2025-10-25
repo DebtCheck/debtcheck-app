@@ -165,7 +165,7 @@ export default function Home() {
               <Button
                 type="submit"
                 disabled={loading || !isValidRepoUrl || cooldown > 0}
-                className="cursor-pointer bg-[rgb(var(--foreground))] text-[rgb(var(--background))] hover:opacity-90 focus:ring-[var(--primary-40)]"
+                className="cursor-pointer bg-[rgb(var(--foreground))] text-[rgb(var(--background))] hover:opacity-90 focus:ring-[var(--primary-40)] w-30"
               >
                 {cooldown > 0
                   ? `Retry in ${Math.ceil(cooldown)}s`
@@ -179,7 +179,9 @@ export default function Home() {
                 variant={cooldown > 0 ? "warning" : uiError?.variant ?? "error"}
                 title={
                   cooldown > 0
-                    ? `You're hitting the anonymous GitHub quota. Sign in for a higher limit or wait ${Math.ceil(cooldown)}s and try again.`
+                    ? `You're hitting the anonymous GitHub quota. Sign in for a higher limit or wait ${Math.ceil(
+                        cooldown
+                      )}s and try again.`
                     : uiError!.title
                 }
                 description={cooldown > 0 ? undefined : uiError?.description}
@@ -191,7 +193,7 @@ export default function Home() {
               <InlineAlert
                 variant="warning"
                 title="You are analyzing without logging in."
-                description="Some features may be limited. You won't be able to analyze private repositories. You'll be limited in the number of requests per hour."
+                description="Some features may be limited. You won't be able to analyze private repositories. You'll be limited to 60 requests per hour , but if you're logged in you'll have 5000 requests per hour."
                 className="mt-3"
               />
             )}

@@ -160,16 +160,145 @@ export async function fetchRepoPR(repoOwner: string, repoName: string, accessTok
 
 const extensions = [".ts", ".tsx", ".json", ".md", ".env", ".yml", ".yaml"];
 
-export async function filterFiles(fileTree: RepoFileTree) {
+const filesToIgnore = [
+  // === Build artifacts / output ===
+  "dist/",
+  "build/",
+  "out/",
+  ".next/",
+  ".nuxt/",
+  "coverage/",
+  "public/",
+  "tmp/",
+  "temp/",
+  "cache/",
+  ".cache/",
+  ".vite/",
+  "logs/",
+  "log/",
+  "artifacts/",
+  "target/",
+  ".turbo/",
 
-  if(!fileTree || !fileTree.tree) {
+  // === Package managers ===
+  "node_modules/",
+  "vendor/",
+  "Pods/",
+  "pnpm-lock.yaml",
+  "yarn.lock",
+  "package-lock.json",
+  "bun.lockb",
+
+  // === Environment / system ===
+  ".env.local",
+  ".env.production",
+  ".env.development",
+  ".env.test",
+  ".env.example",
+  ".DS_Store",
+  "Thumbs.db",
+
+  // === Tests and mocks ===
+  "__tests__/",
+  "__mocks__/",
+  "__snapshots__/",
+  "test/",
+  "tests/",
+  "spec/",
+  "*.test.ts",
+  "*.test.tsx",
+  "*.spec.ts",
+  "*.spec.tsx",
+  "*.mock.ts",
+
+   // === Config files (non-relevant to analysis) ===
+  ".gitignore",
+  ".gitattributes",
+  ".editorconfig",
+  ".prettierrc",
+  ".prettierignore",
+  ".eslintrc",
+  ".eslintrc.js",
+  ".eslintrc.cjs",
+  ".eslintignore",
+  "tsconfig.node.json",
+  "vite.config.ts",
+  "vitest.config.ts",
+  "jest.config.js",
+  "jest.config.ts",
+  "babel.config.js",
+  "babel.config.cjs",
+  "webpack.config.js",
+  "rollup.config.js",
+  "snowpack.config.js",
+  "postcss.config.js",
+  "tailwind.config.js",
+  "next.config.js",
+  "remix.config.js",
+  "svelte.config.js",
+  "angular.json",
+  "vue.config.js",
+  "tsconfig.json",
+  "tsconfig.app.json",
+  "tsconfig.build.json",
+  "tsconfig.spec.json",
+
+  // === Assets ===
+  "assets/",
+  "images/",
+  "img/",
+  "fonts/",
+  "icons/",
+  "static/",
+  "*.png",
+  "*.jpg",
+  "*.jpeg",
+  "*.gif",
+  "*.svg",
+  "*.ico",
+  "*.webp",
+  "*.mp4",
+  "*.mp3",
+  "*.pdf",
+  "*.zip",
+  "*.tar.gz",
+  "*.mov",
+  "*.avi",
+  "*.mkv",
+
+  // === CI / DevOps ===
+  ".github/",
+  ".gitlab/",
+  ".circleci/",
+  ".vscode/",
+  ".idea/",
+  ".devcontainer/",
+  ".husky/",
+  "docker/",
+  "Dockerfile",
+  "docker-compose.yml",
+  ".azure-pipelines/",
+  ".github/workflows/",
+]
+
+export async function filterFiles(fileTree: RepoFileTree) {
+  if (!fileTree || !fileTree.tree) {
     throw new Error("Invalid GitHub tree response");
   }
 
-  const filteredFiles = fileTree.tree.filter(
-    (file) =>
-      file.type === 'blob' &&
-      extensions.some((ext) => file.path.endsWith(ext))
-  );
+  const filteredFiles = fileTree.tree.filter((file) => {
+    if (file.type !== "blob") return false;
+
+    const path = file.path.toLowerCase();
+
+    // Skip ignored files/folders
+    if (filesToIgnore.some((ignore) => path.includes(ignore.toLowerCase()))) {
+      return false;
+    }
+
+    // Keep only relevant extensions
+    return extensions.some((ext) => path.endsWith(ext));
+  });
+
   return filteredFiles;
 }
