@@ -9,14 +9,16 @@ import { Button } from "./components/ui/utilities/buttons/button";
 import GitHubAuth from "./components/ui/githubAuth";
 import JiraAuth from "./components/ui/jira/jiraAuth";
 import type { Report } from "@/app/types/report";
-import { ReposPage } from "./components/dashboard/repos/page";
+import { ReposPage } from "./components/repos/page";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
 import { ApiError } from "@/app/lib/http/response";
-import { InlineAlert } from "./components/ui/utilities";
+import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
 import { ThemeToggle } from "./components/ui/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import DebtCheckReportView from "./components/report/page";
+import router from "next/router";
+import { ChevronLeft } from "lucide-react";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -120,106 +122,105 @@ export default function Home() {
       : "/github-mark-dark.svg";
 
   return (
-    <main className="min-h-screen space-y-8">
+    <>
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b border-border/10">
         <div className="max-w-3xl mx-auto flex justify-between items-center pt-4 mb-4">
           <GitHubAuth />
           <ThemeToggle />
         </div>
       </div>
+      {!result && (
+        <main className="min-h-screen space-y-8 mt-5">
+          {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
+          <section className="max-w-3xl mx-auto">
+            <Card className="shadow-2xl backdrop-blur border [border-color:var(--border-10)] [background:var(--card-80)]">
+              <CardContent className="p-6 space-y-5">
+                <h1 className="text-2xl md:text-3xl font-semibold text-center flex items-center justify-center gap-2">
+                  <Image
+                    src={logoSrc}
+                    alt="GitHub Logo"
+                    width={28}
+                    height={28}
+                    priority
+                  />
+                  <span className="text-2xl md:text-3xl font-semibold text-center">
+                    Analyze a GitHub repo
+                  </span>
+                </h1>
 
-      {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
-      <section className="max-w-3xl mx-auto">
-        <Card
-          className="shadow-2xl backdrop-blur border [border-color:var(--border-10)] 
-                   [background:var(--card-80)]"
-        >
-          <CardContent className="p-6 space-y-5">
-            <h1 className="text-2xl md:text-3xl font-semibold text-center flex items-center justify-center gap-2">
-              <Image
-                src={logoSrc}
-                alt="GitHub"
-                width={28}
-                height={28}
-                priority
-              />
-              <span>Analyze a GitHub repo</span>
-            </h1>
+                <div className="flex-1">
+                  <AnalyzeHero
+                    variant="header"
+                    size="sm" // or "md" for taller
+                    value={repoUrl}
+                    onChange={setRepoUrl}
+                    onAnalyze={() => {
+                      if (!loading && isValidRepoUrl) void handleAnalyze();
+                    }}
+                    loading={loading}
+                    disabled={!isValidRepoUrl || cooldown > 0}
+                    ctaLabel={
+                      cooldown > 0
+                        ? `Retry in ${Math.ceil(cooldown)}s`
+                        : "Analyze"
+                    }
+                    loadingLabel="Analyzing…"
+                    showIcon
+                  />
+                </div>
 
-            <p className="[color:var(--muted-60)] text-center">
-              Paste a repo URL and we’ll analyze the technical debt.
-            </p>
+                {/* keep your auth notices */}
+                {(uiError || cooldown > 0) && (
+                  <InlineAlert
+                    variant={
+                      cooldown > 0 ? "warning" : uiError?.variant ?? "error"
+                    }
+                    title={
+                      cooldown > 0
+                        ? `You're hitting the anonymous GitHub quota. Sign in or wait ${Math.ceil(
+                            cooldown
+                          )}s.`
+                        : uiError!.title
+                    }
+                    description={
+                      cooldown > 0 ? undefined : uiError?.description
+                    }
+                    className="mt-3"
+                  />
+                )}
 
-            <form
-              className="flex gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!loading && isValidRepoUrl) void handleAnalyze();
-              }}
-            >
-              <Input
-                placeholder="https://github.com/user/your-repo"
-                value={repoUrl}
-                onChange={(e) => {
-                  setRepoUrl(e.target.value);
-                  if (error) setError(null);
-                }}
-                className="flex-1 [background:rgb(var(--card))] 
-                  [border-color:var(--border-10)] 
-                  [color:rgb(var(--foreground))] 
-                  placeholder:[color:var(--muted-60)] 
-                  focus-visible:ring-[var(--primary-40)]"
-              />
-              <Button
-                type="submit"
-                disabled={loading || !isValidRepoUrl || cooldown > 0}
-                className="cursor-pointer bg-[rgb(var(--foreground))] text-[rgb(var(--background))] hover:opacity-90 focus:ring-[var(--primary-40)] w-30"
-              >
-                {cooldown > 0
-                  ? `Retry in ${Math.ceil(cooldown)}s`
-                  : loading
-                  ? "Analyzing..."
-                  : "Analyze"}
-              </Button>
-            </form>
-            {(uiError || cooldown > 0) && (
-              <InlineAlert
-                variant={cooldown > 0 ? "warning" : uiError?.variant ?? "error"}
-                title={
-                  cooldown > 0
-                    ? `You're hitting the anonymous GitHub quota. Sign in for a higher limit or wait ${Math.ceil(
-                        cooldown
-                      )}s and try again.`
-                    : uiError!.title
-                }
-                description={cooldown > 0 ? undefined : uiError?.description}
-                className="mt-3"
-              />
-            )}
+                {withoutLog && (
+                  <InlineAlert
+                    variant="warning"
+                    title="You are analyzing without logging in."
+                    description="Some features may be limited (private repos disabled, 60 reqs/hr)."
+                    className="mt-3"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </section>
 
-            {withoutLog && (
-              <InlineAlert
-                variant="warning"
-                title="You are analyzing without logging in."
-                description="Some features may be limited. You won't be able to analyze private repositories. You'll be limited to 60 requests per hour , but if you're logged in you'll have 5000 requests per hour."
-                className="mt-3"
-              />
-            )}
-
-            {result && (
-              <>
-                <DebtCheckReportView report={result} />
-                <JiraAuth report={result} />
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </section>
-      {!withoutLog && (
-        <section className="max-w-5xl mx-auto">
-          <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
-        </section>
+          {!withoutLog && (
+            <section className="max-w-5xl mx-auto">
+              <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
+            </section>
+          )}
+          {!withoutLog && (
+            <section className="max-w-5xl mx-auto">
+              <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
+            </section>
+          )}
+        </main>
       )}
-    </main>
+      {result && (
+        <>
+          <Button className="mt-4 ml-4" onClick={() => setResult(null)}>
+            <ChevronLeft></ChevronLeft>
+          </Button>
+          <DebtCheckReportView report={result} />
+        </>
+      )}
+    </>
   );
 }

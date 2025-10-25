@@ -5,7 +5,7 @@ import { Section } from "@/app/components/ui/utilities/base/section";
 import { Toolbar } from "@/app/components/ui/utilities/base/toolbar";
 import { Input } from "@/app/components/ui/utilities/base/input";
 import { Button } from "@/app/components/ui/utilities/buttons/button";
-import { InlineAlert } from "../../ui/utilities";
+import { InlineAlert } from "../ui/utilities";
 import { RepoGallery } from "./repoGallery";
 import { RepoPagination } from "./repoPagination";
 
