@@ -12,18 +12,32 @@ import { fetchJsonOrThrow } from "./http/rust-error";
 export async function analyzeFileTree(
   files: RepoFileTree,
   accessToken: string,
-  demo: boolean
+  demo: boolean,
+  repo: { owner: string; name: string }
 ) {
   const url = `${process.env.RUST_URL}/analyze`;
+  console.log(accessToken);
+  
+  const toBlobUrl = (sha: string) =>
+    `https://api.github.com/repos/${repo.owner}/${repo.name}/git/blobs/${sha}`;
+  const tree_files = files.tree.map(f => ({
+    path: f.path,
+    url: toBlobUrl(f.sha),
+  }));
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    ...(accessToken
+      ? { "X-Github-Access-Token": accessToken } // server-side only
+      : {}),
+  };
+
+
   return fetchJsonOrThrow<unknown>(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      "X-Github-Access-Token": accessToken ? accessToken : "", // server-side only
-    },
+    headers: headers,
     body: JSON.stringify({
-      tree_files: files,
+      tree_files,
       demo: !accessToken || demo, 
     }),
   });

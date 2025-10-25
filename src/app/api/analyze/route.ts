@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     return jsonError("Invalid GitHub URL. Expected https://github.com/<owner>/<repo>", 400);
   }
 
-   const isDemo = Boolean(demo);
+  const isDemo = Boolean(demo);
   let accessToken = ""; // empty by default for demo
 
   if (!isDemo) {
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     const [metaReport, rustAnalysisReportRaw] = await Promise.all([
       analyzeMetadata(req, metadata, accessToken),
-      analyzeFileTree(filteredFiles, accessToken, isDemo),
+      analyzeFileTree(filteredFiles, accessToken, isDemo, { owner: repoOwner, name: repoName }),
     ]);
     const rustAnalysisReport = rustAnalysisReportRaw as import("@/app/types/report").RustAnalysisReport;
 

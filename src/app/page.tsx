@@ -84,7 +84,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [repoUrl, cooldown]);
+  }, [cooldown, repoUrl, githubLinked, withoutLog]);
 
   const handleWithoutLog = () => {
     setWithoutLog(true);
