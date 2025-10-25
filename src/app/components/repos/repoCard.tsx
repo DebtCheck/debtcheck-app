@@ -38,6 +38,7 @@ export function RepoCard({
       aria-label={`Choisir ${r.full_name}`}
       className={cn(
         "text-left rounded-2xl border p-4 transition group",
+        "cursor-pointer",
         "bg-card/5 hover:shadow-md hover:-translate-y-[1px]",
         "border-border/10",                                    
         disabled && "opacity-60 cursor-not-allowed",

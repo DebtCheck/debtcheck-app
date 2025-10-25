@@ -35,6 +35,20 @@ export default function Home() {
   }, [githubLinked, withoutLog]);
 
   useEffect(() => {
+    const stored = withoutLog
+      ? sessionStorage.getItem("report")
+      : localStorage.getItem("report");
+    if (stored) {
+      try {
+        const parsed: Report = JSON.parse(stored);
+        setResult(parsed);
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, [withoutLog]);
+
+  useEffect(() => {
     if (cooldown <= 0) return;
     const id = setInterval(() => setCooldown((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(id);
@@ -74,6 +88,13 @@ export default function Home() {
           signal: controller.signal,
         }
       );
+
+      if (withoutLog) {
+        sessionStorage.setItem("report", JSON.stringify(data.data));
+      } else {
+        localStorage.setItem("report", JSON.stringify(data.data));
+      }
+
       setResult(data.data);
     } catch (err) {
       if (err instanceof ApiError) {
@@ -206,7 +227,14 @@ export default function Home() {
       )}
       {result && (
         <>
-          <Button className="mt-4 ml-4" onClick={() => setResult(null)}>
+          <Button
+            className="mt-4 ml-4"
+            onClick={() => {
+              setResult(null);
+              sessionStorage.removeItem("report");
+              localStorage.removeItem("report");
+            }}
+          >
             <ChevronLeft></ChevronLeft>
           </Button>
           <DebtCheckReportView report={result} />
