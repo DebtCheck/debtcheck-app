@@ -7,7 +7,7 @@ export interface Report {
 }
 
 export interface AnalyzeStaleness {
-  label: string;  
+  label: string;
   stale: boolean;
   daysSinceUpdate: number;
   message: string;
@@ -26,7 +26,7 @@ export interface AnalyzePrs {
 
 export interface RustAnalysisReport {
   deprecated_libs: DeprecatedLibs[];
-  reportParse: ReportParse;
+  report_parse: ReportParse;
 
   is_env_present: boolean;
 }
@@ -41,7 +41,7 @@ export interface DeprecatedLibs {
 
 export interface ReportParse {
   dead_code: DeadCodeItem[];
-  secrets: SecretItem[];
+  env_vars: SecretItem[];
 }
 
 export interface DeadCodeItem {
@@ -67,7 +67,12 @@ export enum DeadCodeKind {
 }
 
 export type IssuesAnalysis = {
-  issuesRatio: number;             // 0..1
+  issuesRatio: number; // 0..1
   isManyIssuesUnresolved: boolean; // rule-of-thumb threshold
   message: string;
 };
+
+export type DepStatus = "ok" | "warning" | "error";
+export function asDepStatus(s: string): DepStatus {
+  return s === "ok" || s === "warning" || s === "error" ? s : "warning";
+}

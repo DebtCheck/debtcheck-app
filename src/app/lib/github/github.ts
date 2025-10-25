@@ -2,7 +2,7 @@ import { RepoFileTree, RepoPRs } from "@/app/types/repo";
 import { prisma } from "@/app/lib/prisma";
 import { GithubAccount } from "@/app/types/github";
 import { githubFetch } from "@/app/lib/github/http";
-import { filesToIgnore } from "./files-to-ignore";
+import { shouldIgnore } from "./files-to-ignore";
 
 const GITHUB_PROVIDER = "github";
 
@@ -169,15 +169,9 @@ export async function filterFiles(fileTree: RepoFileTree) {
   const filteredFiles = fileTree.tree.filter((file) => {
     if (file.type !== "blob") return false;
 
-    const path = file.path.toLowerCase();
-
-    // Skip ignored files/folders
-    if (filesToIgnore.some((ignore) => path.includes(ignore.toLowerCase()))) {
-      return false;
-    }
-
-    // Keep only relevant extensions
-    return extensions.some((ext) => path.endsWith(ext));
+    return file.type === "blob" &&
+    extensions.some((ext) => file.path.endsWith(ext)) &&
+    !shouldIgnore(file.path);
   });
 
   return filteredFiles;

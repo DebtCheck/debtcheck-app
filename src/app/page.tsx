@@ -16,6 +16,7 @@ import { InlineAlert } from "./components/ui/utilities";
 import { ThemeToggle } from "./components/ui/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
+import DebtCheckReportView from "./components/report/page";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -207,16 +208,7 @@ export default function Home() {
 
             {result && (
               <>
-                <Card className="border border-border/10 bg-card">
-                  <CardContent>
-                    <h2 className="text-lg font-semibold mb-2">
-                      Analysis Result
-                    </h2>
-                    <pre className="whitespace-pre-wrap text-sm">
-                      {JSON.stringify(result, null, 2)}
-                    </pre>
-                  </CardContent>
-                </Card>
+                <DebtCheckReportView report={result} />
                 <JiraAuth report={result} />
               </>
             )}

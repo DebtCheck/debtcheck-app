@@ -41,3 +41,19 @@ export function StatusPill({
     </span>
   );
 }
+
+export function PillFromBool({
+  okLabel,
+  warnLabel,
+  warn,
+}: {
+  okLabel: string;
+  warnLabel: string;
+  warn: boolean;
+}) {
+  return (
+    <StatusPill status={warn ? "warning" : "ok"}>
+      {warn ? warnLabel : okLabel}
+    </StatusPill>
+  );
+}

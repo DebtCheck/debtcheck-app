@@ -65,7 +65,7 @@ export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?
     <>
       <Section
         className="bg-card/80 border-border/10 mx-auto max-w-4xl p-4 shadow-2xl rounded-2xl"
-        title="MMy Github repositories"
+        title="My Github repositories"
         subtitle="Select a repository to analyze its technical debt."
         actions={
           <Button onClick={() => load(page)} disabled={loading}>
