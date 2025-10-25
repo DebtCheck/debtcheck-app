@@ -59,6 +59,9 @@ export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit
   try {
     res = await fetch(input, init);
   } catch (e: unknown) {
+    if (e instanceof DOMException && e.name === "AbortError") {
+      throw new ApiError("Request aborted", 499, {}, "upstream_error");
+    }
     const errorMessage = e instanceof Error ? e.message : "unknown";
     throw new ApiError(
       `Network error calling backend: ${errorMessage}`,

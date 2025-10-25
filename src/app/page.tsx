@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "./components/ui/utilities/base/card";
 import { Input } from "./components/ui/utilities/base/input";
 import { Button } from "./components/ui/utilities/buttons/button";
@@ -29,6 +29,7 @@ export default function Home() {
   const [cooldown, setCooldown] = useState<number>(0);
   const [uiError, setUiError] = useState<UiError | null>(null);
   const { resolvedTheme } = useTheme(); // "light" | "dark"
+  const controllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (githubLinked && withoutLog) setWithoutLog(false);
@@ -56,6 +57,11 @@ export default function Home() {
     setUiError(null);
     setResult(null);
 
+    controllerRef.current?.abort();
+
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     try {
       const data = await fetchJsonOrThrow<{ ok: true; data: Report }>(
         "/api/analyze",
@@ -66,6 +72,7 @@ export default function Home() {
             repoUrl,
             demo: !githubLinked || withoutLog, // <-- add this
           }),
+          signal: controller.signal,
         }
       );
       setResult(data.data);
