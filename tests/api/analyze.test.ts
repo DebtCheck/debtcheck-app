@@ -47,11 +47,8 @@ function makeReq(body: unknown): NextRequest {
 
   const nextReq = base as unknown as MutableNextRequest;
   nextReq.cookies = {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     get: (_name?: string) => undefined,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     set: (_cookie: unknown) => undefined,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     delete: (_names: string | string[]) => false,
   } as unknown as NextRequest["cookies"];
   // cast the URL to the NextRequest['nextUrl'] type so TypeScript accepts the assignment
