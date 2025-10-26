@@ -17,19 +17,22 @@ export function Collapsible({
   headerClassName?: string;
   contentClassName?: string;
 }) {
+  
   return (
     <details
       open={defaultOpen}
       className={cn(
         "rounded-2xl border transition-all",
         "bg-[rgb(var(--surface-1))] border-[color:var(--line-neutral-20)] shadow-[var(--shadow-1)] dark:shadow-[var(--shadow-1)]",
+        "[&[open]>summary>div]:border-b",
+        "[&[open]>summary>div]:border-[color:var(--line-neutral-20)]",
         className
       )}
     >
       <summary className="list-none cursor-pointer select-none">
         <div
           className={cn(
-            "px-6 py-4 flex items-center justify-between border-b border-[color:var(--line-neutral-20)]",
+            "px-6 py-4 flex items-center justify-between",
             headerClassName
           )}
         >
