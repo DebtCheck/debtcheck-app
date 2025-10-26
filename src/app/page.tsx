@@ -140,14 +140,14 @@ export default function Home() {
 
   return (
     <>
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b border-border/10">
-        <div className="max-w-3xl mx-auto flex justify-between items-center pt-4 mb-4">
+      <header className="fixed inset-x-0 top-0 z-[1000] bg-background/80 backdrop-blur border-b [border-color:var(--line-06)] h-[var(--appbar-h)]">
+        <div className="max-w-3xl mx-auto flex justify-between items-center h-full px-4">
           <GitHubAuth />
           <ThemeToggle />
         </div>
-      </div>
+      </header>
       {!result && (
-        <main className="min-h-screen space-y-8 mt-5">
+        <main className="min-h-screen space-y-8 mt-5 pt-[var(--appbar-h)]">
           {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
           <section className="max-w-3xl mx-auto">
             <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
@@ -226,7 +226,7 @@ export default function Home() {
         </main>
       )}
       {result && (
-        <>
+        <main className="pt-[var(--appbar-h)]">
           <Button
             className="mt-4 ml-4"
             onClick={() => {
@@ -238,7 +238,7 @@ export default function Home() {
             <ChevronLeft></ChevronLeft>
           </Button>
           <DebtCheckReportView report={result} />
-        </>
+        </main>
       )}
     </>
   );

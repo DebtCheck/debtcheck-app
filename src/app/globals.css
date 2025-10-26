@@ -72,6 +72,8 @@ body {
   --line-neutral-15: rgb(var(--line-neutral) / 0.15); /* subtle version */
   --line-neutral-20: rgb(var(--line-neutral) / 0.20); /* stronger version */
   --line-neutral-30: rgb(var(--line-neutral) / 0.30); /* even stronger version */
+
+  --appbar-h: 120px;
 }
 
 /* Optional helpers for subtle alphas */

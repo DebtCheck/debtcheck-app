@@ -79,6 +79,7 @@ export function IssuesPrsSection({
   issues: AnalyzeIssues;
   prs: AnalyzePrs;
 }) {
+  const isClean = issues.issuesRatio < 0.1 && prs.stalePRsCount === 0;
   return (
     <Collapsible
       title="Issues & Pull Requests"
@@ -93,7 +94,7 @@ export function IssuesPrsSection({
         </div>
       }
     >
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="flex gap-4 md:grid md:grid-cols-2">
         <StatBadge
           label="Open issues ratio"
           value={`${Math.round(issues.issuesRatio * 100)}%`}
@@ -106,22 +107,24 @@ export function IssuesPrsSection({
           hint={prs.message}
           className="bg-[rgb(var(--surface-2))]"
         />
-        <Card className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]">
-          <CardContent>
-            <Toolbar
-              left={
-                <div className="flex items-center gap-2 text-sm">
-                  <GitPullRequest className="w-4 h-4" />
-                  Quality hints
-                </div>
-              }
-            />
-            <ul className="mt-3 text-sm list-disc pl-5 text-muted-foreground">
-              <li>Close resolved issues to keep the ratio healthy.</li>
-              <li>Review/merge or close stale PRs regularly.</li>
-            </ul>
-          </CardContent>
-        </Card>
+        {isClean ? null : (
+          <Card className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]">
+            <CardContent>
+              <Toolbar
+                left={
+                  <div className="flex items-center gap-2 text-sm">
+                    <GitPullRequest className="w-4 h-4" />
+                    Quality hints
+                  </div>
+                }
+              />
+              <ul className="mt-3 text-sm list-disc pl-5 text-muted-foreground">
+                <li>Close resolved issues to keep the ratio healthy.</li>
+                <li>Review/merge or close stale PRs regularly.</li>
+              </ul>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </Collapsible>
   );
@@ -193,8 +196,6 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
       </Collapsible>
     );
   }
-
-  console.log("Rust analysis report:", rust);
 
   const hasParse = Boolean(rust.report_parse);
   const secretsArray: SecretItem[] = Array.isArray(rust.report_parse?.env_vars)
@@ -293,6 +294,7 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
                   ),
                 },
                 { key: "line", header: "Line", align: "right" },
+                { key: "column", header: "Column", align: "right" },
               ]}
               rows={secretsArray}
               rowKey={(s) => `${s.file}:${s.line}:${s.column}`}
