@@ -5,7 +5,11 @@ export function Section({ title, subtitle, actions, children, padded = true, cla
   title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode; padded?: boolean; className?: string;
 }) {
   return (
-    <Card className={cn(className)}>
+    <Card className={cn(
+      "border-[color:var(--line-neutral-20)]",
+      className
+      )}
+    >
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div>
           <CardTitle className="text-base md:text-lg">{title}</CardTitle>
