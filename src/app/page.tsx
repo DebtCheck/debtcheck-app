@@ -14,7 +14,7 @@ import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
 import { ThemeToggle } from "./components/ui/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
-import DebtCheckReportView from "./components/report/page";
+import { ReportPage } from "./components/report/page";
 import { ChevronLeft } from "lucide-react";
 
 export default function Home() {
@@ -237,7 +237,7 @@ export default function Home() {
           >
             <ChevronLeft></ChevronLeft>
           </Button>
-          <DebtCheckReportView report={result} />
+          <ReportPage report={result} />
         </main>
       )}
     </>

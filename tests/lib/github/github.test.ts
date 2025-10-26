@@ -10,10 +10,10 @@ const prismaMock = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }));
+vi.mock("@/app/lib/prisma", () => ({ prisma: prismaMock }));
 
 const githubFetchMock = vi.hoisted(() => vi.fn());
-vi.mock("@/lib/github/http", () => ({ githubFetch: githubFetchMock }));
+vi.mock("@/app/lib/github/http", () => ({ githubFetch: githubFetchMock }));
 
 // Now import the module under test
 import {
@@ -32,6 +32,10 @@ import type { RepoFileTree } from "@/app/types/repo";
 beforeEach(() => {
   vi.useRealTimers();
   vi.clearAllMocks();
+  // Reset mock implementations
+  prismaMock.account.findFirst.mockReset();
+  prismaMock.account.update.mockReset();
+  githubFetchMock.mockReset();
 });
 
 afterEach(() => {

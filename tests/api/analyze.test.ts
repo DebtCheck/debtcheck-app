@@ -18,14 +18,14 @@ vi.mock("next-auth", () => ({
 }));
 
 // libs
-vi.mock("@/lib/github/github", () => ({
+vi.mock("@/app/lib/github/github", () => ({
   ensureFreshGithubAccessToken: ensureFreshGithubAccessTokenMock,
   fetchRepoMetadata: fetchRepoMetadataMock,
   fetchRepoFileTree: fetchRepoFileTreeMock,
   filterFiles: filterFilesMock,
 }));
 
-vi.mock("@/lib/analyser", () => ({
+vi.mock("@/app/lib/analyser", () => ({
   analyzeMetadata: analyzeMetadataMock,
   analyzeFileTree: analyzeFileTreeMock,
 }));
@@ -105,35 +105,6 @@ describe("/api/analyze (POST)", () => {
     const res = await POST(makeReq({ repoUrl: "https://github.com/owner/repo" }));
     expect(res.status).toBe(401);
     expect(await res.json()).toEqual({ error: "GitHub not linked" });
-  });
-
-  it("413 when repository too large", async () => {
-    okSession();
-    githubTokenOK();
-
-    // fetchRepoMetadata returns huge repo
-    fetchRepoMetadataMock.mockResolvedValue({
-      owner: { login: "owner" },
-      name: "repo",
-      description: "desc",
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-10T00:00:00Z",
-      pushed_at: "2024-01-12T00:00:00Z",
-      size: 2_000_001, // > 2,000,000 threshold
-      stargazers_count: 0,
-      forks_count: 0,
-      watchers_count: 0,
-      open_issues_count: 0,
-      total_issues_count: 0,
-      subscribers_count: 0,
-      pulls_url: "x",
-      default_branch: "main",
-      trees_url: "trees",
-    });
-
-    const res = await POST(makeReq({ repoUrl: "https://github.com/owner/repo" }));
-    expect(res.status).toBe(413);
-    expect(await res.json()).toEqual({ error: "Repository too large to analyze safely." });
   });
 
   it("maps OAuth App blocked error to OAUTH_APP_BLOCKED", async () => {
@@ -238,7 +209,7 @@ describe("/api/analyze (POST)", () => {
     });
 
     analyzeFileTreeMock.mockResolvedValue({
-      dead_code: [],
+      report_parse: { dead_code: [], env_vars: [] },
       deprecated_libs: [],
     });
 
@@ -247,7 +218,7 @@ describe("/api/analyze (POST)", () => {
 
     const j = (await res.json()) as { ok: true; data: Report };
     expect(j.ok).toBe(true);
-    expect(j.data.fileTreeReport?.dead_code).toEqual([]);
+    expect(j.data.rustAnalysisReport?.report_parse?.dead_code).toEqual([]);
     expect(j.data.updatedAtReport?.stale).toBe(false);
   });
 

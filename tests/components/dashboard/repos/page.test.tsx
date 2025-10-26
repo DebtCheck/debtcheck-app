@@ -84,8 +84,8 @@ describe("<ReposPage />", () => {
 
     // Pagination: Page 1 label; Prev disabled, Next enabled
     expect(screen.getByText(/page 1/i)).toBeInTheDocument();
-    const prev = screen.getByRole("button", { name: /précédent/i });
-    const next = screen.getByRole("button", { name: /suivant/i });
+    const prev = screen.getByRole("button", { name: /previous/i });
+    const next = screen.getByRole("button", { name: /next/i });
     expect(prev).toBeDisabled();
     expect(next).not.toBeDisabled();
 
@@ -129,7 +129,7 @@ describe("<ReposPage />", () => {
     );
   });
 
-  it("clicking Suivant loads page 2, sets stale badge when response.stale=true, and disables Next when hasNext=false", async () => {
+  it("clicking Next loads page 2, sets stale badge when response.stale=true, and disables Next when hasNext=false", async () => {
     const fetchSpy = vi
       .spyOn(global, "fetch")
       .mockResolvedValueOnce(
@@ -144,8 +144,8 @@ describe("<ReposPage />", () => {
     // Wait initial
     await screen.findByRole("button", { name: /choisir owner\/repo-1/i });
 
-    // Click "Suivant"
-    const next = screen.getByRole("button", { name: /suivant/i });
+    // Click "Next"
+    const next = screen.getByRole("button", { name: /Next/i });
     await fireEvent.click(next);
 
     // Called with page=2
@@ -160,13 +160,13 @@ describe("<ReposPage />", () => {
     expect(await screen.findByText(/page 2/i)).toBeInTheDocument();
 
     // Stale badge shown (page2.stale=true)
-    expect(screen.getByText(/cache \(peut être périmé\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cache potentially stale, refreshed data may be available./i)).toBeInTheDocument();
 
     // Next disabled (hasNext=false)
-    expect(screen.getByRole("button", { name: /suivant/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Next/i })).toBeDisabled();
     // Prev enabled
     expect(
-      screen.getByRole("button", { name: /précédent/i })
+      screen.getByRole("button", { name: /Previous/i })
     ).not.toBeDisabled();
   });
 
@@ -186,8 +186,8 @@ describe("<ReposPage />", () => {
     render(<ReposPage />);
 
     // While initial load is in-flight, both buttons should be disabled
-    const prev = await screen.findByRole("button", { name: /précédent/i });
-    const next = screen.getByRole("button", { name: /suivant/i });
+    const prev = await screen.findByRole("button", { name: /previous/i });
+    const next = screen.getByRole("button", { name: /next/i });
     expect(prev).toBeDisabled();
     expect(next).toBeDisabled();
     expect(fetchSpy).toHaveBeenCalledTimes(1);

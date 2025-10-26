@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
-import { DeadCode, DeprecatedLibs } from "@/app/types/report";
+import { DeadCodeItem, DeprecatedLibs } from "@/app/types/report";
 import { authOptions } from "@/app/lib/auth/auth";
 import { ensureFreshJiraAccessToken, fetchAccessibleResources } from "@/app/lib/jira";
 import { jsonError, jsonOk } from "@/app/lib/http/response";
@@ -48,20 +48,20 @@ export async function POST(req: NextRequest) {
       summary: "Stale pull requests detected",
       description: report.prsReport.message,
     },
-    report?.fileTreeReport?.dead_code?.length > 0 && {
+    report?.rustAnalysisReport?.report_parse?.dead_code?.length > 0 && {
       label: "Dead Code",
       summary: "Dead code found in repo",
-      description: report.fileTreeReport.dead_code
-        .map((item: DeadCode) => `• ${item.kind} "${item.name}" in ${item.file}:${item.line}`)
+      description: report.rustAnalysisReport.report_parse.dead_code
+        .map((item: DeadCodeItem) => `• ${item.kind} "${item.name}" in ${item.file}:${item.line}`)
         .join("\n"),
     },
-    report?.fileTreeReport?.deprecated_libs?.some(
+    report?.rustAnalysisReport?.report_parse?.deprecated_libs?.some(
       (lib: DeprecatedLibs) =>
         lib.deprecated || lib.status === "error" || lib.status === "warning"
     ) && {
       label: "Deprecated Libraries",
       summary: "Deprecated or unstable libraries in use",
-      description: report.fileTreeReport.deprecated_libs
+      description: report.rustAnalysisReport.report_parse.deprecated_libs
         .filter(
           (lib: DeprecatedLibs) =>
             lib.deprecated || lib.status === "error" || lib.status === "warning"

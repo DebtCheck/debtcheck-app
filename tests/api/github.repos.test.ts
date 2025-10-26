@@ -34,10 +34,10 @@ const kvSetMock = vi.hoisted(
 vi.mock("next-auth", () => ({
   getServerSession: getServerSessionMock,
 }));
-vi.mock("@/lib/auth/auth", () => ({
+vi.mock("@/app/lib/auth/auth", () => ({
   authOptions: {},
 }));
-vi.mock("@/lib/github/github", () => ({
+vi.mock("@/app/lib/github/github", () => ({
   ensureFreshGithubAccessToken: ensureFreshGithubAccessTokenMock,
 }));
 vi.mock("@vercel/kv", () => ({

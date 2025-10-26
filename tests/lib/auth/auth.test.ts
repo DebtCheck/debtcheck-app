@@ -13,7 +13,7 @@ const prismaMock = vi.hoisted(() => ({
 }));
 
 // Must mock before importing SUT
-vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }));
+vi.mock("@/app/lib/prisma", () => ({ prisma: prismaMock }));
 
 describe("authOptions.callbacks.session", () => {
   beforeEach(() => {

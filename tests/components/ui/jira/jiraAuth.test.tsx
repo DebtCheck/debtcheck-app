@@ -29,7 +29,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock child component to keep tests focused (it will render a marker text)
-vi.mock("@/components/ui/jira/jiraProjects", () => ({
+vi.mock("@/app/components/ui/jira/jiraProjects", () => ({
   default: ({ values }: { values: Array<{ id: string; key?: string; name?: string }> }) => (
     <div data-testid="jira-projects">JiraProjects:{values.length}</div>
   ),

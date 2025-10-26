@@ -1,8 +1,10 @@
+"use client";
+
 import { Button, Toolbar } from "../ui/utilities";
 import { ActivitySection, DependenciesSection, IssuesPrsSection, RisksSection } from "./report-sections";
 import { Report } from "@/app/types/report";
 
-export default function DebtCheckReportView({ report }: { report: Report }) {
+export function ReportPage({ report }: { report: Report }) {
   return (
     <div className="mx-auto w-full md:p-10 space-y-4">
       <Toolbar

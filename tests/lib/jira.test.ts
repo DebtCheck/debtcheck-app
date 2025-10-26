@@ -13,7 +13,7 @@ const prismaMock = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }));
+vi.mock("@/app/lib/prisma", () => ({ prisma: prismaMock }));
 
 // Import SUT after mocks
 import {

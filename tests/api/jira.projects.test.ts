@@ -39,11 +39,11 @@ vi.mock("next-auth", () => ({
   getServerSession: getServerSessionMock,
 }));
 
-vi.mock("@/lib/auth/auth", () => ({
+vi.mock("@/app/lib/auth/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/jira", () => ({
+vi.mock("@/app/lib/jira", () => ({
   ensureFreshJiraAccessToken: ensureFreshJiraAccessTokenMock,
   fetchProjects: fetchProjectsMock,
 }));

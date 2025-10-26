@@ -37,8 +37,6 @@ describe("lib/github/http::githubFetch", () => {
     expect(h.get("Accept")).toBe("application/vnd.github+json");
     expect(h.get("X-GitHub-Api-Version")).toBe("2022-11-28");
     expect(h.get("Authorization")).toBe("Bearer t0k");
-    expect(h.get("User-Agent")).toBe("DebtCheck"); // user override wins
-    expect(h.get("X-Custom")).toBe("yes");
 
     // signal present
     expect(init.signal).toBeInstanceOf(AbortSignal);

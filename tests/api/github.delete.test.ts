@@ -14,7 +14,7 @@ const fetchMock = vi.hoisted(() => vi.fn());
 vi.mock("next-auth", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("next-auth/next", () => ({ getServerSession: getServerSessionMock }));
 
-vi.mock("@/lib/prisma", () => ({
+vi.mock("@/app/lib/prisma", () => ({
   prisma: prismaMock,
 }));
 
