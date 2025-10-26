@@ -7,14 +7,14 @@ import { Card, CardContent } from "./components/ui/utilities/base/card";
 import { Button } from "./components/ui/utilities/buttons/button";
 import GitHubAuth from "./components/ui/githubAuth";
 import type { Report } from "@/app/types/report";
-import { ReposPage } from "./components/repos/page";
+import { ReposPage } from "./components/repos/reposPage";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
 import { ApiError } from "@/app/lib/http/response";
 import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
 import { ThemeToggle } from "./components/ui/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
-import { ReportPage } from "./components/report/page";
+import { ReportPage } from "./components/report/reportPage";
 import { ChevronLeft } from "lucide-react";
 
 export default function Home() {
