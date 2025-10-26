@@ -1,4 +1,5 @@
 // components/ui/utilities/hero/AnalyzeHero.tsx
+import { cn } from "@/app/lib/utils";
 import { Input } from "../base/input";
 import { Button } from "../buttons/button";
 import { useId } from "react";
@@ -85,7 +86,10 @@ export function AnalyzeHero({
         <Button
           onClick={onAnalyze}
           disabled={disabled || loading || value.length === 0}
-          className={buttonClasses}
+          className={cn(
+            buttonClasses,
+            "max-w-[200px]",
+          )}
         >
           {loading ? loadingLabel : ctaLabel}
         </Button>

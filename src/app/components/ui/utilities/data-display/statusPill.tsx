@@ -16,10 +16,13 @@ export function StatusPill({
   className,
 }: StatusPillProps) {
   const style = {
-    ok: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30",
-    warning: "bg-yellow-500/15 text-yellow-700 border-yellow-500/30",
-    error: "bg-red-500/15 text-red-700 border-red-500/30",
-    neutral: "bg-gray-500/15 text-gray-600 border-gray-500/30",
+    ok: "bg-[rgb(var(--color-success-bg))] text-[rgb(var(--color-success))] border-[rgb(var(--color-success))/0.25]",
+    warning:
+      "bg-[rgb(var(--color-warning-bg))] text-[rgb(var(--color-warning))] border-[rgb(var(--color-warning))/0.25]",
+    error:
+      "bg-[rgb(var(--color-danger-bg))] text-[rgb(var(--color-danger))] border-[rgb(var(--color-danger))/0.25]",
+    neutral:
+      "bg-[rgb(var(--color-neutral-bg))] text-[rgb(var(--color-muted))] border-[color:var(--border-12)]",
   }[status];
 
   const label =

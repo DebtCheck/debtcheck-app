@@ -4,13 +4,28 @@
 /* ---------- Theme tokens using Tailwind v4's color variables ---------- */
 /* Light (default) */
 @theme {
-  --color-background: 255 255 255;
-  --color-foreground: 17 24 39;   /* gray-900 */
+  /* Base */
+  --color-background: 238 240 244;      /* soft white (was 255 255 255) */
+  --surface-1:        255 255 255;      /* cards */
+  --surface-2:        252 253 255;      /* raised cards */
+  --surface-3:        248 250 253;      /* popovers/dialog headers */
+  --color-foreground: 15 23 42;         /* muted near-black (was gray-900) */
+  --color-card:       255 255 255;      /* cards remain white */
+  --color-border:     244 247 252;      /* softer border (was gray-200) */
+  --color-muted:      100 108 125;      /* body-secondary text */
 
-  --color-card:       255 255 255;
-  --color-border:     229 231 235; /* gray-200 */
-  --color-muted:      107 114 128; /* gray-500 */
-  --color-primary:    0 0 0;       /* black */
+  /* Primary accent (calm blue) */
+  --color-primary:    99 132 255;       /* blue-500ish but softer */
+  --color-primary-foreground: 255 255 255;
+
+  /* Semantic (pastels for pills/badges/backgrounds) */
+  --color-success:    16 163 127;       /* teal/emerald mid */
+  --color-success-bg: 209 250 229;      /* pastel bg */
+  --color-warning:    217 119 6;        /* amber mid */
+  --color-warning-bg: 254 243 199;      /* pastel bg */
+  --color-danger:     225 29 72;        /* rose mid */
+  --color-danger-bg:  254 226 226;      /* pastel bg */
+  --color-neutral-bg: 241 245 249;      /* slate-100ish */
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -18,13 +33,28 @@
 
 /* Dark mode (toggled by next-themes adding .dark on <html>) */
 .dark {
-  --color-background: 12 12 12;
-  --color-foreground: 243 244 246; /* gray-100 */
+  /* Base */
+  --color-background: 22 24 28;         /* soft charcoal (not pitch black) */
+  --surface-1:        32 35 40;         /* cards */
+  --surface-2:        38 42 48;         /* raised cards */
+  --surface-3:        44 48 54;         /* popovers/dialog headers */
+  --color-foreground: 232 235 239;      /* near-white */
+  --color-card:       32 35 40;         /* slightly lifted from bg */
+  --color-border:     48 54 60;      /* low-contrast border */
+  --color-muted:      160 167 178;
 
-  --color-card:       24 24 27;    /* zinc-900-ish */
-  --color-border:     255 255 255; /* use with low alpha in borders */
-  --color-muted:      156 163 175; /* gray-400 */
-  --color-primary:    255 255 255; /* white */
+  /* Primary accent (cooler blue) */
+  --color-primary:    128 158 255;      /* lighter for dark mode */
+  --color-primary-foreground: 255 255 255;
+
+  /* Semantic (dimmed pastels for dark) */
+  --color-success:    52 211 153;
+  --color-success-bg: 6 95 70;          /* emerald-900ish /20 via alpha below */
+  --color-warning:    245 158 11;
+  --color-warning-bg: 120 53 15;        /* amber-900ish */
+  --color-danger:     251 113 133;
+  --color-danger-bg:  76 5 25;          /* rose-950ish */
+  --color-neutral-bg: 35 39 46;
 }
 
 /* Apply tokens globally */
@@ -37,10 +67,25 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
 }
 
+:root {
+  --line-neutral: 180 185 192; /* middle gray base */
+  --line-neutral-15: rgb(var(--line-neutral) / 0.15); /* subtle version */
+  --line-neutral-20: rgb(var(--line-neutral) / 0.20); /* stronger version */
+  --line-neutral-30: rgb(var(--line-neutral) / 0.30); /* even stronger version */
+}
+
 /* Optional helpers for subtle alphas */
 :root, .dark {
-  --border-10: rgb(var(--color-border) / 0.10);
+  --border-08: rgb(var(--color-border) / 0.08);
+  --border-12: rgb(var(--color-border) / 0.12);
+  --border-16: rgb(var(--color-border) / 0.16);
+  --border-20: rgb(var(--color-border) / 0.20);
   --muted-60:  rgb(var(--color-muted) / 0.60);
-  --card-80:   rgb(var(--color-card) / 0.80);
+  --card-94:   rgb(var(--color-card) / 0.94);
   --primary-40: rgb(var(--color-primary) / 0.40);
+
+  /* semantic bg alphas for dark mode softness */
+  --success-bg-20: rgb(var(--color-success-bg) / 0.20);
+  --warning-bg-20: rgb(var(--color-warning-bg) / 0.20);
+  --danger-bg-20:  rgb(var(--color-danger-bg) / 0.20);
 }

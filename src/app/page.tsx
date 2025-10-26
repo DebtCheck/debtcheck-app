@@ -150,7 +150,7 @@ export default function Home() {
         <main className="min-h-screen space-y-8 mt-5">
           {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
           <section className="max-w-3xl mx-auto">
-            <Card className="shadow-2xl backdrop-blur border [border-color:var(--border-10)] [background:var(--card-80)]">
+            <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
               <CardContent className="p-6 space-y-5">
                 <h1 className="text-2xl md:text-3xl font-semibold text-center flex items-center justify-center gap-2">
                   <Image

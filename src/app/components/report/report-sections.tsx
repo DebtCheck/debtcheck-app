@@ -47,13 +47,21 @@ export function ActivitySection({
       }
     >
       <div className="grid gap-4 md:grid-cols-2">
-        <Section title="Updated at" subtitle={updated.message}>
+        <Section
+          title="Updated at"
+          subtitle={updated.message}
+          className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]"
+        >
           <div className="flex items-center gap-2 text-sm">
             <Clock3 className="w-4 h-4" />
             <span>{updated.daysSinceUpdate} day(s) since last update</span>
           </div>
         </Section>
-        <Section title="Pushed at" subtitle={pushed.message}>
+        <Section
+          title="Pushed at"
+          subtitle={pushed.message}
+          className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]"
+        >
           <div className="flex items-center gap-2 text-sm">
             <GitCommit className="w-4 h-4" />
             <span>{pushed.daysSinceUpdate} day(s) since last push</span>
@@ -90,13 +98,15 @@ export function IssuesPrsSection({
           label="Open issues ratio"
           value={`${Math.round(issues.issuesRatio * 100)}%`}
           hint={issues.message}
+          className="bg-[rgb(var(--surface-2))]"
         />
         <StatBadge
           label="Stale PRs (≥30d)"
           value={prs.stalePRsCount}
           hint={prs.message}
+          className="bg-[rgb(var(--surface-2))]"
         />
-        <Card>
+        <Card className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]">
           <CardContent>
             <Toolbar
               left={
