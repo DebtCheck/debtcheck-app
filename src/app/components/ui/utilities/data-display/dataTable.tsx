@@ -81,12 +81,12 @@ export function DataTable<T>({
         className
       )}
     >
-      <div className="overflow-auto">
+      <div>
         <table className="min-w-full text-sm table-fixed border-separate border-spacing-0 p-1">
           <thead
             className={cn(
-              stickyHeader ? "sticky" : "",
-              "bg-[rgb(var(--surface-1))]/90 backdrop-blur",
+              stickyHeader ? "sticky top-[var(--appbar-h)] z-30" : "",
+              "bg-[rgb(var(--surface-1))]",
               "[box-shadow:inset_0_-1px_0_var(--line-06)]",
               "text-xs uppercase tracking-wide text-muted-foreground"
             )}
@@ -114,7 +114,8 @@ export function DataTable<T>({
                         : c.align === "center"
                         ? "text-center"
                         : "text-left",
-                      "font-medium"
+                      "font-medium",
+                      "border-b border-[var(--line-neutral-30)]"
                     )}
                   >
                     {c.sortable && onSortChange ? (
