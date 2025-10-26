@@ -81,11 +81,11 @@ export function DataTable<T>({
         className
       )}
     >
-      <div className="overflow-x-auto">
+      <div className="overflow-auto">
         <table className="min-w-full text-sm table-fixed border-separate border-spacing-0 p-1">
           <thead
             className={cn(
-              "sticky",
+              stickyHeader ? "sticky" : "",
               "bg-[rgb(var(--surface-1))]/90 backdrop-blur",
               "[box-shadow:inset_0_-1px_0_var(--line-06)]",
               "text-xs uppercase tracking-wide text-muted-foreground"
