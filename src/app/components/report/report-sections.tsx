@@ -50,7 +50,7 @@ export function ActivitySection({
         <Section
           title="Updated at"
           subtitle={updated.message}
-          className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]"
+          className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
             <Clock3 className="w-4 h-4" />
@@ -60,7 +60,7 @@ export function ActivitySection({
         <Section
           title="Pushed at"
           subtitle={pushed.message}
-          className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]"
+          className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
             <GitCommit className="w-4 h-4" />
@@ -108,7 +108,7 @@ export function IssuesPrsSection({
           className="bg-[rgb(var(--surface-2))]"
         />
         {isClean ? null : (
-          <Card className="bg-[rgb(var(--surface-2))] border-[color:var(--line-neutral-15)]">
+          <Card className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)">
             <CardContent>
               <Toolbar
                 left={

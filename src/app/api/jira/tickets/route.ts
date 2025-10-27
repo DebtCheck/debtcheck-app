@@ -1,12 +1,30 @@
 import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
-import { DeadCodeItem, DeprecatedLibs } from "@/app/types/report";
+import {
+  asDepStatus,
+  DeadCodeItem,
+  DeprecatedLibs,
+  DepStatus,
+} from "@/app/types/report";
 import { authOptions } from "@/app/lib/auth/auth";
 import {
   ensureFreshJiraAccessToken,
   fetchAccessibleResources,
-} from "@/app/lib/jira";
+} from "@/app/lib/jira/jira";
 import { jsonError, jsonOk } from "@/app/lib/http/response";
+import { CreateIssueResult, PlannedIssue } from "@/app/types/jira";
+import {
+  baseLabels,
+  createJiraIssue,
+  describeDeadCode,
+  describeDeps,
+  describeIssues,
+  describePRs,
+  describeSecrets,
+  describeStaleness,
+  fetchCreateMeta,
+  priorityFromDepStatus,
+} from "@/app/lib/jira/tickets";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -29,107 +47,142 @@ export async function POST(req: NextRequest) {
     return jsonError("Invalid project ID", 400);
   }
 
-  const user = await fetchAccessibleResources(accessToken);
+  const site = await fetchAccessibleResources(accessToken);
 
-  if (!user) {
+  if (!site) {
     return jsonError("Unauthorized", 401);
   }
 
-  const issueActions = [
-    report?.updatedAtReport?.stale && {
-      label: "Repo is stale",
-      summary: "Repository appears stale",
-      description: report.updatedAtReport.message,
-    },
-    report?.issuesReport?.isManyIssuesUnresolved && {
-      label: "Unresolved issues",
-      summary: "Too many unresolved issues",
-      description: report.issuesReport.message,
-    },
-    report?.prsReport?.stalePRsCount > 0 && {
-      label: "Stale PRs",
-      summary: "Stale pull requests detected",
-      description: report.prsReport.message,
-    },
-    report?.rustAnalysisReport?.report_parse?.dead_code?.length > 0 && {
-      label: "Dead Code",
-      summary: "Dead code found in repo",
-      description: report.rustAnalysisReport.report_parse.dead_code
-        .map(
-          (item: DeadCodeItem) =>
-            `• ${item.kind} "${item.name}" in ${item.file}:${item.line}`
-        )
-        .join("\n"),
-    },
-    report?.rustAnalysisReport?.deprecated_libs?.some(
-      (lib: DeprecatedLibs) =>
-        lib.deprecated || lib.status === "error" || lib.status === "warning"
-    ) && {
-      label: "Deprecated Libraries",
-      summary: "Deprecated or unstable libraries in use",
-      description: report.rustAnalysisReport.deprecated_libs
-        .filter(
-          (lib: DeprecatedLibs) =>
-            lib.deprecated || lib.status === "error" || lib.status === "warning"
-        )
-        .map(
-          (lib: DeprecatedLibs) =>
-            `• ${lib.name}: ${lib.current} → ${lib.latest} [${lib.status}]`
-        )
-        .join("\n"),
-    },
-  ].filter(Boolean);
+  const planned: PlannedIssue[] = [];
 
-  if (!issueActions.length) {
-    console.log("✅ Aucun problème détecté, aucun ticket Jira à créer.");
-    return jsonOk("No issues detected, no Jira tickets created.");
+  // 1) Staleness (updatedAt/pushedAt)
+  if (report.updatedAtReport?.stale || report.pushedAtReport?.stale) {
+    planned.push({
+      summary: "Repository staleness",
+      description: describeStaleness(report),
+      labels: baseLabels("staleness"),
+      priority: "Medium",
+    });
   }
 
-  for (const action of issueActions) {
-    try {
-      const requestJira = await fetch(
-        `https://api.atlassian.com/ex/jira/${user.id}/rest/api/3/issue`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            fields: {
-              project: { id: projectId },
-              summary: action.summary,
-              description: {
-                type: "doc",
-                version: 1,
-                content: [
-                  {
-                    type: "paragraph",
-                    content: [
-                      {
-                        type: "text",
-                        text: action.description,
-                      },
-                    ],
-                  },
-                ],
-              },
-              issuetype: { name: "Task" },
-            },
-          }),
-        }
-      );
-
-      const data = await requestJira.json();
-      if (!requestJira.ok) {
-        console.error(`Failed to create ticket:`, data);
-      } else {
-        console.log(`Created ticket: ${data.key}`);
-      }
-    } catch (error) {
-      console.error("Error creating ticket:", error);
-    }
+  // 2) Issues
+  if (report.issuesReport?.isManyIssuesUnresolved) {
+    planned.push({
+      summary: "High ratio of unresolved issues",
+      description: describeIssues(report),
+      labels: baseLabels("issues"),
+      priority: "Medium",
+    });
   }
 
-  return jsonOk("Jira tickets created successfully.");
+  // 3) PRs
+  if (report.prsReport?.stalePRsCount > 0) {
+    planned.push({
+      summary: `Stale PRs detected (${report.prsReport.stalePRsCount})`,
+      description: describePRs(report),
+      labels: baseLabels("pull-requests"),
+      priority: "Medium",
+    });
+  }
+
+  // 4) Dead code (top N)
+  const dead = report.rustAnalysisReport?.report_parse?.dead_code ?? [];
+  if (dead.length > 0) {
+    planned.push({
+      summary: `Dead code to remove (${dead.length} items)`,
+      description: describeDeadCode(dead),
+      labels: baseLabels("dead-code"),
+      priority: "Low",
+    });
+  }
+
+  // 5) Dependencies (non-ok)
+  const libs = report.rustAnalysisReport?.deprecated_libs ?? [];
+  const problematic = libs.filter(
+    (l: { deprecated: any; status: string }) =>
+      l.deprecated || asDepStatus(l.status) !== "ok"
+  );
+  if (problematic.length > 0) {
+    // choose priority from worst status present
+    const worst: DepStatus = problematic.some(
+      (l: { status: string }) => asDepStatus(l.status) === "error"
+    )
+      ? "error"
+      : problematic.some(
+          (l: { status: string }) => asDepStatus(l.status) === "warning"
+        )
+      ? "warning"
+      : "ok";
+    planned.push({
+      summary: `Update dependencies (${problematic.length} to address)`,
+      description: describeDeps(libs),
+      labels: baseLabels("dependencies"),
+      priority: priorityFromDepStatus(worst),
+    });
+  }
+
+  // 6) Secrets / .env presence
+  const secrets = report.rustAnalysisReport?.report_parse?.env_vars ?? [];
+  if (report.rustAnalysisReport?.is_env_present || secrets.length > 0) {
+    const preview = secrets[0]?.value_preview ?? "";
+    planned.push({
+      summary: "Potential secrets in repository",
+      description: describeSecrets(
+        preview,
+        secrets.length,
+        Boolean(report.rustAnalysisReport?.is_env_present)
+      ),
+      labels: baseLabels("secrets"),
+      priority: "High",
+    });
+  }
+
+  if (planned.length === 0) {
+    return jsonOk({
+      created: 0,
+      issues: [],
+      message: "No problems detected, nothing to create.",
+    });
+  }
+
+  const meta = await fetchCreateMeta(
+    site.id,
+    accessToken,
+    projectId,
+    "Task"
+  ).catch(() => null);
+  const results: CreateIssueResult[] = [];
+  for (const pi of planned) {
+    const result = await createJiraIssue(
+      site.id,
+      accessToken,
+      projectId,
+      meta?.issueTypeId ?? "10001",
+      pi.summary,
+      pi.description,
+      pi.labels,
+      pi.priority,
+      meta?.fields
+    );
+    results.push(result);
+  }
+
+  const created = results.filter((r) => r.ok) as Extract<
+    CreateIssueResult,
+    { ok: true }
+  >[];
+  const failed = results.filter((r) => !r.ok) as Extract<
+    CreateIssueResult,
+    { ok: false }
+  >[];
+
+  return jsonOk({
+    created: created.length,
+    issues: created.map((c) => ({ id: c.id, key: c.key, summary: c.summary })),
+    failures: failed.map((f) => ({
+      summary: f.summary,
+      error: f.error,
+      status: f.status,
+    })),
+  });
 }

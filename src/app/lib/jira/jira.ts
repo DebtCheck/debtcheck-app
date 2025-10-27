@@ -1,5 +1,5 @@
 import type { JiraAccessibleResource, JiraAccount, Projects as JiraProjectsType } from "@/app/types/jira";
-import { prisma } from "./prisma";
+import { prisma } from "../prisma";
 
 const JIRA_PROVIDERS = ["atlassian", "jira"] as const;
 type JiraProvider = (typeof JIRA_PROVIDERS)[number];
@@ -106,7 +106,7 @@ export async function fetchAccessibleResources(accessToken: string)  {
 
   if (!site) throw new Error("No accessible Jira site found");
 
-  return { id: site.id, name: site.name };
+  return { id: site.id, name: site.name, url: site.url };
 }
 
 export async function fetchProjects(cloudId: string, accessToken: string): Promise<JiraProjectsType> {

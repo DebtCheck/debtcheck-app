@@ -22,7 +22,7 @@ import {
   ensureFreshJiraAccessToken,
   fetchAccessibleResources,
   fetchProjects,
-} from "@/app/lib/jira";
+} from "@/app/lib/jira/jira";
 
 describe("lib/jira", () => {
   beforeEach(() => {
@@ -224,7 +224,7 @@ describe("lib/jira", () => {
       new Response(JSON.stringify(resources), { status: 200 })
     );
     const out = await fetchAccessibleResources("token");
-    expect(out).toEqual({ id: "cloud-1", name: "My Jira" });
+    expect(out).toEqual({ id: "cloud-1", name: "My Jira", url: "u2" });
   });
 
   it("fetchAccessibleResources throws with status and jiraError on non-OK", async () => {

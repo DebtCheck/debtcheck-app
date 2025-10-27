@@ -58,7 +58,7 @@ export function StatBadge({
   return (
     <div
       className={cn(
-        "rounded-xl p-4 flex flex-col items-center justify-center text-center transition-colors border-[color:var(--line-neutral-15)]",
+        "rounded-xl p-4 flex flex-col items-center justify-center text-center transition-colors border-(--line-neutral-15)",
         "shadow-sm hover:shadow-md",
         tone.bg,
         tone.border,

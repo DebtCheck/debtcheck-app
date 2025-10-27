@@ -1,5 +1,6 @@
 "use client";
 
+import JiraControl from "@/app/components/ui/jira/jiraControl";
 import { Button, Toolbar } from "../ui/utilities";
 import {
   ActivitySection,
@@ -19,21 +20,24 @@ export function ReportPage({ report }: { report: Report }) {
           </h1>
         }
         right={
-          <Button
-            onClick={async () => {
-              await navigator.clipboard.writeText(
-                JSON.stringify(report, null, 2)
-              );
-              const button = document.activeElement as HTMLButtonElement;
-              const originalText = button.textContent;
-              button.textContent = "Copied!";
-              setTimeout(() => {
-                button.textContent = originalText;
-              }, 2000);
-            }}
-          >
-            Copy JSON
-          </Button>
+          <div className="flex items-center space-x-2">
+            <JiraControl report={report} />
+            <Button
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  JSON.stringify(report, null, 2)
+                );
+                const button = document.activeElement as HTMLButtonElement;
+                const originalText = button.textContent;
+                button.textContent = "Copied!";
+                setTimeout(() => {
+                  button.textContent = originalText;
+                }, 2000);
+              }}
+            >
+              Copy JSON
+            </Button>
+          </div>
         }
       />
 
