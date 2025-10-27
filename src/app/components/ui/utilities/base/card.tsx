@@ -7,7 +7,7 @@ function Card(props: React.HTMLAttributes<HTMLDivElement>) {
     <div
       className={cn(
         "rounded-2xl border shadow-sm transition-colors",
-        "bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-[color:var(--border-20)]",
+        "bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-(--border-20)",
         className
       )}
       {...rest}
@@ -27,7 +27,7 @@ function CardHeader(props: React.HTMLAttributes<HTMLDivElement>) {
     <div
       className={cn(
         "px-6 py-4 flex items-center justify-between border-b",
-        "border-[color:var(--line-neutral-20)]",
+        "border-(--line-neutral-20)",
         className
       )}
       {...rest}

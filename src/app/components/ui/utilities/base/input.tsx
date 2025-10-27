@@ -10,7 +10,7 @@ const Input = React.forwardRef<
     type={type}
     className={cn(
       "flex h-12 w-full rounded-xl px-4 text-sm",
-      "bg-card text-foreground placeholder:text-[color:var(--muted-60)]",
+      "bg-card text-foreground placeholder:text-(--muted-60)",
       "border border-border/10",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
       "ring-offset-background focus-visible:ring-offset-2",

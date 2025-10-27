@@ -6,7 +6,7 @@ export function Section({ title, subtitle, actions, children, padded = true, cla
 }) {
   return (
     <Card className={cn(
-      "border-[color:var(--line-neutral-20)]",
+      "border-(--line-neutral-20)",
       className
       )}
     >

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useJiraProjects } from "./useJiraProjects";
 import { Projects } from "@/app/types/jira";
 import { Report } from "@/app/types/report";
+import { Button } from "../utilities";
 
 type Props = {
   open: boolean;
@@ -22,7 +23,9 @@ type TicketCreationState =
 
 export default function BacklogModal({ open, onClose, report }: Props) {
   const { state, fetchProjects } = useJiraProjects();
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null
+  );
   const [submit, setSubmit] = useState<TicketCreationState>({ kind: "idle" });
 
   // fetch on open
@@ -46,7 +49,8 @@ export default function BacklogModal({ open, onClose, report }: Props) {
 
       if (!res.ok) {
         const payload: TicketCreationErr = {
-          error: (json as { error?: string })?.error ?? "Ticket creation failed",
+          error:
+            (json as { error?: string })?.error ?? "Ticket creation failed",
           details: (json as { details?: string })?.details,
         };
         setSubmit({ kind: "error", payload });
@@ -58,7 +62,10 @@ export default function BacklogModal({ open, onClose, report }: Props) {
     } catch (e) {
       setSubmit({
         kind: "error",
-        payload: { error: "Unexpected error", details: e instanceof Error ? e.message : undefined },
+        payload: {
+          error: "Unexpected error",
+          details: e instanceof Error ? e.message : undefined,
+        },
       });
     }
   };
@@ -69,13 +76,16 @@ export default function BacklogModal({ open, onClose, report }: Props) {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-400 flex items-center justify-center"
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/50 dark:bg-black/60"
+        onClick={onClose}
+      />
 
       {/* Panel */}
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white dark:bg-neutral-900 p-6 shadow-xl">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-(--border-20) p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Create backlog in Jira</h2>
           <button
@@ -88,7 +98,9 @@ export default function BacklogModal({ open, onClose, report }: Props) {
         </div>
 
         {/* Body */}
-        {state.kind === "loading" && <p className="text-sm text-gray-500">Loading projects…</p>}
+        {state.kind === "loading" && (
+          <p className="text-sm text-gray-500">Loading projects…</p>
+        )}
         {state.kind === "error" && (
           <p className="text-sm text-red-600">Error: {state.message}</p>
         )}
@@ -125,26 +137,26 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                     </div>
                   </div>
                   <div className="mt-2 text-xs text-gray-600">
-                    {p.projectTypeKey} • {p.style} • {p.isPrivate ? "Private" : "Public"}
+                    {p.projectTypeKey} • {p.style} •{" "}
+                    {p.isPrivate ? "Private" : "Public"}
                   </div>
                 </button>
               ))}
             </div>
 
             <div className="mt-6 flex items-center justify-end gap-2">
-              <button
-                onClick={onClose}
-                className="rounded-md px-4 py-2 text-sm border hover:bg-neutral-100 dark:hover:bg-neutral-800"
-              >
+              <Button onClick={onClose}>
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 disabled={!selectedProjectId || submit.kind === "loading"}
-                onClick={() => selectedProjectId && createTickets(selectedProjectId)}
-                className="rounded-md px-4 py-2 text-sm bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
+                onClick={() =>
+                  selectedProjectId && createTickets(selectedProjectId)
+                }
+                className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
               >
                 {submit.kind === "loading" ? "Creating…" : "Create tickets"}
-              </button>
+              </Button>
             </div>
 
             {submit.kind === "ok" && (

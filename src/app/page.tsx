@@ -140,14 +140,14 @@ export default function Home() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[1000] bg-background/80 backdrop-blur border-b [border-color:var(--line-06)] h-[var(--appbar-h)]">
+      <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-(--appbar-h)">
         <div className="max-w-3xl mx-auto flex justify-between items-center h-full px-4">
           <GitHubAuth />
           <ThemeToggle />
         </div>
       </header>
       {!result && (
-        <main className="min-h-screen space-y-8 mt-5 pt-[var(--appbar-h)]">
+        <main className="min-h-screen space-y-8 mt-5 pt-(--appbar-h)">
           {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
           <section className="max-w-3xl mx-auto">
             <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
@@ -226,7 +226,7 @@ export default function Home() {
         </main>
       )}
       {result && (
-        <main className="pt-[var(--appbar-h)]">
+        <main className="pt-(--appbar-h)">
           <Button
             className="mt-4 ml-4"
             onClick={() => {

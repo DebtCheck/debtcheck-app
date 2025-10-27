@@ -77,7 +77,7 @@ export function DataTable<T>({
     <div
       className={cn(
         "w-full rounded-xl border",
-        "bg-[rgb(var(--surface-1))] border-[var(--line-08)] shadow-[var(--shadow-1)]",
+        "bg-[rgb(var(--surface-1))] border-(--line-08) shadow-(--shadow-1)",
         className
       )}
     >
@@ -85,7 +85,7 @@ export function DataTable<T>({
         <table className="min-w-full text-sm table-fixed border-separate border-spacing-0 p-1">
           <thead
             className={cn(
-              stickyHeader ? "sticky top-[var(--appbar-h)] z-30" : "",
+              stickyHeader ? "sticky top-(--appbar-h) z-30" : "",
               "bg-[rgb(var(--surface-1))]",
               "[box-shadow:inset_0_-1px_0_var(--line-06)]",
               "text-xs uppercase tracking-wide text-muted-foreground"
@@ -115,7 +115,7 @@ export function DataTable<T>({
                         ? "text-center"
                         : "text-left",
                       "font-medium",
-                      "border-b border-[var(--line-neutral-30)]"
+                      "border-b border-(--line-neutral-30)"
                     )}
                   >
                     {c.sortable && onSortChange ? (
@@ -159,7 +159,7 @@ export function DataTable<T>({
           >
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={`s-${i}`} className="border-t border-[var(--line-06)]">
+                <tr key={`s-${i}`} className="border-t border-(--line-06)">
                   <td colSpan={columns.length} className={cellPad}>
                     <Skeleton variant="tableRow" />
                   </td>
@@ -184,7 +184,7 @@ export function DataTable<T>({
                   <React.Fragment key={key}>
                     <tr
                       className={cn(
-                        "border-t border-[var(--line-06)] transition-colors",
+                        "border-t border-(--line-06) transition-colors",
                         "hover:bg-[rgb(var(--surface-2))]"
                       )}
                     >
@@ -225,7 +225,7 @@ export function DataTable<T>({
                     </tr>
 
                     {details && (
-                      <tr className="border-t border-[var(--line-06)]">
+                      <tr className="border-t border-(--line-06)">
                         <td
                           colSpan={columns.length}
                           className="px-4 py-3 bg-[rgb(var(--surface-2))]"
