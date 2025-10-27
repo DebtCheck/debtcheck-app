@@ -22,7 +22,7 @@ import {
   ensureFreshJiraAccessToken,
   fetchAccessibleResources,
   fetchProjects,
-} from "@/app/lib/jira";
+} from "@/app/lib/jira/jira";
 
 describe("lib/jira", () => {
   beforeEach(() => {

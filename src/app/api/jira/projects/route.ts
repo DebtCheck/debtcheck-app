@@ -1,6 +1,6 @@
 import type { JiraAccessibleResource } from "@/app/types/jira";
 import { NextResponse } from "next/server";
-import { ensureFreshJiraAccessToken, fetchProjects } from "@/app/lib/jira";
+import { ensureFreshJiraAccessToken, fetchProjects } from "@/app/lib/jira/jira";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth/auth";
 import { jsonError, jsonOk } from "@/app/lib/http/response";
