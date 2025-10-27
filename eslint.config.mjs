@@ -1,15 +1,8 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+// eslint.config.mjs
+import next from "eslint-config-next";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({ baseDirectory: __dirname });
-
-// eslint-disable-next-line import/no-anonymous-default-export
-export default [
-  // 1) FLAT CONFIG IGNORES (this replaces .eslintignore)
+const config = [
+  // 1) Flat ignores (replaces .eslintignore)
   {
     ignores: [
       ".next/**",
@@ -19,19 +12,17 @@ export default [
       ".out/**",
       ".vercel/**",
       ".turbo/**",
-      // generated code
       "src/generated/**",
       "src/generated/prisma/**",
       "prisma/migrations/**",
-      // any vendored/minified stuff
       "public/**/*.min.js",
     ],
   },
 
-  // 2) Next’s recommended config + TS via compat
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // 2) Next.js flat config (includes TS + core-web-vitals rules)
+  ...next,
 
-  // 3) (Optional) if you *can’t* ignore a generated folder, neuter noisy rules there
+  // 3) Optional: relax rules for generated folders
   {
     files: ["src/generated/**/*", "src/generated/prisma/**/*"],
     rules: {
@@ -42,3 +33,5 @@ export default [
     },
   },
 ];
+
+export default config;

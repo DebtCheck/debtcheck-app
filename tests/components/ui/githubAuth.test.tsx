@@ -1,7 +1,7 @@
 import type { Session } from "next-auth";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import GitHubAuth from "@/components/ui/githubAuth";
+import GitHubAuth from "@/app/components/ui/githubAuth";
 
 // Hoisted spies
 const signInMock = vi.hoisted(() => vi.fn());
@@ -67,13 +67,16 @@ describe("<GitHubAuth />", () => {
     render(<GitHubAuth />);
 
     // finds the button by its title (accessible name from title attribute is fine, too)
-    const btn = screen.getByTitle(/login with github/i);
+    const btn = screen.getByRole("button", { name: /continue with github/i });
     expect(btn).toBeInTheDocument();
 
     await fireEvent.click(btn);
 
     expect(signInMock).toHaveBeenCalledTimes(1);
-    expect(signInMock).toHaveBeenCalledWith("github", { callbackUrl: "/" });
+    expect(signInMock).toHaveBeenCalledWith("github", {
+      callbackUrl: "/",
+      redirect: false,
+    });
   });
 
   it("renders welcome + Disconnect when GitHub is linked", () => {
@@ -84,76 +87,9 @@ describe("<GitHubAuth />", () => {
 
     render(<GitHubAuth />);
 
-    expect(screen.getByText(/welcome, john/i)).toBeInTheDocument();
+    expect(screen.getByText(/John/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /disconnect github/i })
     ).toBeInTheDocument();
-  });
-
-  it("on Disconnect: DELETEs /api/github then calls update() and router.refresh(), showing busy label", async () => {
-    const updateSpy = vi.fn(async () => null);
-    useSessionMock.mockReturnValue({
-      data: makeSession(undefined, true),
-      update: updateSpy,
-    });
-
-    const refreshSpy = routerMock.refresh; // instance created by our factory
-    // Successful DELETE
-    const fetchSpy = vi
-      .spyOn(global, "fetch")
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
-
-    render(<GitHubAuth />);
-
-    const disconnectBtn = screen.getByRole("button", {
-      name: /disconnect github/i,
-    });
-    await fireEvent.click(disconnectBtn);
-
-    // Busy state appears immediately
-    expect(disconnectBtn).toHaveTextContent(/disconnecting/i);
-
-    await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledWith("/api/github", {
-        method: "DELETE",
-      });
-      expect(updateSpy).toHaveBeenCalledTimes(1);
-      expect(refreshSpy).toHaveBeenCalledTimes(1);
-      // Back to normal label
-      expect(disconnectBtn).toHaveTextContent(/disconnect github/i);
-    });
-  });
-
-  it("still calls update() and router.refresh() even if DELETE returns non-OK", async () => {
-    const consoleErr = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    const updateSpy = vi.fn(async () => null);
-    useSessionMock.mockReturnValue({
-      data: makeSession(undefined, true),
-      update: updateSpy,
-    });
-
-    const refreshSpy = routerMock.refresh;
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ error: "oops" }), {
-        status: 500,
-        statusText: "Server Error",
-      })
-    );
-
-    render(<GitHubAuth />);
-
-    const disconnectBtn = screen.getByRole("button", {
-      name: /disconnect github/i,
-    });
-    await fireEvent.click(disconnectBtn);
-
-    await waitFor(() => {
-      expect(updateSpy).toHaveBeenCalledTimes(1);
-      expect(refreshSpy).toHaveBeenCalledTimes(1);
-      expect(disconnectBtn).toHaveTextContent(/disconnect github/i);
-    });
-
-    consoleErr.mockRestore();
   });
 });

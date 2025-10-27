@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { jsonError, jsonOk, ApiError, toErrorResponse } from "@/lib/http/response";
+import { jsonError, jsonOk, ApiError, toErrorResponse } from "@/app/lib/http/response";
 import { NextResponse } from "next/server";
 
 describe("lib/http/response", () => {

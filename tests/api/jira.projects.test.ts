@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { JiraAccessibleResource, Projects } from "@/types/jira";
+import type { JiraAccessibleResource, Projects } from "@/app/types/jira";
 
 // ── Hoisted spies & fixtures ───────────────────────────────────────────────────
 const getServerSessionMock = vi.hoisted(() => vi.fn());
@@ -39,11 +39,11 @@ vi.mock("next-auth", () => ({
   getServerSession: getServerSessionMock,
 }));
 
-vi.mock("@/lib/auth/auth", () => ({
+vi.mock("@/app/lib/auth/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/jira", () => ({
+vi.mock("@/app/lib/jira", () => ({
   ensureFreshJiraAccessToken: ensureFreshJiraAccessTokenMock,
   fetchProjects: fetchProjectsMock,
 }));

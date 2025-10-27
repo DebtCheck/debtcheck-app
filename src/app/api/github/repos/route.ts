@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { kv } from "@vercel/kv";
-import { ensureFreshGithubAccessToken } from "@/lib/github/github";
+import { ensureFreshGithubAccessToken } from "@/app/lib/github/github";
 import { getServerSession } from "next-auth";
-import { jsonError } from "@/lib/http/response";
-import { authOptions } from "@/lib/auth/auth";
+import { jsonError } from "@/app/lib/http/response";
+import { authOptions } from "@/app/lib/auth/auth";
 
 type CacheValue<T = unknown> = 
   { 

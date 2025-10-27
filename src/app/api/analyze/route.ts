@@ -1,14 +1,14 @@
-import { analyzeFileTree, analyzeMetadata } from "@/lib/analyser";
-import { authOptions } from "@/lib/auth/auth";
+import { analyzeFileTree, analyzeMetadata } from "@/app/lib/analyser";
+import { authOptions } from "@/app/lib/auth/auth";
 import {
   ensureFreshGithubAccessToken,
   fetchRepoFileTree,
   fetchRepoMetadata,
   filterFiles,
-} from "@/lib/github/github";
-import { jsonError, toErrorResponse } from "@/lib/http/response";
-import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/types/repo";
-import { Report } from "@/types/report";
+} from "@/app/lib/github/github";
+import { jsonError, toErrorResponse } from "@/app/lib/http/response";
+import { ParsedGitHubUrl, RepoFileTree, RepoMetadata } from "@/app/types/repo";
+import { Report } from "@/app/types/report";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -21,7 +21,7 @@ type GitHubApiError = Error & {
 };
 
 export async function POST(req: NextRequest) {
-  const { repoUrl } = await req.json();
+  const { repoUrl, demo } = await req.json();
 
   if (!repoUrl) {
     return jsonError("Missing repo URL", 400);
@@ -36,24 +36,35 @@ export async function POST(req: NextRequest) {
   const { owner: repoOwner, repo: repoName } = parsedUrl;
 
   if (!repoOwner) {
-    return jsonError("Invalid GitHub URL. Expected https://github.com/<owner>/<repo>", 400);
+    return jsonError(
+      "Invalid GitHub URL. Expected https://github.com/<owner>/<repo>",
+      400
+    );
   }
 
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
-  if (!userId)
-    return jsonError("Unauthorized", 401);
+  const isDemo = Boolean(demo);
+  let accessToken = ""; // empty by default for demo
 
-  let accessToken: string;
-  try {
-    ({ accessToken } = await ensureFreshGithubAccessToken(userId));
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "GitHub not linked";
-    return jsonError(msg, 401);
+  if (!isDemo) {
+    // only require session/token when NOT demo
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+    if (!userId) return jsonError("Unauthorized", 401);
+
+    try {
+      ({ accessToken } = await ensureFreshGithubAccessToken(userId));
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "GitHub not linked";
+      return jsonError(msg, 401);
+    }
   }
 
   try {
-    const repoMetadataRaw = await fetchRepoMetadata(repoOwner, repoName, accessToken);
+    const repoMetadataRaw = await fetchRepoMetadata(
+      repoOwner,
+      repoName,
+      accessToken
+    );
 
     const metadata: RepoMetadata = {
       owner: repoMetadataRaw.owner.login,
@@ -74,34 +85,35 @@ export async function POST(req: NextRequest) {
       trees_url: repoMetadataRaw.trees_url,
     };
 
-    if (metadata.size > 2000000) {
-      return jsonError("Repository too large to analyze safely.", 413);
-    }
-
     const rawTree = await fetchRepoFileTree(metadata.trees_url, accessToken);
     const filteredTree = await filterFiles(rawTree);
     const filteredFiles: RepoFileTree = { tree: filteredTree };
 
-    const [metaReport, fileTreeReportRaw] = await Promise.all([
+    const [metaReport, rustAnalysisReportRaw] = await Promise.all([
       analyzeMetadata(req, metadata, accessToken),
-      analyzeFileTree(filteredFiles, accessToken),
+      analyzeFileTree(filteredFiles, accessToken, isDemo, {
+        owner: repoOwner,
+        name: repoName,
+      }),
     ]);
-    const fileTreeReport = fileTreeReportRaw as import("@/types/report").AnalyzeFileTree;
+    const rustAnalysisReport =
+      rustAnalysisReportRaw as import("@/app/types/report").RustAnalysisReport;
 
     const report: Report = {
       updatedAtReport: metaReport.updatedAtReport,
       pushedAtReport: metaReport.pushedAtReport,
       issuesReport: metaReport.issuesReport,
       prsReport: metaReport.prsReport,
-      fileTreeReport,
+      rustAnalysisReport,
     };
 
     return NextResponse.json({ ok: true, data: report }, { status: 200 });
-  } catch (err: unknown) {
+  } catch (err: GitHubApiError | unknown) {
     if (isGitHubApiError(err)) {
       // If it tries to access a repo from an organization that didn't allow the API
       const githubMessage = err.githubError?.message;
-      let type: "GITHUB_ERROR" | "OAUTH_APP_BLOCKED" | "SSO_NOT_AUTHORIZED" = "GITHUB_ERROR";
+      let type: "GITHUB_ERROR" | "OAUTH_APP_BLOCKED" | "SSO_NOT_AUTHORIZED" =
+        "GITHUB_ERROR";
       let docsUrl: string | undefined;
 
       if (githubMessage?.includes("OAuth App access restrictions")) {
@@ -114,8 +126,11 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: githubMessage ?? "GitHub API error", details: { type, docsUrl, status: err.status ?? 403 } },
-        { status: err.status ?? 403 },
+        {
+          error: githubMessage ?? "GitHub API error",
+          details: { type, docsUrl, status: err.status ?? 403 },
+        },
+        { status: err.status ?? 403 }
       );
     }
 
@@ -156,4 +171,29 @@ function isGitHubApiError(err: unknown): err is GitHubApiError {
     "githubError" in err &&
     typeof (err as { githubError?: unknown }).githubError === "object"
   );
+}
+
+function retryAfterSecondsFromHeaders(h: Headers): number {
+  // 1) Prefer Retry-After if present
+  const ra = h.get("Retry-After");
+  if (ra) {
+    const n = Number(ra);
+    if (Number.isFinite(n)) return Math.max(0, Math.ceil(n)); // delta-seconds
+    const d = Date.parse(ra); // HTTP-date
+    if (!Number.isNaN(d))
+      return Math.max(0, Math.ceil((d - Date.now()) / 1000));
+  }
+
+  // 2) Fallback to X-RateLimit-Reset (UNIX seconds)
+  const reset = h.get("X-RateLimit-Reset");
+  if (reset) {
+    const until = parseInt(reset, 10);
+    if (Number.isFinite(until)) {
+      const secs = until - Math.floor(Date.now() / 1000);
+      return Math.max(0, Math.ceil(secs));
+    }
+  }
+
+  // 3) Sensible default
+  return 60;
 }

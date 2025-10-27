@@ -3,7 +3,7 @@ import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import type { AdapterUser } from "next-auth/adapters";
 import type { Account } from "@prisma/client";
-import { authOptions } from "@/lib/auth/auth";
+import { authOptions } from "@/app/lib/auth/auth";
 
 // Mocked Prisma client
 const prismaMock = vi.hoisted(() => ({
@@ -13,7 +13,7 @@ const prismaMock = vi.hoisted(() => ({
 }));
 
 // Must mock before importing SUT
-vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }));
+vi.mock("@/app/lib/prisma", () => ({ prisma: prismaMock }));
 
 describe("authOptions.callbacks.session", () => {
   beforeEach(() => {

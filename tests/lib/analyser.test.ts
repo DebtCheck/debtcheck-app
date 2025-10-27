@@ -1,11 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { analyzeFileTree, analyzeMetadata, analyzeIssues } from "@/lib/analyser";
-import type { RepoFileTree, RepoMetadata, RepoPRs } from "@/types/repo";
+import {
+  analyzeFileTree,
+  analyzeMetadata,
+  analyzeIssues,
+} from "@/app/lib/analyser";
+import type { RepoFileTree, RepoMetadata, RepoPRs } from "@/app/types/repo";
 import { NextRequest } from "next/server";
 
 // --- Hoisted/mocked deps ---
 const fetchRepoPRMock = vi.hoisted(() => vi.fn<() => Promise<RepoPRs[]>>());
-vi.mock("@/lib/github/github", () => ({
+vi.mock("@/app/lib/github/github", () => ({
   fetchRepoPR: fetchRepoPRMock,
 }));
 
@@ -24,23 +28,57 @@ describe("lib/analyser", () => {
 
     const fetchSpy = vi
       .spyOn(global, "fetch")
-      .mockResolvedValueOnce(new Response(JSON.stringify(payload), { status: 200, statusText: "OK" }));
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(payload), { status: 200, statusText: "OK" })
+      );
 
-    const files: RepoFileTree = { tree: [] } as unknown as RepoFileTree; // minimal shape for payload
-    const out = await analyzeFileTree(files, "gh_token");
+    // Minimal valid RepoFileTree for the mapping step
+    const files = {
+      tree: [
+        { path: "src/main.ts", sha: "abc123", type: "blob" },
+        { path: "README.md", sha: "def456", type: "blob" },
+      ],
+    } as unknown as RepoFileTree;
 
-    expect(fetchSpy).toHaveBeenCalledWith(
-      "http://rust/analyze",
-        expect.objectContaining({
-          method: "POST",
-          headers: expect.objectContaining({
-            "Content-Type": "application/json",
-            "X-Github-Access-Token": "gh_token",
-            "Accept": "application/json",
-        }),
-        body: JSON.stringify({ tree: [] }),
+    const out = await analyzeFileTree(files, "gh_token", false, {
+      owner: "o",
+      name: "r",
+    });
+
+    // Basic call checks
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    const [calledUrl, calledInit] = fetchSpy.mock.calls[0] as [
+      string,
+      RequestInit
+    ];
+
+    expect(calledUrl).toBe("http://rust/analyze");
+    expect(calledInit.method).toBe("POST");
+    expect(calledInit.headers).toEqual(
+      expect.objectContaining({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Github-Access-Token": "gh_token",
       })
     );
+
+    // Inspect JSON body shape safely
+    const sentBody = JSON.parse(String(calledInit.body));
+    expect(sentBody.demo).toBe(false); // token present + demo=false => false
+
+    // New shape: array of { path, url }
+    expect(sentBody.tree_files).toEqual([
+      {
+        path: "src/main.ts",
+        url: "https://api.github.com/repos/o/r/git/blobs/abc123",
+      },
+      {
+        path: "README.md",
+        url: "https://api.github.com/repos/o/r/git/blobs/def456",
+      },
+    ]);
+
+    // Response passthrough
     expect(out).toEqual(payload);
   });
 
@@ -50,8 +88,19 @@ describe("lib/analyser", () => {
       new Response("bad", { status: 500, statusText: "Internal Error" })
     );
 
-    await expect(analyzeFileTree({} as RepoFileTree, "gh_token"))
-      .rejects.toThrow(/Backend error/);
+    const mockFileTree = {
+      tree: [
+        { path: "src/main.ts", type: "blob" },
+        { path: "README.md", type: "blob" },
+      ],
+    } as unknown as RepoFileTree;
+
+    await expect(
+      analyzeFileTree(mockFileTree, "gh_token", false, {
+        owner: "o",
+        name: "r",
+      })
+    ).rejects.toThrow(/Backend error/);
   });
 
   // ---------- analyzeIssues (unit) ----------
@@ -117,7 +166,9 @@ describe("lib/analyser", () => {
 
     // PRs
     expect(report.prsReport.stalePRsCount).toBe(2);
-    expect(report.prsReport.message).toMatch(/There are 2 PRs that are 30 days old or more/);
+    expect(report.prsReport.message).toMatch(
+      /There are 2 PRs that are 30 days old or more/
+    );
 
     vi.useRealTimers();
   });

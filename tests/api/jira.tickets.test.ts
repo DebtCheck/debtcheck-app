@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { Report, DeadCodeKind } from "@/types/report";
+import { Report, DeadCodeKind } from "@/app/types/report";
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────────
 const getServerSessionMock = vi.hoisted(() => vi.fn());
@@ -18,11 +18,11 @@ vi.mock("next-auth", () => ({
   getServerSession: getServerSessionMock,
 }));
 
-vi.mock("@/lib/auth/auth", () => ({
+vi.mock("@/app/lib/auth/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/jira", () => ({
+vi.mock("@/app/lib/jira", () => ({
   ensureFreshJiraAccessToken: ensureFreshJiraAccessTokenMock,
   fetchAccessibleResources: fetchAccessibleResourcesMock,
 }));
@@ -75,14 +75,23 @@ const reportWithIssues: Report = {
     stalePRsCount: 2,
     message: "There are stale PRs",
   },
-  fileTreeReport: {
-    dead_code: [{
-      file: "src/old.ts", line: 10, name: "OldComp", kind: "function" as DeadCodeKind,
-      column: 0
-    }],
+  rustAnalysisReport: {
+    report_parse: {
+      dead_code: [
+        {
+          name: "unused_function",
+          kind: DeadCodeKind.Function,
+          file: "src/lib.rs",
+          line: 10,
+          column: 5,
+        },
+      ],
+      env_vars: [],
+    },
     deprecated_libs: [
       { name: "left-pad", current: "1.0.0", latest: "1.3.0", deprecated: true, status: "error" },
     ],
+    is_env_present: false,
   },
 };
 
@@ -131,7 +140,7 @@ describe("/api/jira/tickets (POST)", () => {
         issuesRatio: 0
       },
       prsReport: { stalePRsCount: 0, message: "" },
-      fileTreeReport: { dead_code: [], deprecated_libs: [] },
+      rustAnalysisReport: { report_parse: { dead_code: [], env_vars: [] }, deprecated_libs: [], is_env_present: false },
     };
 
     const res = await POST(makePost({ projectId: "100", report: cleanReport }));

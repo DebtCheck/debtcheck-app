@@ -2,114 +2,244 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import GitHubAuth from "../components/ui/githubAuth";
-import { useCallback, useState } from "react";
-import { Card, CardContent } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
-import JiraAuth from "../components/ui/jira/jiraAuth";
-import type { Report } from "@/types/report";
-import { ReposPage } from "../components/dashboard/repos/page";
-import { fetchJsonOrThrow } from "@/lib/http/rust-error";
-import { ApiError } from "@/lib/http/response";
-
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Card, CardContent } from "./components/ui/utilities/base/card";
+import { Button } from "./components/ui/utilities/buttons/button";
+import GitHubAuth from "./components/ui/githubAuth";
+import type { Report } from "@/app/types/report";
+import { ReposPage } from "./components/repos/reposPage";
+import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
+import { ApiError } from "@/app/lib/http/response";
+import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
+import { ThemeToggle } from "./components/ui/theme-toggle";
+import { useTheme } from "next-themes";
+import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
+import { ReportPage } from "./components/report/reportPage";
+import { ChevronLeft } from "lucide-react";
 
 export default function Home() {
-
   const { data: session } = useSession();
   const githubLinked = !!session?.providers?.github;
 
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Report | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [withoutLog, setWithoutLog] = useState(false);
+  const [cooldown, setCooldown] = useState<number>(0);
+  const [uiError, setUiError] = useState<UiError | null>(null);
+  const { resolvedTheme } = useTheme(); // "light" | "dark"
+  const controllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (githubLinked && withoutLog) setWithoutLog(false);
+  }, [githubLinked, withoutLog]);
+
+  useEffect(() => {
+    const stored = withoutLog
+      ? sessionStorage.getItem("report")
+      : localStorage.getItem("report");
+    if (stored) {
+      try {
+        const parsed: Report = JSON.parse(stored);
+        setResult(parsed);
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, [withoutLog]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setInterval(() => setCooldown((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(id);
+  }, [cooldown]);
+
+  const isValidRepoUrl = useMemo(() => {
+    // lightweight GH repo URL check: owner/repo, optional trailing parts ignored
+    try {
+      const u = new URL(repoUrl);
+      return u.hostname === "github.com" && /^\/[^/]+\/[^/]+/.test(u.pathname);
+    } catch {
+      return false;
+    }
+  }, [repoUrl]);
 
   const handleAnalyze = useCallback(async () => {
+    if (cooldown > 0) return;
     setLoading(true);
-    setError(null);
+    setUiError(null);
+    setResult(null);
+
+    controllerRef.current?.abort();
+
+    const controller = new AbortController();
+    controllerRef.current = controller;
 
     try {
-      // 🔽 use the helper: it throws ApiError with parsed {message, hint, code, meta}
-      const data = await fetchJsonOrThrow<{ ok: true; data: Report }>("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoUrl }),
-      });
+      const data = await fetchJsonOrThrow<{ ok: true; data: Report }>(
+        "/api/analyze",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            repoUrl,
+            demo: !githubLinked || withoutLog, // <-- add this
+          }),
+          signal: controller.signal,
+        }
+      );
 
-      // if we’re here, it was 2xx and JSON
-      setResult(data.data);
-    } catch (e: unknown) {
-      // 🔽 build a nice string for UI from ApiError
-      if (e instanceof ApiError) {
-        const hint = e.hint ? ` — ${e.hint}` : "";
-        const code = e.code ? ` (${e.code})` : "";
-        setError(`${e.message}${hint}${code}`);
-      } else if (e instanceof Error) {
-        // e.g. network abort, etc.
-        setError(`Network error calling backend: ${e.message}`);
+      if (withoutLog) {
+        sessionStorage.setItem("report", JSON.stringify(data.data));
       } else {
-        setError("Unexpected error");
+        localStorage.setItem("report", JSON.stringify(data.data));
+      }
+
+      setResult(data.data);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const mapped = mapApiErrorToUi(err, {
+          githubLinked,
+          startCooldown: (secs) => setCooldown(secs),
+        });
+        setUiError(mapped);
+      } else if (err instanceof Error) {
+        setUiError({
+          variant: "error",
+          title: "Network error",
+          description: err.message,
+        });
+      } else {
+        setUiError({ variant: "error", title: "Unexpected error" });
       }
     } finally {
       setLoading(false);
     }
-  }, [repoUrl]);
+  }, [cooldown, repoUrl, githubLinked, withoutLog]);
+
+  const handleWithoutLog = () => {
+    setWithoutLog(true);
+  };
+
+  if (!githubLinked && !withoutLog) {
+    // Show ONLY the auth gate when not linked
+    return (
+      <main className="min-h-screen flex items-center justify-center p-8">
+        <GitHubAuth />
+        <Button onClick={handleWithoutLog} className="ml-4">
+          {withoutLog ? "Continue without login…" : "Continue without login"}
+        </Button>
+      </main>
+    );
+  }
+
+  const logoSrc =
+    resolvedTheme === "dark"
+      ? "/github-mark-white.svg"
+      : "/github-mark-dark.svg";
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-8 font-[family-name:var(--font-geist-sans)]">
-      {!githubLinked ? (
-        <GitHubAuth />
-      ) : (
-        <>
-          <Card className="w-full max-w-2xl shadow-xl">
-            <CardContent className="p-6 space-y-4">
-              <h1 className="text-3xl font-bold text-center flex items-center justify-center gap-2">
-                <Image src="/github.svg" alt="DebtCheck Logo" width={40} height={40} />
-              </h1>
-              <p className="text-center text-gray-600">
-                Drop your GitHub repo URL and we&apos;ll analyze it for technical debt.
-              </p>
-
-              <div className="flex gap-2">
-                <Input
-                  placeholder="https://github.com/user/your-repo"
-                  value={repoUrl}
-                  onChange={(e) => setRepoUrl(e.target.value)}
-                  className="flex-1 placeholder-gray-500 text-gray-600"
-                />
-                <Button onClick={handleAnalyze} disabled={loading || !repoUrl}>
-                  {loading ? "Analyzing..." : "Analyze"}
-                </Button>
-              </div>
-
-              {result && (
-                <>
-                  <div className="mt-4 text-gray-600 border rounded p-4">
-                    <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(result, null, 2)}</pre>
-                  </div>
-
-                  <div className="p-6 w-full max-w-2xl">
-                    <h2 className="text-xl font-bold mb-4">Jira Integration</h2>
-
-                    <JiraAuth report={result} />
-                  </div>
-                </>
-                
-              )}
-
-              {error && (
-                <div role="alert" className="mt-2 text-sm text-red-600">
-                  {error}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+    <>
+      <header className="fixed inset-x-0 top-0 z-[1000] bg-background/80 backdrop-blur border-b [border-color:var(--line-06)] h-[var(--appbar-h)]">
+        <div className="max-w-3xl mx-auto flex justify-between items-center h-full px-4">
           <GitHubAuth />
-          <ReposPage onSelectRepo={(url) => setRepoUrl(url)}/>
-        </>
-      )
+          <ThemeToggle />
+        </div>
+      </header>
+      {!result && (
+        <main className="min-h-screen space-y-8 mt-5 pt-[var(--appbar-h)]">
+          {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
+          <section className="max-w-3xl mx-auto">
+            <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
+              <CardContent className="p-6 space-y-5">
+                <h1 className="text-2xl md:text-3xl font-semibold text-center flex items-center justify-center gap-2">
+                  <Image
+                    src={logoSrc}
+                    alt="GitHub Logo"
+                    width={28}
+                    height={28}
+                    priority
+                  />
+                  <span className="text-2xl md:text-3xl font-semibold text-center">
+                    Analyze a GitHub repo
+                  </span>
+                </h1>
 
-      }
-    </main>
+                <div className="flex-1">
+                  <AnalyzeHero
+                    variant="header"
+                    size="sm" // or "md" for taller
+                    value={repoUrl}
+                    onChange={setRepoUrl}
+                    onAnalyze={() => {
+                      if (!loading && isValidRepoUrl) void handleAnalyze();
+                    }}
+                    loading={loading}
+                    disabled={!isValidRepoUrl || cooldown > 0}
+                    ctaLabel={
+                      cooldown > 0
+                        ? `Retry in ${Math.ceil(cooldown)}s`
+                        : "Analyze"
+                    }
+                    loadingLabel="Analyzing…"
+                    showIcon
+                  />
+                </div>
+
+                {/* keep your auth notices */}
+                {(uiError || cooldown > 0) && (
+                  <InlineAlert
+                    variant={
+                      cooldown > 0 ? "warning" : uiError?.variant ?? "error"
+                    }
+                    title={
+                      cooldown > 0
+                        ? `You're hitting the anonymous GitHub quota. Sign in or wait ${Math.ceil(
+                            cooldown
+                          )}s.`
+                        : uiError!.title
+                    }
+                    description={
+                      cooldown > 0 ? undefined : uiError?.description
+                    }
+                    className="mt-3"
+                  />
+                )}
+
+                {withoutLog && (
+                  <InlineAlert
+                    variant="warning"
+                    title="You are analyzing without logging in."
+                    description="Some features may be limited (private repos disabled, 60 reqs/hr)."
+                    className="mt-3"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </section>
+
+          {!withoutLog && (
+            <section className="max-w-5xl mx-auto">
+              <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
+            </section>
+          )}
+        </main>
+      )}
+      {result && (
+        <main className="pt-[var(--appbar-h)]">
+          <Button
+            className="mt-4 ml-4"
+            onClick={() => {
+              setResult(null);
+              sessionStorage.removeItem("report");
+              localStorage.removeItem("report");
+            }}
+          >
+            <ChevronLeft></ChevronLeft>
+          </Button>
+          <ReportPage report={result} />
+        </main>
+      )}
+    </>
   );
 }
