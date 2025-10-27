@@ -24,7 +24,6 @@ export function useJiraProjects() {
         setState({ kind: "error", message });
         return;
       }
-      console.log(data);
       
       setState({ kind: "loaded", data: data as Projects });
     } catch (e) {

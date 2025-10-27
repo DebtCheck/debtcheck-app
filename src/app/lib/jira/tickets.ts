@@ -264,7 +264,6 @@ export async function createJiraIssue(
 
   const body = await res.json().catch(() => ({}));
   if (!res.ok) {
-    console.error("Jira creation failed", JSON.stringify(body, null, 2));
     
     const msg =
       (body?.errorMessages && body.errorMessages.join("; ")) ||
