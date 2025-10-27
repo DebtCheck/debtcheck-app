@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useJiraProjects } from "./useJiraProjects";
 import { Projects } from "@/app/types/jira";
 import { Report } from "@/app/types/report";
@@ -12,7 +12,7 @@ type Props = {
   report: Report;
 };
 
-type TicketIssue = { id: string; key: string };
+type TicketIssue = { id: string; key: string; summary: string; url: string };
 type TicketCreationOk = { created: number; issues: TicketIssue[] };
 type TicketCreationErr = { error: string; details?: string };
 type TicketCreationState =
@@ -27,6 +27,38 @@ export default function BacklogModal({ open, onClose, report }: Props) {
     null
   );
   const [submit, setSubmit] = useState<TicketCreationState>({ kind: "idle" });
+  const [history, setHistory] = useState<TicketIssue[] | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const historyAbortRef = useRef<AbortController | null>(null);
+
+  const loadHistory = useCallback(async (projectId: string) => {
+    // cancel previous request (if any)
+    historyAbortRef.current?.abort();
+    const ctrl = new AbortController();
+    historyAbortRef.current = ctrl;
+
+    setHistory(null);
+    setHistoryError(null);
+    setHistoryLoading(true);
+
+    try {
+      const params = new URLSearchParams({ projectId, max: "10" });
+      const res = await fetch(`/api/jira/history?${params.toString()}`, {
+        cache: "no-store",
+        signal: ctrl.signal,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error ?? "Failed to load history");
+      setHistory(json.issues as TicketIssue[]);
+    } catch (e) {
+      if ((e as DOMException)?.name !== "AbortError") {
+        setHistoryError(e instanceof Error ? e.message : "Error");
+      }
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
 
   // fetch on open
   useEffect(() => {
@@ -58,6 +90,7 @@ export default function BacklogModal({ open, onClose, report }: Props) {
       }
 
       const payload = json as TicketCreationOk;
+      loadHistory(projectId);
       setSubmit({ kind: "ok", payload });
     } catch (e) {
       setSubmit({
@@ -109,12 +142,16 @@ export default function BacklogModal({ open, onClose, report }: Props) {
         )}
 
         {values.length > 0 && (
-          <>
+          <div className="mt-3 pb-24 flex flex-col">
             <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
               {values.map((p) => (
                 <button
                   key={p.id}
-                  onClick={() => setSelectedProjectId(p.id)}
+                  onClick={() => {
+                    setSelectedProjectId(p.id);
+                    loadHistory(p.id);
+                    setSubmit({ kind: "idle" });
+                  }}
                   className={[
                     "text-left rounded-xl border p-4 shadow transition",
                     selectedProjectId === p.id
@@ -144,19 +181,70 @@ export default function BacklogModal({ open, onClose, report }: Props) {
               ))}
             </div>
 
-            <div className="mt-6 flex items-center justify-end gap-2">
-              <Button onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                disabled={!selectedProjectId || submit.kind === "loading"}
-                onClick={() =>
-                  selectedProjectId && createTickets(selectedProjectId)
-                }
-                className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
-              >
-                {submit.kind === "loading" ? "Creating…" : "Create tickets"}
-              </Button>
+            <div className="mt-6 flex items-center justify-between gap-2">
+              {selectedProjectId && (
+                <div
+                  className="
+                    bottom-4 left-4 z-10
+                    w-64 max-w-[80%]
+                    rounded-lg border-(--border-20)
+                    bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))]
+                    shadow-md p-3
+                  ">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold">
+                      Created by{" "}
+                      <span className="text-blue-600">DebtCheck</span>
+                    </span>
+                    <span className="text-[10px] opacity-60">recent</span>
+                  </div>
+
+                  {historyLoading && (
+                    <p className="text-[11px] opacity-70">Loading…</p>
+                  )}
+                  {historyError && (
+                    <p className="text-[11px] text-red-600 leading-snug">
+                      {historyError}
+                    </p>
+                  )}
+                  {history && history.length === 0 && (
+                    <p className="text-[11px] opacity-70">No recent tickets.</p>
+                  )}
+
+                  {history && history.length > 0 && (
+                    <ul className="max-h-32 overflow-auto">
+                      {history.slice(0, 5).map((i) => (
+                        <li
+                          key={i.id}
+                          className="flex items-start gap-2 rounded px-2 py-1 text-[11px] hover:bg-black/5 cursor-pointer"
+                          onClick={() => i.url && window.open(i.url, "_blank")}
+                          title={i.summary}
+                        >
+                          <span className="font-mono text-blue-600">
+                            {i.key}
+                          </span>
+                          <span className="opacity-80 truncate">
+                            {i.summary}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              <div className="bottom-4 right-6 flex items-center gap-2">
+                <Button onClick={onClose}>Cancel</Button>
+                <Button
+                  disabled={!selectedProjectId || submit.kind === "loading"}
+                  onClick={() =>
+                    selectedProjectId && createTickets(selectedProjectId)
+                  }
+                  className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
+                >
+                  {submit.kind === "loading" ? "Creating…" : "Create tickets"}
+                </Button>
+              </div>
             </div>
 
             {submit.kind === "ok" && (
@@ -171,7 +259,7 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                 {submit.payload.details ? ` – ${submit.payload.details}` : ""}
               </p>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>
