@@ -16,11 +16,10 @@ export async function analyzeFileTree(
   repo: { owner: string; name: string }
 ) {
   const url = `${process.env.RUST_URL}/analyze`;
-  console.log(accessToken);
-  
+
   const toBlobUrl = (sha: string) =>
     `https://api.github.com/repos/${repo.owner}/${repo.name}/git/blobs/${sha}`;
-  const tree_files = files.tree.map(f => ({
+  const tree_files = files.tree.map((f) => ({
     path: f.path,
     url: toBlobUrl(f.sha),
   }));
@@ -32,13 +31,12 @@ export async function analyzeFileTree(
       : {}),
   };
 
-
   return fetchJsonOrThrow<unknown>(url, {
     method: "POST",
     headers: headers,
     body: JSON.stringify({
       tree_files,
-      demo: !accessToken || demo, 
+      demo: !accessToken || demo,
     }),
   });
 }

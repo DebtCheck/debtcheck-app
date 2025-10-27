@@ -6,7 +6,9 @@ import { shouldIgnore } from "./files-to-ignore";
 
 const GITHUB_PROVIDER = "github";
 
-export async function getGithubAccount(userId: string): Promise<GithubAccount | null> {
+export async function getGithubAccount(
+  userId: string
+): Promise<GithubAccount | null> {
   return prisma.account.findFirst({
     where: { userId, provider: GITHUB_PROVIDER },
     select: {
@@ -23,7 +25,9 @@ export async function getGithubAccount(userId: string): Promise<GithubAccount | 
   });
 }
 
-export async function refreshGithub(account: GithubAccount): Promise<GithubAccount | null> {
+export async function refreshGithub(
+  account: GithubAccount
+): Promise<GithubAccount | null> {
   if (!account.refresh_token) return null;
 
   const res = await fetch("https://github.com/login/oauth/access_token", {
@@ -44,7 +48,7 @@ export async function refreshGithub(account: GithubAccount): Promise<GithubAccou
     token_type?: string;
     scope?: string;
     refresh_token?: string;
-    expires_in?: number;               // seconds
+    expires_in?: number; // seconds
     refresh_token_expires_in?: number; // seconds
     error?: string;
     error_description?: string;
@@ -93,7 +97,9 @@ export async function ensureFreshGithubAccessToken(userId: string): Promise<{
 
   const now = Math.floor(Date.now() / 1000);
   const isExpired =
-    typeof acc.expires_at === "number" && acc.expires_at > 0 && acc.expires_at <= now;
+    typeof acc.expires_at === "number" &&
+    acc.expires_at > 0 &&
+    acc.expires_at <= now;
 
   if (!isExpired) {
     return { accessToken: acc.access_token, account: acc };
@@ -108,12 +114,26 @@ export async function ensureFreshGithubAccessToken(userId: string): Promise<{
   return { accessToken: refreshed.access_token, account: refreshed };
 }
 
-export async function fetchRepoMetadata(repoOwner: string, repoName: string, accessToken: string) {
-  return githubFetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, accessToken);
+export async function fetchRepoMetadata(
+  repoOwner: string,
+  repoName: string,
+  accessToken: string
+) {
+  return githubFetch(
+    `https://api.github.com/repos/${repoOwner}/${repoName}`,
+    accessToken
+  );
 }
 
-export async function fetchRepoIssues(repoOwner: string, repoName: string, accessToken: string) {
-  return githubFetch(`https://api.github.com/search/issues?q=repo:${repoOwner}/${repoName}+type:issue`, accessToken);
+export async function fetchRepoIssues(
+  repoOwner: string,
+  repoName: string,
+  accessToken: string
+) {
+  return githubFetch(
+    `https://api.github.com/search/issues?q=repo:${repoOwner}/${repoName}+type:issue`,
+    accessToken
+  );
 }
 
 export async function fetchRepoFileTree(url: string, accessToken: string) {
@@ -127,7 +147,11 @@ export async function fetchRepoFileTree(url: string, accessToken: string) {
   return githubFetch(`${normalized}?recursive=1`, accessToken);
 }
 
-export async function fetchRepoPR(repoOwner: string, repoName: string, accessToken: string) {
+export async function fetchRepoPR(
+  repoOwner: string,
+  repoName: string,
+  accessToken: string
+) {
   let page = 1;
   const perPage = 100;
   let allPRs: RepoPRs[] = [];
@@ -135,19 +159,20 @@ export async function fetchRepoPR(repoOwner: string, repoName: string, accessTok
 
   while (hasMore) {
     const headers = {
-      "Accept": "application/vnd.github+json",
+      Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
       "User-Agent": "your-app-name",
-      ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     };
     const response = await fetch(
       `https://api.github.com/repos/${repoOwner}/${repoName}/pulls?state=open&per_page=${perPage}&page=${page}`,
       {
-        headers: headers
-      });
-    if (!response.ok) { 
+        headers: headers,
+      }
+    );
+    if (!response.ok) {
       throw new Error(`Error fetching repo PRs: ${response.statusText}`);
-    } 
+    }
 
     const Prs = await response.json();
     allPRs = allPRs.concat(Prs);
@@ -169,9 +194,11 @@ export async function filterFiles(fileTree: RepoFileTree) {
   const filteredFiles = fileTree.tree.filter((file) => {
     if (file.type !== "blob") return false;
 
-    return file.type === "blob" &&
-    extensions.some((ext) => file.path.endsWith(ext)) &&
-    !shouldIgnore(file.path);
+    return (
+      file.type === "blob" &&
+      extensions.some((ext) => file.path.endsWith(ext)) &&
+      !shouldIgnore(file.path)
+    );
   });
 
   return filteredFiles;
