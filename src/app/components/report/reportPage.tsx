@@ -1,7 +1,12 @@
 "use client";
 
 import { Button, Toolbar } from "../ui/utilities";
-import { ActivitySection, DependenciesSection, IssuesPrsSection, RisksSection } from "./report-sections";
+import {
+  ActivitySection,
+  DependenciesSection,
+  IssuesPrsSection,
+  RisksSection,
+} from "./report-sections";
 import { Report } from "@/app/types/report";
 
 export function ReportPage({ report }: { report: Report }) {
@@ -15,9 +20,17 @@ export function ReportPage({ report }: { report: Report }) {
         }
         right={
           <Button
-            onClick={() =>
-              navigator.clipboard.writeText(JSON.stringify(report, null, 2)) // TODO: add animation to show copied
-            }
+            onClick={async () => {
+              await navigator.clipboard.writeText(
+                JSON.stringify(report, null, 2)
+              );
+              const button = document.activeElement as HTMLButtonElement;
+              const originalText = button.textContent;
+              button.textContent = "Copied!";
+              setTimeout(() => {
+                button.textContent = originalText;
+              }, 2000);
+            }}
           >
             Copy JSON
           </Button>

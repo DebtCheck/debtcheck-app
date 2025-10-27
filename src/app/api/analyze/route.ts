@@ -42,9 +42,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  console.log(demo);
-  console.log(repoUrl);
-
   const isDemo = Boolean(demo);
   let accessToken = ""; // empty by default for demo
 

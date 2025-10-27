@@ -15,7 +15,11 @@ type RustErrorBody = {
 };
 
 function safeJson(text: string) {
-  try { return JSON.parse(text); } catch { return null; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 }
 
 function extractRustError(body: RustErrorBody | null): {
@@ -25,7 +29,12 @@ function extractRustError(body: RustErrorBody | null): {
   meta: Record<string, unknown> | undefined;
 } {
   if (!body) {
-    return { code: "internal_error", message: "Backend error", hint: undefined, meta: undefined };
+    return {
+      code: "internal_error",
+      message: "Backend error",
+      hint: undefined,
+      meta: undefined,
+    };
   }
 
   // If body.error is a STRING -> legacy/simple shape: treat as the message
@@ -47,14 +56,19 @@ function extractRustError(body: RustErrorBody | null): {
     "Backend error";
 
   return {
-    code: ((src && "code" in src && src.code) || body.code || "internal_error") as ApiErrorCode,
+    code: ((src && "code" in src && src.code) ||
+      body.code ||
+      "internal_error") as ApiErrorCode,
     message,
     hint: (src && "hint" in src ? src.hint : undefined) ?? body.hint,
     meta: (src && "meta" in src ? src.meta : undefined) ?? body.meta,
   };
 }
 
-export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+export async function fetchJsonOrThrow<T>(
+  input: RequestInfo,
+  init?: RequestInit
+): Promise<T> {
   let res: Response;
   try {
     res = await fetch(input, init);
@@ -76,10 +90,11 @@ export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit
   const ctype = res.headers.get("content-type") || "";
 
   if (!res.ok) {
-
     if (res.status === 403 && text.includes("API rate limit exceeded")) {
       const reset = res.headers.get("X-RateLimit-Reset");
-      const secs = reset ? Math.max(0, Math.ceil(parseInt(reset, 10) - Date.now() / 1000)) : 60;
+      const secs = reset
+        ? Math.max(0, Math.ceil(parseInt(reset, 10) - Date.now() / 1000))
+        : 60;
       // Normalize as 429 for your UI cooldown
       throw new ApiError(
         "GitHub rate limited (unauthenticated).",
@@ -94,12 +109,16 @@ export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit
     const errParsed = extractRustError(asJson);
     // capture Retry-After if present
     const raSeconds = parseRetryAfter(res.headers.get("Retry-After"));
-    const meta = { ...(errParsed.meta || {}), ...(raSeconds != null ? { retry_after_secs: raSeconds } : {}) };
+    const meta = {
+      ...(errParsed.meta || {}),
+      ...(raSeconds != null ? { retry_after_secs: raSeconds } : {}),
+    };
 
     throw new ApiError(
       errParsed.message || `Backend error ${res.status}`,
       res.status,
-      asJson ?? text,                 
+      // Prefer parsed JSON error details if available, otherwise fall back to raw text
+      asJson ?? text,
       errParsed.code,
       errParsed.hint,
       meta
@@ -107,7 +126,12 @@ export async function fetchJsonOrThrow<T>(input: RequestInfo, init?: RequestInit
   }
 
   if (!asJson && ctype.includes("application/json")) {
-    throw new ApiError("Invalid JSON from backend", 502, { raw: text, ctype }, "upstream_error");
+    throw new ApiError(
+      "Invalid JSON from backend",
+      502,
+      { raw: text, ctype },
+      "upstream_error"
+    );
   }
 
   if (!asJson) {
@@ -126,6 +150,6 @@ function parseRetryAfter(v: string | null): number | undefined {
   if (!v) return;
   const n = Number(v);
   if (Number.isFinite(n)) return n; // delta-seconds
-  const d = Date.parse(v);          // HTTP-date
+  const d = Date.parse(v); // HTTP-date
   if (!Number.isNaN(d)) return Math.max(0, Math.round((d - Date.now()) / 1000));
 }
