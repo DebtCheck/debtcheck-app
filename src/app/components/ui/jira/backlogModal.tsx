@@ -142,7 +142,7 @@ export default function BacklogModal({ open, onClose, report }: Props) {
         )}
 
         {values.length > 0 && (
-          <div className="mt-3 pb-24 flex flex-col">
+          <div className="mt-3 flex flex-col">
             <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
               {values.map((p) => (
                 <button
