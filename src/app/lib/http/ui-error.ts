@@ -30,11 +30,13 @@ export function mapApiErrorToUi(
         e.hint ??
         "You're hitting the anonymous GitHub quota. Sign in for a higher limit or wait and try again.",
       actionLabel: opts.githubLinked ? undefined : "Sign in with GitHub",
-      action: opts.githubLinked ? undefined : () => {
-        // programmatically click your auth button if you expose a method
-        // or navigate to /api/auth/signin
-        window.location.href = "/api/auth/signin?provider=github";
-      },
+      action: opts.githubLinked
+        ? undefined
+        : () => {
+            // programmatically click your auth button if you expose a method
+            // or navigate to /api/auth/signin
+            window.location.href = "/api/auth/signin?provider=github";
+          },
     };
   }
 
@@ -75,12 +77,23 @@ export function mapApiErrorToUi(
     };
   }
 
+  if (e.status === 404 || e.code === "not_found") {
+    return {
+      variant: "error",
+      title: "Repository not found or inaccessible",
+      description:
+        e.message ||
+        "The specified repository could not be found. Please check the URL and your access permissions.",
+    };
+  }
+
   // Validation / bad input
   if (e.status === 400 || e.status === 422 || e.code === "validation_failed") {
     return {
       variant: "error",
       title: "Invalid input",
-      description: e.message || "Please check the repository URL and try again.",
+      description:
+        e.message || "Please check the repository URL and try again.",
     };
   }
 

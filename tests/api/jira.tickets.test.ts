@@ -172,7 +172,7 @@ describe("/api/jira/tickets (POST)", () => {
     const calls = globalFetchSpy.mock.calls.filter(([req]) =>
       String(req).includes("/rest/api/3/issue")
     );
-    expect(calls.length).toBe(4);
+    expect(calls.length).toBe(5);
 
     // Validate one payload example (e.g., the “Stale PRs” one)
     const bodies = calls.map(([, init]) => (init as RequestInit).body as string);

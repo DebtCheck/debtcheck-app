@@ -192,7 +192,6 @@ export async function filterFiles(fileTree: RepoFileTree) {
   }
 
   const filteredFiles = fileTree.tree.filter((file) => {
-
     return (
       file.type === "blob" &&
       extensions.some((ext) => file.path.endsWith(ext)) &&

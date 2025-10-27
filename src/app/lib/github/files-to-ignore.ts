@@ -100,7 +100,7 @@ export const IGNORED_GLOBS = [
 ];
 
 export function shouldIgnore(filePath: string): boolean {
-  const p = filePath.replace(/\\\\/g, "/");
+  const p = filePath.replace(/\\+/g, "/");
   const segs = p.split("/");
   // 1) exact filenames
   const base = segs[segs.length - 1];

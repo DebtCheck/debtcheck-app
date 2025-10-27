@@ -36,8 +36,14 @@ export async function POST(req: NextRequest) {
   const { owner: repoOwner, repo: repoName } = parsedUrl;
 
   if (!repoOwner) {
-    return jsonError("Invalid GitHub URL. Expected https://github.com/<owner>/<repo>", 400);
+    return jsonError(
+      "Invalid GitHub URL. Expected https://github.com/<owner>/<repo>",
+      400
+    );
   }
+
+  console.log(demo);
+  console.log(repoUrl);
 
   const isDemo = Boolean(demo);
   let accessToken = ""; // empty by default for demo
@@ -57,7 +63,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const repoMetadataRaw = await fetchRepoMetadata(repoOwner, repoName, accessToken);
+    const repoMetadataRaw = await fetchRepoMetadata(
+      repoOwner,
+      repoName,
+      accessToken
+    );
 
     const metadata: RepoMetadata = {
       owner: repoMetadataRaw.owner.login,
@@ -84,9 +94,13 @@ export async function POST(req: NextRequest) {
 
     const [metaReport, rustAnalysisReportRaw] = await Promise.all([
       analyzeMetadata(req, metadata, accessToken),
-      analyzeFileTree(filteredFiles, accessToken, isDemo, { owner: repoOwner, name: repoName }),
+      analyzeFileTree(filteredFiles, accessToken, isDemo, {
+        owner: repoOwner,
+        name: repoName,
+      }),
     ]);
-    const rustAnalysisReport = rustAnalysisReportRaw as import("@/app/types/report").RustAnalysisReport;
+    const rustAnalysisReport =
+      rustAnalysisReportRaw as import("@/app/types/report").RustAnalysisReport;
 
     const report: Report = {
       updatedAtReport: metaReport.updatedAtReport,
@@ -97,11 +111,12 @@ export async function POST(req: NextRequest) {
     };
 
     return NextResponse.json({ ok: true, data: report }, { status: 200 });
-  } catch (err: unknown) {
+  } catch (err: GitHubApiError | unknown) {
     if (isGitHubApiError(err)) {
       // If it tries to access a repo from an organization that didn't allow the API
       const githubMessage = err.githubError?.message;
-      let type: "GITHUB_ERROR" | "OAUTH_APP_BLOCKED" | "SSO_NOT_AUTHORIZED" = "GITHUB_ERROR";
+      let type: "GITHUB_ERROR" | "OAUTH_APP_BLOCKED" | "SSO_NOT_AUTHORIZED" =
+        "GITHUB_ERROR";
       let docsUrl: string | undefined;
 
       if (githubMessage?.includes("OAuth App access restrictions")) {
@@ -114,25 +129,13 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: githubMessage ?? "GitHub API error", details: { type, docsUrl, status: err.status ?? 403 } },
-        { status: err.status ?? 403 },
+        {
+          error: githubMessage ?? "GitHub API error",
+          details: { type, docsUrl, status: err.status ?? 403 },
+        },
+        { status: err.status ?? 403 }
       );
     }
-
-    if (isGhRateLimited(err)) {
-    const secs = retryAfterSecondsFromHeaders(err.headers);
-    return NextResponse.json(
-      {
-        error: {
-          code: "rate_limited",
-          message: "GitHub rate limited (unauthenticated).",
-          hint: "Sign in with GitHub for a higher quota or retry later.",
-          meta: { retry_after_secs: secs },
-        },
-      },
-      { status: 429, headers: { "Retry-After": String(secs) } }
-    );
-  }
 
     return toErrorResponse(err);
   }
@@ -173,11 +176,6 @@ function isGitHubApiError(err: unknown): err is GitHubApiError {
   );
 }
 
-function isGhRateLimited(err: unknown): err is { isGithubRateLimited: true; headers: Headers } {
-  return Boolean(err && typeof err === "object" && (err as { isGithubRateLimited?: unknown }).isGithubRateLimited && (err as { headers?: Headers }).headers);
-}
-
-
 function retryAfterSecondsFromHeaders(h: Headers): number {
   // 1) Prefer Retry-After if present
   const ra = h.get("Retry-After");
@@ -185,7 +183,8 @@ function retryAfterSecondsFromHeaders(h: Headers): number {
     const n = Number(ra);
     if (Number.isFinite(n)) return Math.max(0, Math.ceil(n)); // delta-seconds
     const d = Date.parse(ra); // HTTP-date
-    if (!Number.isNaN(d)) return Math.max(0, Math.ceil((d - Date.now()) / 1000));
+    if (!Number.isNaN(d))
+      return Math.max(0, Math.ceil((d - Date.now()) / 1000));
   }
 
   // 2) Fallback to X-RateLimit-Reset (UNIX seconds)

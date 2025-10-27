@@ -51,6 +51,8 @@ export default function GitHubAuth() {
         return;
       }
 
+      localStorage.removeItem("report");
+      sessionStorage.removeItem("report");
       window.location.assign("/"); // or a dedicated /auth page
     } catch (e) {
       console.error(e);
