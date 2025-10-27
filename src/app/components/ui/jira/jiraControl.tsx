@@ -5,6 +5,7 @@ import { useState } from "react";
 import BacklogModal from "./backlogModal";
 import { Button } from "@/app/components/ui/utilities";
 import { Report } from "@/app/types/report";
+import DisconnectJira from "./disconnectJira";
 
 type Props = { report: Report };
 
@@ -31,6 +32,7 @@ export default function JiraControl({ report }: Props) {
 
   return (
     <>
+      <DisconnectJira />
       <Button onClick={() => setOpen(true)} aria-label="Create backlog">
         Create backlog
       </Button>

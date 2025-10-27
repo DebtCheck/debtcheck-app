@@ -1,6 +1,5 @@
 "use client";
 
-import JiraAuth from "../ui/jira/jiraAuth";
 import JiraControl from "@/app/components/ui/jira/jiraControl";
 import { Button, Toolbar } from "../ui/utilities";
 import {
