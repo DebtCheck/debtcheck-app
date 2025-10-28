@@ -25,6 +25,8 @@ import {
 import { Clock3, GitCommit, GitPullRequest } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { HelpTip } from "../ui/utilities/base/tip/helpTip";
+import { LabelWithTip } from "../ui/utilities/base/tip/labelWithTip";
 
 export function ActivitySection({
   updated,
@@ -36,7 +38,12 @@ export function ActivitySection({
   const t = useTranslations("Report.activity");
   return (
     <Collapsible
-      title={t("title")}
+      title={
+        <div className="inline-flex items-center gap-2">
+          {t("title")}
+          <HelpTip content={t("help.main")} />
+        </div>
+      }
       right={
         <div className="flex gap-2">
           <PillFromBool
@@ -44,13 +51,23 @@ export function ActivitySection({
             warnLabel={t("stale")}
             warn={updated.stale}
           />
-          <PillFromBool okLabel={t("fresh")} warnLabel={t("stale")} warn={pushed.stale} />
+          <PillFromBool
+            okLabel={t("fresh")}
+            warnLabel={t("stale")}
+            warn={pushed.stale}
+          />
         </div>
       }
     >
       <div className="grid gap-4 md:grid-cols-2">
         <Section
-          title={t("updatedAt")}
+          title={
+            <LabelWithTip
+              label={t("updatedAt")}
+              tip={t("help.updatedAt")}
+              ariaLabel="Help: Updated At"
+            />
+          }
           className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
@@ -59,7 +76,13 @@ export function ActivitySection({
           </div>
         </Section>
         <Section
-          title={t("pushedAt")}
+          title={
+            <LabelWithTip
+              label={t("pushedAt")}
+              tip={t("help.pushedAt")}
+              ariaLabel="Help: Pushed At"
+            />
+          }
           className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
@@ -83,7 +106,12 @@ export function IssuesPrsSection({
   const isClean = issues.issuesRatio < 0.1 && prs.stalePRsCount === 0;
   return (
     <Collapsible
-      title={t("title")}
+      title={
+        <div className="inline-flex items-center gap-2">
+          {t("title")}
+          <HelpTip content={t("help.main")} />
+        </div>
+      }
       right={
         <div className="flex gap-2">
           <StatusPill status={issues.isManyIssuesUnresolved ? "warning" : "ok"}>
@@ -97,12 +125,22 @@ export function IssuesPrsSection({
     >
       <div className="flex gap-4 md:grid md:grid-cols-2">
         <StatBadge
-          label={t("openIssuesRatio")}
+          label={
+            <LabelWithTip
+              label={t("openIssuesRatio")}
+              tip={t("help.openIssuesRatio")}
+            />
+          }
           value={`${Math.round(issues.issuesRatio * 100)}%`}
           className="bg-[rgb(var(--surface-2))]"
         />
         <StatBadge
-          label={t("stalePrs_30")}
+          label={
+            <LabelWithTip
+              label={t("stalePrs_30")}
+              tip={t("help.stalePrs_30")}
+            />
+          }
           value={prs.stalePRsCount}
           className="bg-[rgb(var(--surface-2))]"
         />
@@ -170,7 +208,20 @@ export function DependenciesSection({ items }: { items: DeprecatedLibs[] }) {
     : "ok";
 
   return (
-    <Collapsible title={t("title")} right={<StatusPill status={worst} />}>
+    <Collapsible
+      title={
+        <div className="inline-flex items-center gap-2">
+          {t("title")}
+          <HelpTip content={t("help.main")} />
+        </div>
+      }
+      right={
+        <div className="inline-flex items-center gap-1">
+          <StatusPill status={worst} />
+          <HelpTip content={t("help.overall")} />
+        </div>
+      }
+    >
       <DataTable
         columns={columns}
         rows={rows}
@@ -182,11 +233,16 @@ export function DependenciesSection({ items }: { items: DeprecatedLibs[] }) {
 
 export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
   const t = useTranslations("Report.risks");
-  // No Rust report at all
+
   if (!rust) {
     return (
       <Collapsible
-        title={t("title")}
+        title={
+          <div className="inline-flex items-center gap-2">
+            {t("title")}
+            <HelpTip content={t("help.main")} />
+          </div>
+        }
         right={<StatusPill status="neutral">{t("noScanPill")}</StatusPill>}
       >
         <InlineAlert
@@ -215,51 +271,85 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
 
   return (
     <Collapsible
-      title={t("title")}
+      title={
+        <div className="inline-flex items-center gap-2">
+          {t("title")}
+          <HelpTip content={t("help.main")} />
+        </div>
+      }
       right={<StatusPill status={overall} />}
     >
       <div className="grid gap-4">
         {hasSecretsReport &&
           (secretsArray.length > 0 ? (
-            <InlineAlert
-              variant="warning"
-              title={t("secretsFound", { count: secretsArray.length })}
-              description={t("secretsAdvice")}
-            />
+            <div className="flex items-start gap-2">
+              <InlineAlert
+                variant="warning"
+                title={t("secretsFound", { count: secretsArray.length })}
+                description={t("secretsAdvice")}
+              />
+              <HelpTip content={t("help.secretsFound")} />
+            </div>
           ) : (
-            <InlineAlert
-              variant="success"
-              title={t("noSecretsTitle")}
-              description={t("noSecretsDesc")}
-            />
+            <div className="flex items-start gap-2">
+              <InlineAlert
+                variant="success"
+                title={t("noSecretsTitle")}
+                description={t("noSecretsDesc")}
+              />
+              <HelpTip content={t("help.noSecrets")} />
+            </div>
           ))}
 
         {env && (
-          <InlineAlert
-            variant="info"
-            title={t("envTitle")}
-            description={t("envDesc")}
-          />
+          <div className="flex items-start gap-2">
+            <InlineAlert
+              variant="info"
+              title={t("envTitle")}
+              description={t("envDesc")}
+            />
+            <HelpTip content={t("help.envPresent")} />
+          </div>
         )}
 
         {hasParse && (
           <Section
-            title={t("deadSummaryTitle")}
+            title={
+              <LabelWithTip
+                label={t("deadSummaryTitle")}
+                tip={t("help.deadSummary")}
+              />
+            }
             subtitle={t("deadSummarySub")}
           >
             <div className="grid grid-cols-3 gap-4">
               <StatBadge
-                label={t("unusedDecl")}
+                label={
+                  <LabelWithTip
+                    label={t("unusedDecl")}
+                    tip={t("help.unusedDecl")}
+                  />
+                }
                 value={deadArray.length}
                 variant={deadArray.length > 0 ? "warning" : "success"}
               />
               <StatBadge
-                label={t("secrets")}
+                label={
+                  <LabelWithTip
+                    label={t("secrets")}
+                    tip={t("help.secretsStat")}
+                  />
+                }
                 value={secretsArray.length}
                 variant={secretsArray.length > 0 ? "danger" : "success"}
               />
               <StatBadge
-                label={t("envPresent")}
+                label={
+                  <LabelWithTip
+                    label={t("envPresent")}
+                    tip={t("help.envStat")}
+                  />
+                }
                 value={env ? "yes" : "no"}
                 variant={env ? "info" : "neutral"}
               />
@@ -326,9 +416,7 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
               ]}
               rows={deadArray}
               rowKey={(d) => `${d.file}:${d.line}:${d.column}:${d.name}`}
-              emptyState={
-                <Card className="p-4 text-sm">{t("emptyDead")}</Card>
-              }
+              emptyState={<Card className="p-4 text-sm">{t("emptyDead")}</Card>}
             />
           </Collapsible>
         )}

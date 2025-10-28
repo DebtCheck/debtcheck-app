@@ -9,7 +9,7 @@ export function Collapsible({
   headerClassName,
   contentClassName,
 }: {
-  title: string;
+  title: React.ReactNode;
   defaultOpen?: boolean;
   right?: React.ReactNode;
   children: React.ReactNode;
@@ -23,9 +23,9 @@ export function Collapsible({
       open={defaultOpen}
       className={cn(
         "rounded-2xl border transition-all",
-        "bg-[rgb(var(--surface-1))] border-[color:var(--line-neutral-20)] shadow-[var(--shadow-1)] dark:shadow-[var(--shadow-1)]",
+        "bg-[rgb(var(--surface-1))] border-(--line-neutral-20) shadow-(--shadow-1) dark:shadow-(--shadow-1)",
         "[&[open]>summary>div]:border-b",
-        "[&[open]>summary>div]:border-[color:var(--line-neutral-20)]",
+        "[&[open]>summary>div]:border-(--line-neutral-20)",
         className
       )}
     >

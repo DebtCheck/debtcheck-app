@@ -62,7 +62,12 @@
       "updatedAt": "Updated at",
       "pushedAt": "Pushed at",
       "sinceUpdate": "{count, plural, one {# day since last update} other {# days since last update}}",
-      "sincePush":   "{count, plural, one {# day since last push}   other {# days since last push}}"
+      "sincePush":   "{count, plural, one {# day since last push}   other {# days since last push}}",
+      "help": {
+        "main": "Signals to detect inactivity or staleness in the repository.",
+        "updatedAt": "Time since the default branch was updated (any ref update).",
+        "pushedAt": "Time since the last commit was pushed."
+      }
     },
     "issuesPrs": {
       "title": "Issues & Pull Requests",
@@ -72,7 +77,14 @@
       "stalePrs_30": "Stale PRs (≥30d)",
       "hintsTitle": "Quality hints",
       "hintCloseIssues": "Close resolved issues to keep the ratio healthy.",
-      "hintReviewPrs": "Review/merge or close stale PRs regularly."
+      "hintReviewPrs": "Review/merge or close stale PRs regularly.",
+      "help": {
+        "main": "Backlog and review hygiene.",
+        "openPct": "Share of issues currently open vs total.",
+        "stalePrs": "PRs with no activity for 30+ days.",
+        "openIssuesRatio": "Open issues / total issues.",
+        "stalePrs_30": "Count of PRs with 30 days without activity."
+      }
     },
     "deps": {
       "title": "Dependencies",
@@ -82,7 +94,16 @@
       "deprecated": "Deprecated",
       "yes": "yes",
       "no": "no",
-      "status": "Status"
+      "status": "Status",
+      "help": {
+        "main": "Outdated/Deprecated packages can cause security and maintenance risks.",
+        "overall": "Overall health derived from the worst dependency status.",
+        "package": "Dependency name as declared.",
+        "current": "Version pinned in the project.",
+        "latest": "Latest published version.",
+        "deprecated": "Marked as deprecated by the registry.",
+        "status": "Severity based on your rules (ok/warning/error)."
+      }
     },
     "risks": {
       "title": "Risks & hygiene",
@@ -110,7 +131,17 @@
       "column": "Column",
       "identifier": "Identifier",
       "emptySecrets": "No secrets detected.",
-      "emptyDead": "No dead code detected."
+      "emptyDead": "No dead code detected.",
+      "help": {
+        "main": "Automatic findings from the files static analyzer.",
+        "secretsFound": "Values that look like API keys/tokens in source files.",
+        "noSecrets": "No credential-like strings detected.",
+        "envPresent": "Repository contains files starting with .env.",
+        "deadSummary": "High-level counts computed from parse results.",
+        "unusedDecl": "Variables/functions declared but never referenced.",
+        "secretsStat": "Total candidate credentials found.",
+        "envStat": "Whether .env files exist in the repo."
+      }
     }
   },
   "Jira": {

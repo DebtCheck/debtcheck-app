@@ -62,7 +62,12 @@
       "updatedAt": "Mis à jour",
       "pushedAt": "Dernier push",
       "sinceUpdate": "{count, plural, one {il y a # jour} other {il y a # jours}} depuis la dernière mise à jour",
-      "sincePush":   "{count, plural, one {il y a # jour} other {il y a # jours}} depuis le dernier push"
+      "sincePush":   "{count, plural, one {il y a # jour} other {il y a # jours}} depuis le dernier push",
+      "help": {
+        "main": "Indicateurs pour détecter l’inactivité ou l’obsolescence du dépôt.",
+        "updatedAt": "Temps écoulé depuis la dernière mise à jour de la branche par défaut (toute mise à jour de référence).",
+        "pushedAt": "Temps écoulé depuis le dernier commit poussé."
+      }
     },
     "issuesPrs": {
       "title": "Issues & Pull Requests",
@@ -72,7 +77,14 @@
       "stalePrs_30": "PRs anciennes (≥30j)",
       "hintsTitle": "Pistes de qualité",
       "hintCloseIssues": "Fermez les issues résolues pour garder un taux sain.",
-      "hintReviewPrs": "Relisez/fusionnez ou fermez régulièrement les PRs anciennes."
+      "hintReviewPrs": "Relisez/fusionnez ou fermez régulièrement les PRs anciennes.",
+      "help": {
+        "main": "Hygiène du backlog et du flux de revue.",
+        "openPct": "Part des issues actuellement ouvertes par rapport au total.",
+        "stalePrs": "PRs sans activité depuis 30 jours ou plus.",
+        "openIssuesRatio": "Issues ouvertes / total des issues.",
+        "stalePrs_30": "Nombre de PRs sans activité depuis au moins 30 jours."
+      }
     },
     "deps": {
       "title": "Dépendances",
@@ -82,7 +94,16 @@
       "deprecated": "Déprécié",
       "yes": "oui",
       "no": "non",
-      "status": "Statut"
+      "status": "Statut",
+      "help": {
+        "main": "Des paquets obsolètes/dépréciés augmentent les risques de sécurité et de maintenance.",
+        "overall": "Santé globale déduite du statut de dépendance le plus critique.",
+        "package": "Nom de la dépendance telle que déclarée.",
+        "current": "Version actuellement utilisée dans le projet.",
+        "latest": "Dernière version publiée.",
+        "deprecated": "Marqué comme déprécié par le registre.",
+        "status": "Sévérité selon vos règles (ok/avertissement/erreur)."
+      }
     },
     "risks": {
       "title": "Risques & hygiène",
@@ -110,7 +131,17 @@
       "column": "Colonne",
       "identifier": "Identifiant",
       "emptySecrets": "Aucun secret détecté.",
-      "emptyDead": "Aucun code mort détecté."
+      "emptyDead": "Aucun code mort détecté.",
+      "help": {
+        "main": "Résultats automatiques de l’analyse statique des fichiers",
+        "secretsFound": "Valeurs ressemblant à des clés/tokens dans les fichiers sources.",
+        "noSecrets": "Aucune chaîne de type « identifiant/clé » détectée.",
+        "envPresent": "Le dépôt contient des fichiers commençant par .env.",
+        "deadSummary": "Comptes globaux issus de l’analyse du code.",
+        "unusedDecl": "Variables/fonctions déclarées mais jamais référencées.",
+        "secretsStat": "Total des identifiants potentiels trouvés.",
+        "envStat": "Présence de fichiers .env dans le dépôt."
+      }
     }
   },
   "Jira": {
