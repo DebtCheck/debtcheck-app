@@ -62,7 +62,7 @@ export default function GitHubAuth() {
     return (
       <Button
         onClick={handleLogin}
-        className="flex items-center gap-2 bg-[#24292f] hover:bg-[#1b1f23] text-white"
+        className="flex items-center gap-2 bg-[#24292f] hover:bg-[#1b1f23] text-white w-[180px]"
       >
         <Image
           src={logoSrc}
@@ -92,7 +92,7 @@ export default function GitHubAuth() {
       <Button
         onClick={disconnect}
         disabled={busy}
-        className="bg-transparent border border-border/15 hover:bg-foreground/10 text-foreground"
+        className="bg-transparent border border-border/15 hover:bg-foreground/10 text-foreground w-[180px]"
       >
         {busy ? t("disconnectBusy") : t("disconnect")}
       </Button>

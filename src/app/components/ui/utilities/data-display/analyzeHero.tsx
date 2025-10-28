@@ -88,7 +88,7 @@ export function AnalyzeHero({
           disabled={disabled || loading || value.length === 0}
           className={cn(
             buttonClasses,
-            "max-w-[200px]",
+            "w-[120px]",
           )}
         >
           {loading ? loadingLabel : ctaLabel}

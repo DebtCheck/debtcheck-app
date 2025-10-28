@@ -11,7 +11,7 @@ export function ThemeToggle() {
     <Button
       onClick={() => setTheme(next)}
       aria-label={t("toggleAria")}
-      className="bg-transparent border border-border/15 hover:bg-foreground/10 text-foreground px-3 py-1.5 text-sm transition"
+      className="bg-transparent border border-border/15 hover:bg-foreground/10 text-foreground px-3 py-1.5 text-sm transition w-[100px]"
     >
       {theme === "dark" ? t("dark") : t("light")}
     </Button>

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Languages } from "lucide-react";
 import { ButtonDropdown } from "../../utilities/buttons/buttonDropdown";
 import { setLocale } from "./set-local";
@@ -11,6 +11,7 @@ import { PopToast } from "../../utilities/buttons/popToast";
 type Locale = "en" | "fr";
 
 export function LocaleDropdown() {
+  const t = useTranslations("Header.Locale");
   const router = useRouter();
   const [pending, start] = useTransition();
   const locale = useLocale() as Locale;
@@ -48,7 +49,7 @@ export function LocaleDropdown() {
           setToast({ x, y, text: label });
         }}
         disabled={pending}
-        aria-label="Select language"
+        aria-label={t("selectAria")}
         align="end"
       />
       {toast && (
