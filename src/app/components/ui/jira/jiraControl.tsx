@@ -6,10 +6,12 @@ import BacklogModal from "./backlogModal";
 import { Button } from "@/app/components/ui/utilities";
 import { Report } from "@/app/types/report";
 import DisconnectJira from "./disconnectJira";
+import { useTranslations } from "next-intl";
 
 type Props = { report: Report };
 
 export default function JiraControl({ report }: Props) {
+  const t = useTranslations("Jira");
   const { status, data } = useSession();
   const jiraLinked = Boolean(data?.providers?.jira);
 
@@ -25,7 +27,7 @@ export default function JiraControl({ report }: Props) {
         onClick={() => signIn("jira", { callbackUrl: "/" })}
         aria-label="Connect Jira"
       >
-        Connect Jira
+        {t("connect")}
       </Button>
     );
   }
@@ -33,8 +35,8 @@ export default function JiraControl({ report }: Props) {
   return (
     <>
       <DisconnectJira />
-      <Button onClick={() => setOpen(true)} aria-label="Create backlog">
-        Create backlog
+      <Button onClick={() => setOpen(true)} aria-label={t("createBacklogAria")}>
+        {t("createBacklog")}
       </Button>
       <BacklogModal open={open} onClose={() => setOpen(false)} report={report} />
     </>

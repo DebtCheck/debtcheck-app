@@ -1,0 +1,143 @@
+{
+  "Nav": {
+    "home": "Accueil",
+    "title": "Rapport de dette technique",
+    "cta": "Analyser un dépôt"
+  },
+  "Header": {
+    "Auth": {
+      "continue": "Continuer avec GitHub",
+      "continueBusy": "Connexion à GitHub…",
+      "disconnect": "Déconnecter GitHub",
+      "disconnectBusy": "Déconnexion…",
+      "avatarAlt": "Avatar",
+      "githubUserFallback": "Utilisateur GitHub"
+    },
+    "Theme": {
+      "toggleAria": "Changer le thème",
+      "dark": "🌙 Sombre",
+      "light": "☀️ Clair"
+    },
+    "Locale": {
+      "selectAria": "Choisir la langue"
+    }
+  },
+  "Home": {
+    "analyzeGithubRepo": "Analyser un dépôt GitHub",
+    "continueWithoutLogin": "Continuer sans connexion",
+    "continueWithoutLoginDots": "Continuer sans connexion…",
+    "analyze": "Analyser",
+    "analyzing": "Analyse en cours…",
+    "retryIn": "Réessayer dans {seconds}s",
+    "quotaTitle": "Vous atteignez le quota GitHub anonyme. Connectez-vous ou patientez {seconds}s.",
+    "anonTitle": "Vous analysez sans vous connecter.",
+    "anonDesc": "Certaines fonctionnalités peuvent être limitées (repos privés désactivés, 60 reqs/h).",
+    "networkError": "Erreur réseau",
+    "analyzeCtaAlt": "Logo GitHub"
+  },
+  "Repos": {
+    "sectionTitle": "Mes dépôts GitHub",
+    "sectionSubtitle": "Sélectionnez un dépôt pour analyser sa dette technique.",
+    "refresh": "Rafraîchir",
+    "staleTitle": "Cache potentiellement obsolète, des données à jour sont disponibles.",
+    "staleDesc": "Les données affichées proviennent peut-être du cache. Rafraîchissez pour recharger.",
+    "searchPlaceholder": "Rechercher un dépôt…",
+    "empty": "Aucun dépôt à afficher ici.",
+    "privacyPublic": "publique",
+    "privacyPrivate": "privé",
+    "noLang": "Aucun langage",
+    "pushed": "poussé {when}",
+    "ariaChoose": "Choisir {fullName}",
+    "page": "Page {page}",
+    "prev": "Précédent",
+    "next": "Suivant"
+  },
+  "Report": {
+    "title": "Rapport de dette technique",
+    "copy": { "btn": "Copier le JSON", "copied": "Copié !" },
+    "activity": {
+      "title": "Activité du dépôt",
+      "fresh": "Récent",
+      "stale": "Ancien",
+      "updatedAt": "Mis à jour",
+      "pushedAt": "Dernier push",
+      "sinceUpdate": "{count, plural, one {il y a # jour} other {il y a # jours}} depuis la dernière mise à jour",
+      "sincePush":   "{count, plural, one {il y a # jour} other {il y a # jours}} depuis le dernier push"
+    },
+    "issuesPrs": {
+      "title": "Issues & Pull Requests",
+      "openPct": "{pct}% ouvertes",
+      "stalePrs": "{count} PRs anciennes",
+      "openIssuesRatio": "Taux d’issues ouvertes",
+      "stalePrs_30": "PRs anciennes (≥30j)",
+      "hintsTitle": "Pistes de qualité",
+      "hintCloseIssues": "Fermez les issues résolues pour garder un taux sain.",
+      "hintReviewPrs": "Relisez/fusionnez ou fermez régulièrement les PRs anciennes."
+    },
+    "deps": {
+      "title": "Dépendances",
+      "package": "Paquet",
+      "current": "Actuelle",
+      "latest": "Dernière",
+      "deprecated": "Déprécié",
+      "yes": "oui",
+      "no": "non",
+      "status": "Statut"
+    },
+    "risks": {
+      "title": "Risques & hygiène",
+      "noScanPill": "Pas d’analyse",
+      "noScanTitle": "Aucune analyse statique",
+      "noScanDesc": "Ce rapport n’inclut pas de résultats d’analyse Rust.",
+      "secretsFound": "Secrets potentiels trouvés : {count}",
+      "secretsAdvice": "Vérifiez et faites tourner les clés si confirmé. Les tests et placeholders peuvent être ignorés quand les règles le permettent.",
+      "noSecretsTitle": "Aucun secret détecté",
+      "noSecretsDesc": "L’analyse n’a pas trouvé de valeurs suspectes.",
+      "envTitle": "Fichiers .env présents",
+      "envDesc": "Des fichiers de configuration sensibles sont versionnés.",
+      "deadSummaryTitle": "Résumé du code mort",
+      "deadSummarySub": "Identifiants déclarés mais jamais utilisés",
+      "unusedDecl": "Déclarations inutilisées",
+      "secrets": "Secrets",
+      "envPresent": ".env présent",
+      "secretsDetails": "Détails des secrets",
+      "deadDetails": "Détails du code mort",
+      "file": "Fichier",
+      "name": "Nom",
+      "kind": "Type",
+      "preview": "Extrait",
+      "line": "Ligne",
+      "column": "Colonne",
+      "identifier": "Identifiant",
+      "emptySecrets": "Aucun secret détecté.",
+      "emptyDead": "Aucun code mort détecté."
+    }
+  },
+  "Jira": {
+    "connect": "Connecter Jira",
+    "connectAria": "Connecter Jira",
+    "disconnect": "Déconnecter Jira",
+    "disconnectBusy": "Déconnexion…",
+    "createBacklog": "Créer le backlog",
+    "createBacklogAria": "Créer le backlog",
+    "modal": {
+      "title": "Créer le backlog dans Jira",
+      "close": "Fermer",
+      "loading": "Chargement des projets…",
+      "error": "Erreur : {msg}",
+      "empty": "Aucun projet Jira trouvé.",
+      "key": "Clé : {key}",
+      "privacyPublic": "Public",
+      "privacyPrivate": "Privé",
+      "createdBy": "Créé par ",
+      "recent": "récent",
+      "historyLoading": "Chargement…",
+      "historyEmpty": "Aucun ticket récent.",
+      "cancel": "Annuler",
+      "creating": "Création…",
+      "createTickets": "Créer les tickets",
+      "createdSummary": "{count, plural, one {# ticket créé} other {# tickets créés}} : {keys}",
+      "createError": "{msg}{details, select, undefined {} other { – {details}}}"
+    }
+  }
+}

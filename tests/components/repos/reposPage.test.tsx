@@ -8,6 +8,8 @@ import {
 } from "@testing-library/react";
 import { ReposPage } from "@/app/components/repos/reposPage"; // adjust import if your path differs
 import type { GithubReposResponse, Repo } from "@/app/types/github";
+import { renderWithI18n } from "../../helpers/renderWithI18n";
+import frMessages from "@/messages/fr.json";
 
 const makeRepo = (id: number, overrides: Partial<Repo> = {}): Repo => ({
   id,
@@ -60,7 +62,7 @@ describe("<ReposPage />", () => {
         new Response(JSON.stringify(page1), { status: 200 })
       );
 
-    render(<ReposPage />);
+    renderWithI18n(<ReposPage />, { locale: "fr", messages: frMessages });
 
     // called with page=1
     await waitFor(() => {
@@ -84,8 +86,8 @@ describe("<ReposPage />", () => {
 
     // Pagination: Page 1 label; Prev disabled, Next enabled
     expect(screen.getByText(/page 1/i)).toBeInTheDocument();
-    const prev = screen.getByRole("button", { name: /previous/i });
-    const next = screen.getByRole("button", { name: /next/i });
+    const prev = screen.getByRole("button", { name: /précédent/i });
+    const next = screen.getByRole("button", { name: /suivant/i });
     expect(prev).toBeDisabled();
     expect(next).not.toBeDisabled();
 
@@ -98,9 +100,8 @@ describe("<ReposPage />", () => {
     }) as HTMLImageElement;
     expect(img.src).toContain("https://example.com/a.png");
 
-    // Language and “pushed …” label (2025-01-31 vs 2025-01-01 ≈ 30 days => "1 mois")
     expect(within(firstCard).getByText(/typescript/i)).toBeInTheDocument();
-    expect(within(firstCard).getByText(/pushed 1 mois/i)).toBeInTheDocument();
+    expect(within(firstCard).getByText(/poussé il y a 10 mois/i)).toBeInTheDocument();
   });
 
   it("falls back to icon when no avatar, and calls onSelectRepo on click", async () => {
@@ -113,7 +114,7 @@ describe("<ReposPage />", () => {
     );
 
     const onSelectRepo = vi.fn();
-    render(<ReposPage onSelectRepo={onSelectRepo} />);
+    renderWithI18n(<ReposPage onSelectRepo={onSelectRepo} />, { locale: "fr", messages: frMessages });
 
     const card = await screen.findByRole("button", {
       name: /choisir owner\/repo-1/i,
@@ -139,13 +140,13 @@ describe("<ReposPage />", () => {
         new Response(JSON.stringify(page2), { status: 200 })
       ); // page 2
 
-    render(<ReposPage />);
+    renderWithI18n(<ReposPage />, { locale: "fr", messages: frMessages });
 
     // Wait initial
     await screen.findByRole("button", { name: /choisir owner\/repo-1/i });
 
     // Click "Next"
-    const next = screen.getByRole("button", { name: /Next/i });
+    const next = screen.getByRole("button", { name: /Suivant/i });
     await fireEvent.click(next);
 
     // Called with page=2
@@ -160,13 +161,13 @@ describe("<ReposPage />", () => {
     expect(await screen.findByText(/page 2/i)).toBeInTheDocument();
 
     // Stale badge shown (page2.stale=true)
-    expect(screen.getByText(/Cache potentially stale, refreshed data may be available./i)).toBeInTheDocument();
+    expect(screen.getByText(/Cache potentiellement obsolète, des données à jour sont disponibles./i)).toBeInTheDocument();
 
     // Next disabled (hasNext=false)
-    expect(screen.getByRole("button", { name: /Next/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /suivant/i })).toBeDisabled();
     // Prev enabled
     expect(
-      screen.getByRole("button", { name: /Previous/i })
+      screen.getByRole("button", { name: /précédent/i })
     ).not.toBeDisabled();
   });
 
@@ -183,11 +184,11 @@ describe("<ReposPage />", () => {
         return Promise.reject(new Error("unexpected url " + url));
       });
 
-    render(<ReposPage />);
+    renderWithI18n(<ReposPage />, { locale: "fr", messages: frMessages });
 
     // While initial load is in-flight, both buttons should be disabled
-    const prev = await screen.findByRole("button", { name: /previous/i });
-    const next = screen.getByRole("button", { name: /next/i });
+    const prev = await screen.findByRole("button", { name: /précédent/i });
+    const next = screen.getByRole("button", { name: /suivant/i });
     expect(prev).toBeDisabled();
     expect(next).toBeDisabled();
     expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -280,7 +281,7 @@ describe("<ReposPage />", () => {
       )
     );
 
-    render(<ReposPage />);
+    renderWithI18n(<ReposPage />, { locale: "fr", messages: frMessages });
 
     // wait for loading to finish and the empty state to appear
     expect(
@@ -296,7 +297,7 @@ describe("<ReposPage />", () => {
 
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    render(<ReposPage />);
+    renderWithI18n(<ReposPage />, { locale: "fr", messages: frMessages });
 
     // UI should not crash; with no data loaded it will show the empty state
     await waitFor(() => {

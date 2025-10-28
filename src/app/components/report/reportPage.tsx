@@ -7,16 +7,18 @@ import {
   DependenciesSection,
   IssuesPrsSection,
   RisksSection,
-} from "./report-sections";
+} from "./reportSections";
 import { Report } from "@/app/types/report";
+import { useTranslations } from "next-intl";
 
 export function ReportPage({ report }: { report: Report }) {
+  const t = useTranslations("Report");
   return (
     <div className="mx-auto w-full md:p-10 space-y-4">
       <Toolbar
         left={
           <h1 className="text-2xl font-semibold tracking-tight">
-            Technical Debt Report
+            {t("title")}
           </h1>
         }
         right={
@@ -35,7 +37,7 @@ export function ReportPage({ report }: { report: Report }) {
                 }, 2000);
               }}
             >
-              Copy JSON
+              {t("copy.btn")}
             </Button>
           </div>
         }

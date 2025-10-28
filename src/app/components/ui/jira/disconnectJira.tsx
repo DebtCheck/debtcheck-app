@@ -3,8 +3,10 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "../utilities";
+import { useTranslations } from "next-intl";
 
 export default function DisconnectJira() {
+  const t = useTranslations("Jira");
   const { update } = useSession();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -14,7 +16,7 @@ export default function DisconnectJira() {
     try {
       const res = await fetch("/api/jira", { method: "DELETE" });
       if (!res.ok) console.error(await res.json());
-      await update();        // recompute session.providers
+      await update();
       router.refresh();
     } finally {
       setBusy(false);
@@ -23,7 +25,7 @@ export default function DisconnectJira() {
 
   return (
     <Button onClick={onClick} disabled={busy}>
-      {busy ? "Disconnecting…" : "Disconnect Jira"}
+      {busy ? t("disconnectBusy") : t("disconnect")}
     </Button>
   );
 }

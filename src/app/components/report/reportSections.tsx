@@ -24,6 +24,7 @@ import {
 } from "../ui/utilities";
 import { Clock3, GitCommit, GitPullRequest } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 export function ActivitySection({
   updated,
@@ -32,39 +33,38 @@ export function ActivitySection({
   updated: AnalyzeStaleness;
   pushed: AnalyzeStaleness;
 }) {
+  const t = useTranslations("Report.activity");
   return (
     <Collapsible
-      title="Repository activity"
+      title={t("title")}
       right={
         <div className="flex gap-2">
           <PillFromBool
-            okLabel="Fresh"
-            warnLabel="Stale"
+            okLabel={t("fresh")}
+            warnLabel={t("stale")}
             warn={updated.stale}
           />
-          <PillFromBool okLabel="Fresh" warnLabel="Stale" warn={pushed.stale} />
+          <PillFromBool okLabel={t("fresh")} warnLabel={t("stale")} warn={pushed.stale} />
         </div>
       }
     >
       <div className="grid gap-4 md:grid-cols-2">
         <Section
-          title="Updated at"
-          subtitle={updated.message}
+          title={t("updatedAt")}
           className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
             <Clock3 className="w-4 h-4" />
-            <span>{updated.daysSinceUpdate} day(s) since last update</span>
+            <span>{t("sinceUpdate", { count: updated.daysSinceUpdate })}</span>
           </div>
         </Section>
         <Section
-          title="Pushed at"
-          subtitle={pushed.message}
+          title={t("pushedAt")}
           className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
             <GitCommit className="w-4 h-4" />
-            <span>{pushed.daysSinceUpdate} day(s) since last push</span>
+            <span>{t("sincePush", { count: pushed.daysSinceUpdate })}</span>
           </div>
         </Section>
       </div>
@@ -79,32 +79,31 @@ export function IssuesPrsSection({
   issues: AnalyzeIssues;
   prs: AnalyzePrs;
 }) {
+  const t = useTranslations("Report.issuesPrs");
   const isClean = issues.issuesRatio < 0.1 && prs.stalePRsCount === 0;
   return (
     <Collapsible
-      title="Issues & Pull Requests"
+      title={t("title")}
       right={
         <div className="flex gap-2">
           <StatusPill status={issues.isManyIssuesUnresolved ? "warning" : "ok"}>
-            {Math.round(issues.issuesRatio * 100)}% open
+            {t("openPct", { pct: Math.round(issues.issuesRatio * 100) })}
           </StatusPill>
           <StatusPill status={prs.stalePRsCount > 0 ? "warning" : "ok"}>
-            {prs.stalePRsCount} stale PRs
+            {t("stalePrs", { count: prs.stalePRsCount })}
           </StatusPill>
         </div>
       }
     >
       <div className="flex gap-4 md:grid md:grid-cols-2">
         <StatBadge
-          label="Open issues ratio"
+          label={t("openIssuesRatio")}
           value={`${Math.round(issues.issuesRatio * 100)}%`}
-          hint={issues.message}
           className="bg-[rgb(var(--surface-2))]"
         />
         <StatBadge
-          label="Stale PRs (≥30d)"
+          label={t("stalePrs_30")}
           value={prs.stalePRsCount}
-          hint={prs.message}
           className="bg-[rgb(var(--surface-2))]"
         />
         {isClean ? null : (
@@ -114,13 +113,13 @@ export function IssuesPrsSection({
                 left={
                   <div className="flex items-center gap-2 text-sm">
                     <GitPullRequest className="w-4 h-4" />
-                    Quality hints
+                    {t("hintsTitle")}
                   </div>
                 }
               />
               <ul className="mt-3 text-sm list-disc pl-5 text-muted-foreground">
-                <li>Close resolved issues to keep the ratio healthy.</li>
-                <li>Review/merge or close stale PRs regularly.</li>
+                <li>{t("hintCloseIssues")}</li>
+                <li>{t("hintReviewPrs")}</li>
               </ul>
             </CardContent>
           </Card>
@@ -131,29 +130,30 @@ export function IssuesPrsSection({
 }
 
 export function DependenciesSection({ items }: { items: DeprecatedLibs[] }) {
+  const t = useTranslations("Report.deps");
   const columns: Column<DeprecatedLibs & { _status: DepStatus }>[] = [
     {
       key: "name",
-      header: "Package",
+      header: t("package"),
       width: "40%",
       render: (r) => <span className="break-all font-medium">{r.name}</span>,
     },
-    { key: "current", header: "Current" },
-    { key: "latest", header: "Latest" },
+    { key: "current", header: t("current") },
+    { key: "latest", header: t("latest") },
     {
       key: "deprecated",
-      header: "Deprecated",
+      header: t("deprecated"),
       width: 110,
       render: (r) =>
         r.deprecated ? (
-          <span className="text-red-700">yes</span>
+          <span className="text-red-700">{t("yes")}</span>
         ) : (
-          <span className="text-muted-foreground">no</span>
+          <span className="text-muted-foreground">{t("no")}</span>
         ),
     },
     {
       key: "_status",
-      header: "Status",
+      header: t("status"),
       width: 120,
       render: (r) => <StatusPill status={r._status} />,
     },
@@ -170,7 +170,7 @@ export function DependenciesSection({ items }: { items: DeprecatedLibs[] }) {
     : "ok";
 
   return (
-    <Collapsible title="Dependencies" right={<StatusPill status={worst} />}>
+    <Collapsible title={t("title")} right={<StatusPill status={worst} />}>
       <DataTable
         columns={columns}
         rows={rows}
@@ -181,17 +181,18 @@ export function DependenciesSection({ items }: { items: DeprecatedLibs[] }) {
 }
 
 export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
+  const t = useTranslations("Report.risks");
   // No Rust report at all
   if (!rust) {
     return (
       <Collapsible
-        title="Risks & hygiene"
-        right={<StatusPill status="neutral">No code scan</StatusPill>}
+        title={t("title")}
+        right={<StatusPill status="neutral">{t("noScanPill")}</StatusPill>}
       >
         <InlineAlert
           variant="info"
-          title="No static analysis"
-          description="This report did not include Rust analysis results."
+          title={t("noScanTitle")}
+          description={t("noScanDesc")}
         />
       </Collapsible>
     );
@@ -214,7 +215,7 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
 
   return (
     <Collapsible
-      title="Risks & hygiene"
+      title={t("title")}
       right={<StatusPill status={overall} />}
     >
       <div className="grid gap-4">
@@ -222,45 +223,43 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
           (secretsArray.length > 0 ? (
             <InlineAlert
               variant="warning"
-              title={`Potential secrets found: ${secretsArray.length}`}
-              description="Review and rotate keys if confirmed. Tests and placeholders can be ignored when safe rules apply."
+              title={t("secretsFound", { count: secretsArray.length })}
+              description={t("secretsAdvice")}
             />
           ) : (
             <InlineAlert
               variant="success"
-              title="No secrets detected"
-              description="Static scan did not find suspicious values."
+              title={t("noSecretsTitle")}
+              description={t("noSecretsDesc")}
             />
           ))}
 
         {env && (
           <InlineAlert
             variant="info"
-            title={".env-like files present"}
-            description={
-              "Sensitive configuration files are committed in the repo."
-            }
+            title={t("envTitle")}
+            description={t("envDesc")}
           />
         )}
 
         {hasParse && (
           <Section
-            title="Dead code summary"
-            subtitle="Identifiers declared but never used"
+            title={t("deadSummaryTitle")}
+            subtitle={t("deadSummarySub")}
           >
             <div className="grid grid-cols-3 gap-4">
               <StatBadge
-                label="Unused declarations"
+                label={t("unusedDecl")}
                 value={deadArray.length}
                 variant={deadArray.length > 0 ? "warning" : "success"}
               />
               <StatBadge
-                label="Secrets"
+                label={t("secrets")}
                 value={secretsArray.length}
                 variant={secretsArray.length > 0 ? "danger" : "success"}
               />
               <StatBadge
-                label=".env present"
+                label={t("envPresent")}
                 value={env ? "yes" : "no"}
                 variant={env ? "info" : "neutral"}
               />
@@ -270,36 +269,36 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
 
         {hasSecretsReport && (
           <Collapsible
-            title="Secrets details"
+            title={t("secretsDetails")}
             defaultOpen={hasSecretsReport ? true : false}
           >
             <DataTable
               columns={[
                 {
                   key: "file",
-                  header: "File",
+                  header: t("file"),
                   width: "40%",
                   render: (s: SecretItem) => (
                     <span className="break-all">{s.file}</span>
                   ),
                 },
-                { key: "name", header: "Name" },
-                { key: "kind", header: "Kind" },
+                { key: "name", header: t("name") },
+                { key: "kind", header: t("kind") },
                 {
                   key: "value_preview",
-                  header: "Preview",
+                  header: t("preview"),
                   width: "30%",
                   render: (s: SecretItem) => (
                     <code className="text-xs break-all">{s.value_preview}</code>
                   ),
                 },
-                { key: "line", header: "Line", align: "right" },
-                { key: "column", header: "Column", align: "right" },
+                { key: "line", header: t("line"), align: "right" },
+                { key: "column", header: t("column"), align: "right" },
               ]}
               rows={secretsArray}
               rowKey={(s) => `${s.file}:${s.line}:${s.column}`}
               emptyState={
-                <Card className="p-4 text-sm">No secrets detected.</Card>
+                <Card className="p-4 text-sm">{t("emptySecrets")}</Card>
               }
             />
           </Collapsible>
@@ -307,28 +306,28 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
 
         {hasDeadReport && (
           <Collapsible
-            title="Dead code details"
+            title={t("deadDetails")}
             defaultOpen={hasDeadReport ? true : false}
           >
             <DataTable
               columns={[
                 {
                   key: "file",
-                  header: "File",
+                  header: t("file"),
                   width: "40%",
                   render: (d: DeadCodeItem) => (
                     <span className="break-all">{d.file}</span>
                   ),
                 },
-                { key: "name", header: "Identifier" },
-                { key: "kind", header: "Kind" },
-                { key: "line", header: "Line", align: "right" },
-                { key: "column", header: "Column", align: "right" },
+                { key: "name", header: t("identifier") },
+                { key: "kind", header: t("kind") },
+                { key: "line", header: t("line"), align: "right" },
+                { key: "column", header: t("column"), align: "right" },
               ]}
               rows={deadArray}
               rowKey={(d) => `${d.file}:${d.line}:${d.column}:${d.name}`}
               emptyState={
-                <Card className="p-4 text-sm">No dead code detected.</Card>
+                <Card className="p-4 text-sm">{t("emptyDead")}</Card>
               }
             />
           </Collapsible>

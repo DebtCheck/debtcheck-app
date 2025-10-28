@@ -5,6 +5,7 @@ import { useJiraProjects } from "./useJiraProjects";
 import { Projects } from "@/app/types/jira";
 import { Report } from "@/app/types/report";
 import { Button } from "../utilities";
+import { useTranslations } from "next-intl";
 
 type Props = {
   open: boolean;
@@ -22,6 +23,7 @@ type TicketCreationState =
   | { kind: "error"; payload: TicketCreationErr };
 
 export default function BacklogModal({ open, onClose, report }: Props) {
+  const t = useTranslations("Jira.modal");
   const { state, fetchProjects } = useJiraProjects();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null
@@ -33,7 +35,6 @@ export default function BacklogModal({ open, onClose, report }: Props) {
   const historyAbortRef = useRef<AbortController | null>(null);
 
   const loadHistory = useCallback(async (projectId: string) => {
-    // cancel previous request (if any)
     historyAbortRef.current?.abort();
     const ctrl = new AbortController();
     historyAbortRef.current = ctrl;
@@ -120,7 +121,7 @@ export default function BacklogModal({ open, onClose, report }: Props) {
       {/* Panel */}
       <div className="relative w-full max-w-3xl rounded-2xl bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-(--border-20) p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Create backlog in Jira</h2>
+          <h2 className="text-xl font-semibold">{t("title")}</h2>
           <button
             onClick={onClose}
             className="rounded-md px-2 py-1 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-800"
@@ -132,13 +133,15 @@ export default function BacklogModal({ open, onClose, report }: Props) {
 
         {/* Body */}
         {state.kind === "loading" && (
-          <p className="text-sm text-gray-500">Loading projects…</p>
+          <p className="text-sm text-gray-500">{t("loading")}</p>
         )}
         {state.kind === "error" && (
-          <p className="text-sm text-red-600">Error: {state.message}</p>
+          <p className="text-sm text-red-600">
+            {t("error", { msg: state.message })}
+          </p>
         )}
         {state.kind === "loaded" && values.length === 0 && (
-          <p className="text-sm text-gray-600">No Jira projects found.</p>
+          <p className="text-sm text-gray-600">{t("empty")}</p>
         )}
 
         {values.length > 0 && (
@@ -170,12 +173,14 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                     )}
                     <div>
                       <div className="font-medium">{p.name}</div>
-                      <div className="text-xs text-gray-500">Key: {p.key}</div>
+                      <div className="text-xs text-gray-500">
+                        {t("key", { key: p.key })}
+                      </div>
                     </div>
                   </div>
                   <div className="mt-2 text-xs text-gray-600">
                     {p.projectTypeKey} • {p.style} •{" "}
-                    {p.isPrivate ? "Private" : "Public"}
+                    {p.isPrivate ? t("privacyPrivate") : t("privacyPublic")}
                   </div>
                 </button>
               ))}
@@ -190,17 +195,18 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                     rounded-lg border-(--border-20)
                     bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))]
                     shadow-md p-3
-                  ">
+                  "
+                >
                   <div className="mb-2 flex items-center justify-between">
                     <span className="text-xs font-semibold">
-                      Created by{" "}
+                      {t("createdBy")}
                       <span className="text-blue-600">DebtCheck</span>
                     </span>
-                    <span className="text-[10px] opacity-60">recent</span>
+                    <span className="text-[10px] opacity-60">{t("recent")}</span>
                   </div>
 
                   {historyLoading && (
-                    <p className="text-[11px] opacity-70">Loading…</p>
+                    <p className="text-[11px] opacity-70">{t("historyLoading")}</p>
                   )}
                   {historyError && (
                     <p className="text-[11px] text-red-600 leading-snug">
@@ -208,7 +214,7 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                     </p>
                   )}
                   {history && history.length === 0 && (
-                    <p className="text-[11px] opacity-70">No recent tickets.</p>
+                    <p className="text-[11px] opacity-70">{t("historyEmpty")}</p>
                   )}
 
                   {history && history.length > 0 && (
@@ -234,7 +240,7 @@ export default function BacklogModal({ open, onClose, report }: Props) {
               )}
 
               <div className="bottom-4 right-6 flex items-center gap-2">
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onClose}>{t("cancel")}</Button>
                 <Button
                   disabled={!selectedProjectId || submit.kind === "loading"}
                   onClick={() =>
@@ -242,21 +248,22 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                   }
                   className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
                 >
-                  {submit.kind === "loading" ? "Creating…" : "Create tickets"}
+                  {submit.kind === "loading" ? t("creating") : t("createTickets")}
                 </Button>
               </div>
             </div>
 
             {submit.kind === "ok" && (
               <p className="mt-3 text-sm text-green-600">
-                {submit.payload.created} ticket(s) created:{" "}
-                {submit.payload.issues.map((i) => i.key).join(", ")}
+                {t("createdSummary", {
+                  count: submit.payload.created,
+                  keys: submit.payload.issues.map((i) => i.key).join(", ")
+                })}
               </p>
             )}
             {submit.kind === "error" && (
               <p className="mt-3 text-sm text-red-600">
-                {submit.payload.error}
-                {submit.payload.details ? ` – ${submit.payload.details}` : ""}
+                {t("createError", { msg: submit.payload.error, details: submit.payload.details ?? "" })}
               </p>
             )}
           </div>

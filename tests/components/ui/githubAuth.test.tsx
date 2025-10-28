@@ -1,7 +1,9 @@
 import type { Session } from "next-auth";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import GitHubAuth from "@/app/components/ui/githubAuth";
+import GitHubAuth from "@/app/components/ui/header/githubAuth";
+import { renderWithI18n } from "../../helpers/renderWithI18n";
+import enMessages from "@/messages/en.json";
 
 // Hoisted spies
 const signInMock = vi.hoisted(() => vi.fn());
@@ -64,7 +66,7 @@ describe("<GitHubAuth />", () => {
       update: vi.fn(async () => null),
     });
 
-    render(<GitHubAuth />);
+    renderWithI18n(<GitHubAuth />, { locale: "en", messages: enMessages });
 
     // finds the button by its title (accessible name from title attribute is fine, too)
     const btn = screen.getByRole("button", { name: /continue with github/i });
@@ -85,7 +87,7 @@ describe("<GitHubAuth />", () => {
       update: vi.fn(async () => null),
     });
 
-    render(<GitHubAuth />);
+    renderWithI18n(<GitHubAuth />, { locale: "en", messages: enMessages });
 
     expect(screen.getByText(/John/i)).toBeInTheDocument();
     expect(

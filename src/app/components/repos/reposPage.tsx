@@ -8,10 +8,12 @@ import { Button } from "@/app/components/ui/utilities/buttons/button";
 import { InlineAlert } from "../ui/utilities";
 import { RepoGallery } from "./repoGallery";
 import { RepoPagination } from "./repoPagination";
+import { useTranslations } from "next-intl";
 
 const PER_PAGE = 10;
 
 export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?: Repo) => void }) {
+  const t = useTranslations("Repos");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<Repo[]>([]);
   const [hasNext, setHasNext] = useState(false);
@@ -65,11 +67,11 @@ export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?
     <>
       <Section
         className="bg-card/80 border-border/10 mx-auto max-w-4xl p-4 shadow-2xl rounded-2xl"
-        title="My Github repositories"
-        subtitle="Select a repository to analyze its technical debt."
+        title={t("sectionTitle")}
+        subtitle={t("sectionSubtitle")}
         actions={
           <Button onClick={() => load(page)} disabled={loading}>
-            Refresh
+            {t("refresh")}
           </Button>
         }
       >
@@ -77,8 +79,8 @@ export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?
           <InlineAlert
             className="mb-3"
             variant="info"
-            title="Cache potentially stale, refreshed data may be available."
-            description="The displayed data may have been served from the cache. Refresh to reload."
+            title={t("staleTitle")}
+            description={t("staleDesc")}
           />
         )}
 
@@ -86,7 +88,7 @@ export function ReposPage({ onSelectRepo }: { onSelectRepo?: (url: string, repo?
           className="mb-4"
           left={
             <Input
-              placeholder="Search a repository…"
+              placeholder={t("searchPlaceholder")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />

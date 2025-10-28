@@ -3,18 +3,15 @@
 import { cn } from "@/app/lib/utils";
 import { Repo } from "@/app/types/github";
 import { Clock, GitBranch, Globe, Shield } from "lucide-react";
+import { useFormatter, useNow, useTranslations } from "next-intl";
 
-function timeAgo(iso: string): string {
-  const d = new Date(iso).getTime();
-  const diff = Date.now() - d;
-  const mins = Math.round(diff / 60000);
-  if (mins < 60) return `${mins} min`;
-  const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs} h`;
-  const days = Math.round(hrs / 24);
-  if (days < 30) return `${days} j`;
-  const months = Math.round(days / 30);
-  return `${months} mois`;
+function useTimeAgo() {
+  const f = useFormatter();
+  const now = useNow();
+
+  return (iso: string): string => {
+    return f.relativeTime(new Date(iso), { now });
+  };
 }
 
 export type RepoCardProps = {
@@ -30,17 +27,19 @@ export function RepoCard({
   className,
   disabled,
 }: RepoCardProps) {
+  const t = useTranslations("Repos");
+  const timeAgo = useTimeAgo();
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={() => onSelect?.(r.html_url, r)}
-      aria-label={`Choisir ${r.full_name}`}
+      aria-label={t("ariaChoose", { fullName: r.full_name })}
       className={cn(
         "text-left rounded-2xl border p-4 transition group",
         "cursor-pointer",
-        "bg-card/5 hover:shadow-md hover:-translate-y-[1px]",
-        "border-border/10",                                    
+        "bg-card/5 hover:shadow-md hover:-translate-y-px",
+        "border-border/10",
         disabled && "opacity-60 cursor-not-allowed",
         className
       )}
@@ -72,16 +71,16 @@ export function RepoCard({
               ) : (
                 <Globe className="h-3 w-3" />
               )}
-              {r.private ? "privé" : "public"}
+              {r.private ? t("privacyPrivate") : t("privacyPublic")}
             </span>
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs opacity-80">
             <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 border-border/10">
-              {r.language ?? "No lang"}
+              {r.language ?? t("noLang")}
             </span>
             <span className="inline-flex items-center gap-1">
-              <Clock className="h-3 w-3" /> pushed {timeAgo(r.pushed_at)}
+              <Clock className="h-3 w-3" /> {t("pushed", { when: timeAgo(r.pushed_at) })}
             </span>
           </div>
         </div>

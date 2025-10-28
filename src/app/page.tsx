@@ -5,19 +5,22 @@ import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "./components/ui/utilities/base/card";
 import { Button } from "./components/ui/utilities/buttons/button";
-import GitHubAuth from "./components/ui/githubAuth";
+import GitHubAuth from "./components/ui/header/githubAuth";
 import type { Report } from "@/app/types/report";
 import { ReposPage } from "./components/repos/reposPage";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
 import { ApiError } from "@/app/lib/http/response";
 import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
-import { ThemeToggle } from "./components/ui/theme-toggle";
+import { ThemeToggle } from "./components/ui/header/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import { ReportPage } from "./components/report/reportPage";
 import { ChevronLeft } from "lucide-react";
+import { LocaleDropdown } from "./components/ui/header/lang/localeDropdown";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
+  const t = useTranslations("Home");
   const { data: session } = useSession();
   const githubLinked = !!session?.providers?.github;
 
@@ -55,7 +58,6 @@ export default function Home() {
   }, [cooldown]);
 
   const isValidRepoUrl = useMemo(() => {
-    // lightweight GH repo URL check: owner/repo, optional trailing parts ignored
     try {
       const u = new URL(repoUrl);
       return u.hostname === "github.com" && /^\/[^/]+\/[^/]+/.test(u.pathname);
@@ -122,12 +124,11 @@ export default function Home() {
   };
 
   if (!githubLinked && !withoutLog) {
-    // Show ONLY the auth gate when not linked
     return (
       <main className="min-h-screen flex items-center justify-center p-8">
         <GitHubAuth />
         <Button onClick={handleWithoutLog} className="ml-4">
-          {withoutLog ? "Continue without login…" : "Continue without login"}
+          {withoutLog ? t("continueWithoutLoginDots") : t("continueWithoutLogin")}
         </Button>
       </main>
     );
@@ -143,32 +144,34 @@ export default function Home() {
       <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-(--appbar-h)">
         <div className="max-w-3xl mx-auto flex justify-between items-center h-full px-4">
           <GitHubAuth />
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LocaleDropdown />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
       {!result && (
         <main className="min-h-screen space-y-8 mt-5 pt-(--appbar-h)">
-          {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
           <section className="max-w-3xl mx-auto">
             <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
               <CardContent className="p-6 space-y-5">
                 <h1 className="text-2xl md:text-3xl font-semibold text-center flex items-center justify-center gap-2">
                   <Image
                     src={logoSrc}
-                    alt="GitHub Logo"
+                    alt={t("analyzeCtaAlt")}
                     width={28}
                     height={28}
                     priority
                   />
                   <span className="text-2xl md:text-3xl font-semibold text-center">
-                    Analyze a GitHub repo
+                    {t("analyzeGithubRepo")}
                   </span>
                 </h1>
 
                 <div className="flex-1">
                   <AnalyzeHero
                     variant="header"
-                    size="sm" // or "md" for taller
+                    size="sm"
                     value={repoUrl}
                     onChange={setRepoUrl}
                     onAnalyze={() => {
@@ -178,15 +181,14 @@ export default function Home() {
                     disabled={!isValidRepoUrl || cooldown > 0}
                     ctaLabel={
                       cooldown > 0
-                        ? `Retry in ${Math.ceil(cooldown)}s`
-                        : "Analyze"
+                        ? t("retryIn", { seconds: Math.ceil(cooldown) })
+                        : t("analyze")
                     }
-                    loadingLabel="Analyzing…"
+                    loadingLabel={t("analyzing")}
                     showIcon
                   />
                 </div>
 
-                {/* keep your auth notices */}
                 {(uiError || cooldown > 0) && (
                   <InlineAlert
                     variant={
@@ -194,9 +196,7 @@ export default function Home() {
                     }
                     title={
                       cooldown > 0
-                        ? `You're hitting the anonymous GitHub quota. Sign in or wait ${Math.ceil(
-                            cooldown
-                          )}s.`
+                        ? t("quotaTitle", { seconds: Math.ceil(cooldown) })
                         : uiError!.title
                     }
                     description={
@@ -209,8 +209,8 @@ export default function Home() {
                 {withoutLog && (
                   <InlineAlert
                     variant="warning"
-                    title="You are analyzing without logging in."
-                    description="Some features may be limited (private repos disabled, 60 reqs/hr)."
+                    title={t("anonTitle")}
+                    description={t("anonDesc")}
                     className="mt-3"
                   />
                 )}

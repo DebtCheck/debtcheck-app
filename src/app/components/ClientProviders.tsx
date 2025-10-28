@@ -8,9 +8,9 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
       <ThemeProvider
-        attribute="class" // Adds `class="dark"` or `class="light"` on <html>
-        defaultTheme="dark" // Start in dark mode
-        enableSystem={false} // Ignore OS preference (set true if you want auto)
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem={true}
       >
         {children}
       </ThemeProvider>
