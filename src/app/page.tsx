@@ -128,7 +128,7 @@ export default function Home() {
       <main className="min-h-screen flex items-center justify-center p-8">
         <GitHubAuth />
         <Button onClick={handleWithoutLog} className="ml-4">
-          {withoutLog ? "Continue without login…" : "Continue without login"}
+          {withoutLog ? t("continueWithoutLoginDots") : t("continueWithoutLogin")}
         </Button>
       </main>
     );

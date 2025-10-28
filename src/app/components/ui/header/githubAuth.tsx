@@ -62,7 +62,7 @@ export default function GitHubAuth() {
     return (
       <Button
         onClick={handleLogin}
-        className="flex items-center gap-2 bg-[#24292f] hover:bg-[#1b1f23] text-white w-[180px]"
+        className="flex items-center gap-2 bg-[#24292f] hover:bg-[#1b1f23] text-white w-[220px]"
       >
         <Image
           src={logoSrc}
