@@ -5,18 +5,18 @@ import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "./components/ui/utilities/base/card";
 import { Button } from "./components/ui/utilities/buttons/button";
-import GitHubAuth from "./components/ui/githubAuth";
+import GitHubAuth from "./components/ui/header/githubAuth";
 import type { Report } from "@/app/types/report";
 import { ReposPage } from "./components/repos/reposPage";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
 import { ApiError } from "@/app/lib/http/response";
 import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
-import { ThemeToggle } from "./components/ui/theme-toggle";
+import { ThemeToggle } from "./components/ui/header/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import { ReportPage } from "./components/report/reportPage";
 import { ChevronLeft } from "lucide-react";
-import { LocaleDropdown } from "./components/ui/lang/localeDropdown";
+import { LocaleDropdown } from "./components/ui/header/lang/localeDropdown";
 import { useTranslations } from "next-intl";
 
 export default function Home() {

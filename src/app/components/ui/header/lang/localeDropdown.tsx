@@ -4,9 +4,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Languages } from "lucide-react";
-import { ButtonDropdown } from "../utilities/buttons/buttonDropdown";
+import { ButtonDropdown } from "../../utilities/buttons/buttonDropdown";
 import { setLocale } from "./set-local";
-import { PopToast } from "../utilities/buttons/popToast";
+import { PopToast } from "../../utilities/buttons/popToast";
 
 type Locale = "en" | "fr";
 

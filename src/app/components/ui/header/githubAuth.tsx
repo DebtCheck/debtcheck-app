@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import Image from "next/image";
-import { Button } from "./utilities/buttons/button";
+import { Button } from "../utilities/buttons/button";
 import { useTheme } from "next-themes";
 
 export default function GitHubAuth() {
