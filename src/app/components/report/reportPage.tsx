@@ -7,7 +7,7 @@ import {
   DependenciesSection,
   IssuesPrsSection,
   RisksSection,
-} from "./report-sections";
+} from "./reportSections";
 import { Report } from "@/app/types/report";
 
 export function ReportPage({ report }: { report: Report }) {
