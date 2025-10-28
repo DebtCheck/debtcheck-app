@@ -58,7 +58,6 @@ export default function Home() {
   }, [cooldown]);
 
   const isValidRepoUrl = useMemo(() => {
-    // lightweight GH repo URL check: owner/repo, optional trailing parts ignored
     try {
       const u = new URL(repoUrl);
       return u.hostname === "github.com" && /^\/[^/]+\/[^/]+/.test(u.pathname);
@@ -125,7 +124,6 @@ export default function Home() {
   };
 
   if (!githubLinked && !withoutLog) {
-    // Show ONLY the auth gate when not linked
     return (
       <main className="min-h-screen flex items-center justify-center p-8">
         <GitHubAuth />
@@ -150,12 +148,10 @@ export default function Home() {
             <LocaleDropdown />
             <ThemeToggle />
           </div>
-          
         </div>
       </header>
       {!result && (
         <main className="min-h-screen space-y-8 mt-5 pt-(--appbar-h)">
-          {/* Analyze hero – keep this SINGLE source of truth for the URL input */}
           <section className="max-w-3xl mx-auto">
             <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
               <CardContent className="p-6 space-y-5">
@@ -175,7 +171,7 @@ export default function Home() {
                 <div className="flex-1">
                   <AnalyzeHero
                     variant="header"
-                    size="sm" // or "md" for taller
+                    size="sm"
                     value={repoUrl}
                     onChange={setRepoUrl}
                     onAnalyze={() => {
@@ -193,7 +189,6 @@ export default function Home() {
                   />
                 </div>
 
-                {/* keep your auth notices */}
                 {(uiError || cooldown > 0) && (
                   <InlineAlert
                     variant={

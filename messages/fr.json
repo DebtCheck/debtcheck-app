@@ -1,5 +1,27 @@
 {
-  "Nav": { "home": "Accueil", "title": "Rapport de dette technique", "cta": "Analyser un dépôt" },
+  "Nav": {
+    "home": "Accueil",
+    "title": "Rapport de dette technique",
+    "cta": "Analyser un dépôt"
+  },
+  "Header": {
+    "Auth": {
+      "continue": "Continuer avec GitHub",
+      "continueBusy": "Connexion à GitHub…",
+      "disconnect": "Déconnecter GitHub",
+      "disconnectBusy": "Déconnexion…",
+      "avatarAlt": "Avatar",
+      "githubUserFallback": "Utilisateur GitHub"
+    },
+    "Theme": {
+      "toggleAria": "Changer le thème",
+      "dark": "🌙 Sombre",
+      "light": "☀️ Clair"
+    },
+    "Locale": {
+      "selectAria": "Choisir la langue"
+    }
+  },
   "Home": {
     "analyzeGithubRepo": "Analyser un dépôt GitHub",
     "continueWithoutLogin": "Continuer sans connexion",

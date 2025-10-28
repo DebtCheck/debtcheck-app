@@ -4,6 +4,24 @@
     "title": "Technical Debt Report",
     "cta": "Analyze a repository"
   },
+  "Header": {
+    "Auth": {
+      "continue": "Continue with GitHub",
+      "continueBusy": "Continuing with GitHub…",
+      "disconnect": "Disconnect GitHub",
+      "disconnectBusy": "Disconnecting…",
+      "avatarAlt": "Avatar",
+      "githubUserFallback": "GitHub User"
+    },
+    "Theme": {
+      "toggleAria": "Toggle theme",
+      "dark": "🌙 Dark",
+      "light": "☀️ Light"
+    },
+    "Locale": {
+      "selectAria": "Select language"
+    }
+  },
   "Home": {
     "analyzeGithubRepo": "Analyze a GitHub repo",
     "continueWithoutLogin": "Continue without login",

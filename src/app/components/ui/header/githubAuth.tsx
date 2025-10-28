@@ -5,8 +5,10 @@ import { useSession, signIn } from "next-auth/react";
 import Image from "next/image";
 import { Button } from "../utilities/buttons/button";
 import { useTheme } from "next-themes";
+import { useTranslations } from "next-intl";
 
 export default function GitHubAuth() {
+  const t = useTranslations("Header.Auth");
   const { data: session, status } = useSession();
   const [busy, setBusy] = useState(false);
 
@@ -32,11 +34,9 @@ export default function GitHubAuth() {
         return;
       }
       if (res?.error) {
-        console.error("GitHub sign-in failed:", res.error);
         setBusy(false);
       }
     } catch (err) {
-      console.error("GitHub sign-in threw:", err);
       setBusy(false);
     }
   };
@@ -46,16 +46,14 @@ export default function GitHubAuth() {
     try {
       const res = await fetch("/api/github", { method: "DELETE" });
       if (!res.ok) {
-        console.error("Failed to disconnect GitHub:", await res.text());
         setBusy(false);
         return;
       }
 
       localStorage.removeItem("report");
       sessionStorage.removeItem("report");
-      window.location.assign("/"); // or a dedicated /auth page
+      window.location.assign("/");
     } catch (e) {
-      console.error(e);
       setBusy(false);
     }
   };
@@ -68,14 +66,12 @@ export default function GitHubAuth() {
       >
         <Image
           src={logoSrc}
-          alt="GitHub Logo"
+          alt="GitHub"
           width={20}
           height={20}
           className="invert-0 dark:invert"
         />
-        <span>
-          {busy ? "Continuing with GitHub..." : "Continue with GitHub"}
-        </span>
+        <span>{busy ? t("continueBusy") : t("continue")}</span>
       </Button>
     );
   }
@@ -85,12 +81,12 @@ export default function GitHubAuth() {
       <div className="flex items-center gap-2">
         <Image
           src={session.user?.image || logoSrc}
-          alt="Avatar"
+          alt={t("avatarAlt")}
           width={28}
           height={28}
           className="rounded-full"
         />
-        <p className="font-medium">{session.user?.name || "GitHub User"}</p>
+        <p className="font-medium">{session.user?.name || t("githubUserFallback")}</p>
       </div>
 
       <Button
@@ -98,7 +94,7 @@ export default function GitHubAuth() {
         disabled={busy}
         className="bg-transparent border border-border/15 hover:bg-foreground/10 text-foreground"
       >
-        {busy ? "Disconnecting…" : "Disconnect GitHub"}
+        {busy ? t("disconnectBusy") : t("disconnect")}
       </Button>
     </div>
   );
