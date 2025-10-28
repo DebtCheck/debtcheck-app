@@ -51,7 +51,6 @@ export function ActivitySection({
       <div className="grid gap-4 md:grid-cols-2">
         <Section
           title={t("updatedAt")}
-          subtitle={updated.message}
           className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
@@ -61,7 +60,6 @@ export function ActivitySection({
         </Section>
         <Section
           title={t("pushedAt")}
-          subtitle={pushed.message}
           className="bg-[rgb(var(--surface-2))] border-(--line-neutral-15)"
         >
           <div className="flex items-center gap-2 text-sm">
@@ -101,13 +99,11 @@ export function IssuesPrsSection({
         <StatBadge
           label={t("openIssuesRatio")}
           value={`${Math.round(issues.issuesRatio * 100)}%`}
-          hint={issues.message}
           className="bg-[rgb(var(--surface-2))]"
         />
         <StatBadge
           label={t("stalePrs_30")}
           value={prs.stalePRsCount}
-          hint={prs.message}
           className="bg-[rgb(var(--surface-2))]"
         />
         {isClean ? null : (
