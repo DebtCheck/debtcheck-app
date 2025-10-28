@@ -144,7 +144,7 @@ export function ButtonDropdown({
   };
 
   const menuPos = cn(
-    "absolute z-301 mt-2 w-48 rounded-xl border border-border/15 bg-popover/95 backdrop-blur shadow-xl",
+    "mt-2 w-48 rounded-xl border border-border/15 bg-popover/95 backdrop-blur shadow-xl",
     placement === "top" && "bottom-full mt-0 mb-2",
     align === "start" ? "left-0" : "right-0",
     menuClassName

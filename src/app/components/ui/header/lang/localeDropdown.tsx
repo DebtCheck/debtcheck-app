@@ -39,6 +39,7 @@ export function LocaleDropdown() {
         items={items}
         onSelect={(id: string) =>
           start(async () => {
+            if (id === locale) return;
             await setLocale(id as Locale);
             router.refresh();
           })
