@@ -112,5 +112,32 @@
       "emptySecrets": "No secrets detected.",
       "emptyDead": "No dead code detected."
     }
+  },
+  "Jira": {
+    "connect": "Connect Jira",
+    "connectAria": "Connect Jira",
+    "disconnect": "Disconnect Jira",
+    "disconnectBusy": "Disconnecting…",
+    "createBacklog": "Create backlog",
+    "createBacklogAria": "Create backlog",
+    "modal": {
+      "title": "Create backlog in Jira",
+      "close": "Close",
+      "loading": "Loading projects…",
+      "error": "Error: {msg}",
+      "empty": "No Jira projects found.",
+      "key": "Key: {key}",
+      "privacyPublic": "Public",
+      "privacyPrivate": "Private",
+      "createdBy": "Created by ",
+      "recent": "recent",
+      "historyLoading": "Loading…",
+      "historyEmpty": "No recent tickets.",
+      "cancel": "Cancel",
+      "creating": "Creating…",
+      "createTickets": "Create tickets",
+      "createdSummary": "{count, plural, one {# ticket created} other {# tickets created}}: {keys}",
+      "createError": "{msg}{details, select, undefined {} other { – {details}}}"
+    }
   }
 }
