@@ -2,7 +2,7 @@ import { cn } from "@/app/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 
 export function Section({ title, subtitle, actions, children, padded = true, className }: {
-  title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode; padded?: boolean; className?: string;
+  title: React.ReactNode; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode; padded?: boolean; className?: string;
 }) {
   return (
     <Card className={cn(

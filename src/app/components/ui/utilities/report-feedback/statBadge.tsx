@@ -9,7 +9,7 @@ export type StatBadgeVariant =
   | "info";
 
 export type StatBadgeProps = {
-  label: string;
+  label: React.ReactNode;
   value: string | number;
   variant?: StatBadgeVariant;
   hint?: string;
