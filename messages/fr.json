@@ -51,5 +51,66 @@
     "page": "Page {page}",
     "prev": "Précédent",
     "next": "Suivant"
+  },
+  "Report": {
+    "title": "Rapport de dette technique",
+    "copy": { "btn": "Copier le JSON", "copied": "Copié !" },
+    "activity": {
+      "title": "Activité du dépôt",
+      "fresh": "Récent",
+      "stale": "Ancien",
+      "updatedAt": "Mis à jour",
+      "pushedAt": "Dernier push",
+      "sinceUpdate": "{count, plural, one {il y a # jour} other {il y a # jours}} depuis la dernière mise à jour",
+      "sincePush":   "{count, plural, one {il y a # jour} other {il y a # jours}} depuis le dernier push"
+    },
+    "issuesPrs": {
+      "title": "Issues & Pull Requests",
+      "openPct": "{pct}% ouvertes",
+      "stalePrs": "{count} PRs anciennes",
+      "openIssuesRatio": "Taux d’issues ouvertes",
+      "stalePrs_30": "PRs anciennes (≥30j)",
+      "hintsTitle": "Pistes de qualité",
+      "hintCloseIssues": "Fermez les issues résolues pour garder un taux sain.",
+      "hintReviewPrs": "Relisez/fusionnez ou fermez régulièrement les PRs anciennes."
+    },
+    "deps": {
+      "title": "Dépendances",
+      "package": "Paquet",
+      "current": "Actuelle",
+      "latest": "Dernière",
+      "deprecated": "Déprécié",
+      "yes": "oui",
+      "no": "non",
+      "status": "Statut"
+    },
+    "risks": {
+      "title": "Risques & hygiène",
+      "noScanPill": "Pas d’analyse",
+      "noScanTitle": "Aucune analyse statique",
+      "noScanDesc": "Ce rapport n’inclut pas de résultats d’analyse Rust.",
+      "secretsFound": "Secrets potentiels trouvés : {count}",
+      "secretsAdvice": "Vérifiez et faites tourner les clés si confirmé. Les tests et placeholders peuvent être ignorés quand les règles le permettent.",
+      "noSecretsTitle": "Aucun secret détecté",
+      "noSecretsDesc": "L’analyse n’a pas trouvé de valeurs suspectes.",
+      "envTitle": "Fichiers .env présents",
+      "envDesc": "Des fichiers de configuration sensibles sont versionnés.",
+      "deadSummaryTitle": "Résumé du code mort",
+      "deadSummarySub": "Identifiants déclarés mais jamais utilisés",
+      "unusedDecl": "Déclarations inutilisées",
+      "secrets": "Secrets",
+      "envPresent": ".env présent",
+      "secretsDetails": "Détails des secrets",
+      "deadDetails": "Détails du code mort",
+      "file": "Fichier",
+      "name": "Nom",
+      "kind": "Type",
+      "preview": "Extrait",
+      "line": "Ligne",
+      "column": "Colonne",
+      "identifier": "Identifiant",
+      "emptySecrets": "Aucun secret détecté.",
+      "emptyDead": "Aucun code mort détecté."
+    }
   }
 }

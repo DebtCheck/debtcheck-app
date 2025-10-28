@@ -51,5 +51,66 @@
     "page": "Page {page}",
     "prev": "Previous",
     "next": "Next"
+  },
+  "Report": {
+    "title": "Technical Debt Report",
+    "copy": { "btn": "Copy JSON", "copied": "Copied!" },
+    "activity": {
+      "title": "Repository activity",
+      "fresh": "Fresh",
+      "stale": "Stale",
+      "updatedAt": "Updated at",
+      "pushedAt": "Pushed at",
+      "sinceUpdate": "{count, plural, one {# day since last update} other {# days since last update}}",
+      "sincePush":   "{count, plural, one {# day since last push}   other {# days since last push}}"
+    },
+    "issuesPrs": {
+      "title": "Issues & Pull Requests",
+      "openPct": "{pct}% open",
+      "stalePrs": "{count} stale PRs",
+      "openIssuesRatio": "Open issues ratio",
+      "stalePrs_30": "Stale PRs (≥30d)",
+      "hintsTitle": "Quality hints",
+      "hintCloseIssues": "Close resolved issues to keep the ratio healthy.",
+      "hintReviewPrs": "Review/merge or close stale PRs regularly."
+    },
+    "deps": {
+      "title": "Dependencies",
+      "package": "Package",
+      "current": "Current",
+      "latest": "Latest",
+      "deprecated": "Deprecated",
+      "yes": "yes",
+      "no": "no",
+      "status": "Status"
+    },
+    "risks": {
+      "title": "Risks & hygiene",
+      "noScanPill": "No code scan",
+      "noScanTitle": "No static analysis",
+      "noScanDesc": "This report did not include Rust analysis results.",
+      "secretsFound": "Potential secrets found: {count}",
+      "secretsAdvice": "Review and rotate keys if confirmed. Tests and placeholders can be ignored when safe rules apply.",
+      "noSecretsTitle": "No secrets detected",
+      "noSecretsDesc": "Static scan did not find suspicious values.",
+      "envTitle": ".env-like files present",
+      "envDesc": "Sensitive configuration files are committed in the repo.",
+      "deadSummaryTitle": "Dead code summary",
+      "deadSummarySub": "Identifiers declared but never used",
+      "unusedDecl": "Unused declarations",
+      "secrets": "Secrets",
+      "envPresent": ".env present",
+      "secretsDetails": "Secrets details",
+      "deadDetails": "Dead code details",
+      "file": "File",
+      "name": "Name",
+      "kind": "Kind",
+      "preview": "Preview",
+      "line": "Line",
+      "column": "Column",
+      "identifier": "Identifier",
+      "emptySecrets": "No secrets detected.",
+      "emptyDead": "No dead code detected."
+    }
   }
 }
