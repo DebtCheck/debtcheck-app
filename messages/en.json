@@ -34,5 +34,22 @@
     "anonDesc": "Some features may be limited (private repos disabled, 60 reqs/hr).",
     "networkError": "Network error",
     "analyzeCtaAlt": "GitHub Logo"
+  },
+  "Repos": {
+    "sectionTitle": "My Github repositories",
+    "sectionSubtitle": "Select a repository to analyze its technical debt.",
+    "refresh": "Refresh",
+    "staleTitle": "Cache potentially stale, refreshed data may be available.",
+    "staleDesc": "The displayed data may have been served from the cache. Refresh to reload.",
+    "searchPlaceholder": "Search a repository…",
+    "empty": "No repositories to display here.",
+    "privacyPublic": "public",
+    "privacyPrivate": "private",
+    "noLang": "No lang",
+    "pushed": "pushed {when}",
+    "ariaChoose": "Choose {fullName}",
+    "page": "Page {page}",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

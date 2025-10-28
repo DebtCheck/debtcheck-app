@@ -34,5 +34,22 @@
     "anonDesc": "Certaines fonctionnalités peuvent être limitées (repos privés désactivés, 60 reqs/h).",
     "networkError": "Erreur réseau",
     "analyzeCtaAlt": "Logo GitHub"
+  },
+  "Repos": {
+    "sectionTitle": "Mes dépôts GitHub",
+    "sectionSubtitle": "Sélectionnez un dépôt pour analyser sa dette technique.",
+    "refresh": "Rafraîchir",
+    "staleTitle": "Cache potentiellement obsolète, des données à jour sont disponibles.",
+    "staleDesc": "Les données affichées proviennent peut-être du cache. Rafraîchissez pour recharger.",
+    "searchPlaceholder": "Rechercher un dépôt…",
+    "empty": "Aucun dépôt à afficher ici.",
+    "privacyPublic": "publique",
+    "privacyPrivate": "privé",
+    "noLang": "Aucun langage",
+    "pushed": "poussé {when}",
+    "ariaChoose": "Choisir {fullName}",
+    "page": "Page {page}",
+    "prev": "Précédent",
+    "next": "Suivant"
   }
 }
