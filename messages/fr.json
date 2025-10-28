@@ -1,0 +1,16 @@
+{
+  "Nav": { "home": "Accueil", "title": "Rapport de dette technique", "cta": "Analyser un dépôt" },
+  "Home": {
+    "analyzeGithubRepo": "Analyser un dépôt GitHub",
+    "continueWithoutLogin": "Continuer sans connexion",
+    "continueWithoutLoginDots": "Continuer sans connexion…",
+    "analyze": "Analyser",
+    "analyzing": "Analyse en cours…",
+    "retryIn": "Réessayer dans {seconds}s",
+    "quotaTitle": "Vous atteignez le quota GitHub anonyme. Connectez-vous ou patientez {seconds}s.",
+    "anonTitle": "Vous analysez sans vous connecter.",
+    "anonDesc": "Certaines fonctionnalités peuvent être limitées (repos privés désactivés, 60 reqs/h).",
+    "networkError": "Erreur réseau",
+    "analyzeCtaAlt": "Logo GitHub"
+  }
+}

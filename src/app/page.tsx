@@ -16,8 +16,11 @@ import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import { ReportPage } from "./components/report/reportPage";
 import { ChevronLeft } from "lucide-react";
+import { LocaleDropdown } from "./components/ui/lang/localeDropdown";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
+  const t = useTranslations("Home");
   const { data: session } = useSession();
   const githubLinked = !!session?.providers?.github;
 
@@ -143,7 +146,11 @@ export default function Home() {
       <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-(--appbar-h)">
         <div className="max-w-3xl mx-auto flex justify-between items-center h-full px-4">
           <GitHubAuth />
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LocaleDropdown />
+            <ThemeToggle />
+          </div>
+          
         </div>
       </header>
       {!result && (
@@ -155,13 +162,13 @@ export default function Home() {
                 <h1 className="text-2xl md:text-3xl font-semibold text-center flex items-center justify-center gap-2">
                   <Image
                     src={logoSrc}
-                    alt="GitHub Logo"
+                    alt={t("analyzeCtaAlt")}
                     width={28}
                     height={28}
                     priority
                   />
                   <span className="text-2xl md:text-3xl font-semibold text-center">
-                    Analyze a GitHub repo
+                    {t("analyzeGithubRepo")}
                   </span>
                 </h1>
 
@@ -178,10 +185,10 @@ export default function Home() {
                     disabled={!isValidRepoUrl || cooldown > 0}
                     ctaLabel={
                       cooldown > 0
-                        ? `Retry in ${Math.ceil(cooldown)}s`
-                        : "Analyze"
+                        ? t("retryIn", { seconds: Math.ceil(cooldown) })
+                        : t("analyze")
                     }
-                    loadingLabel="Analyzing…"
+                    loadingLabel={t("analyzing")}
                     showIcon
                   />
                 </div>
@@ -194,9 +201,7 @@ export default function Home() {
                     }
                     title={
                       cooldown > 0
-                        ? `You're hitting the anonymous GitHub quota. Sign in or wait ${Math.ceil(
-                            cooldown
-                          )}s.`
+                        ? t("quotaTitle", { seconds: Math.ceil(cooldown) })
                         : uiError!.title
                     }
                     description={
@@ -209,8 +214,8 @@ export default function Home() {
                 {withoutLog && (
                   <InlineAlert
                     variant="warning"
-                    title="You are analyzing without logging in."
-                    description="Some features may be limited (private repos disabled, 60 reqs/hr)."
+                    title={t("anonTitle")}
+                    description={t("anonDesc")}
                     className="mt-3"
                   />
                 )}

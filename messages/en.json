@@ -1,0 +1,20 @@
+{
+  "Nav": {
+    "home": "Home",
+    "title": "Technical Debt Report",
+    "cta": "Analyze a repository"
+  },
+  "Home": {
+    "analyzeGithubRepo": "Analyze a GitHub repo",
+    "continueWithoutLogin": "Continue without login",
+    "continueWithoutLoginDots": "Continue without login…",
+    "analyze": "Analyze",
+    "analyzing": "Analyzing…",
+    "retryIn": "Retry in {seconds}s",
+    "quotaTitle": "You're hitting the anonymous GitHub quota. Sign in or wait {seconds}s.",
+    "anonTitle": "You are analyzing without logging in.",
+    "anonDesc": "Some features may be limited (private repos disabled, 60 reqs/hr).",
+    "networkError": "Network error",
+    "analyzeCtaAlt": "GitHub Logo"
+  }
+}
