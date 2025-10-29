@@ -2,19 +2,15 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-
 import { Section as BaseSection } from "@/app/components/ui/utilities/base/section";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/app/components/ui/utilities/base/card";
 import { Button } from "@/app/components/ui/utilities/buttons/button";
 import { LabelWithTip } from "@/app/components/ui/utilities/base/tip/labelWithTip";
 import { Header } from "@/app/components/header";
-
-type FeatureKey = "deps" | "dead" | "secrets" | "env" | "activity" | "readonly" | "jira";
+import { FeatureSection, RulesList, CodeSample } from "./featuresHelper";
 
 export default function FeaturesPage() {
   const t = useTranslations("Features");
@@ -224,79 +220,5 @@ const API_KEY = "AIzaSyD3Y4Z5xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";`}
         </Card>
       </main>
     </>
-  );
-}
-
-/* ---------- Small helpers (typed, no any) ---------- */
-
-// function TocItem({
-//   href,
-//   label,
-// }: {
-//   href: `#${FeatureKey}` | string;
-//   label: string;
-// }) {
-//   return (
-//     <Link
-//       href={href}
-//       className="inline-block rounded-lg border border-(--line-neutral-20) px-3 py-2 hover:bg-foreground/5"
-//     >
-//       {label}
-//     </Link>
-//   );
-// }
-
-function FeatureSection({
-  id,
-  title,
-  children,
-}: {
-  id: FeatureKey;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <BaseSection
-      className="mt-6"
-      title={
-        <a id={id} href={`#${id}`} className="no-underline">
-          {title}
-        </a>
-      }
-    >
-      {children}
-    </BaseSection>
-  );
-}
-
-function RulesList({
-  items,
-}: {
-  items: ReadonlyArray<{ rule: string; status: "OK" | "Warning" | "Error" }>;
-}) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-      {items.map((it) => (
-        <Card key={`${it.rule}-${it.status}`} className="h-full">
-          <CardHeader>
-            <CardTitle className="text-sm">{it.status}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">{it.rule}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-}
-
-function CodeSample({ label, code }: { label: string; code: string }) {
-  return (
-    <div className="mt-2">
-      <div className="text-xs font-semibold mb-2">{label}</div>
-      <pre className="rounded-xl border border-(--line-neutral-20) bg-[rgb(var(--surface-1))] p-4 text-xs overflow-x-auto">
-        <code>{code}</code>
-      </pre>
-    </div>
   );
 }
