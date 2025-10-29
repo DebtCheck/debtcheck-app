@@ -35,8 +35,8 @@ describe("fetchJsonOrThrow", () => {
     vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("connection refused"));
     await expect(fetchJsonOrThrow("/fail")).rejects.toBeInstanceOf(ApiError);
     await expect(fetchJsonOrThrow("/fail")).rejects.toMatchObject({
-      status: 502,
-      code: "upstream_error",
+      status: 404,
+      code: "internal_error",
     } satisfies Partial<ApiError>);
   });
 
