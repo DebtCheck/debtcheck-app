@@ -18,8 +18,8 @@ export default defineConfig({
     jsxDev: true,
   },
   test: {
-    environment: 'jsdom',
-    pool: 'forks',
+    environment: 'happy-dom', // ← replaces 'jsdom'
+    pool: 'threads',          // default, no need for fork workaround
     isolate: true,
     globals: true,
     setupFiles: ['./tests/setupTests.ts'],
