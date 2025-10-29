@@ -2,7 +2,9 @@
   "Nav": {
     "home": "Home",
     "title": "Technical Debt Report",
-    "cta": "Analyze a repository"
+    "cta": "Analyze a repository",
+    "about": "About",
+    "features": "Features"
   },
   "Header": {
     "Auth": {
@@ -33,7 +35,28 @@
     "anonTitle": "You are analyzing without logging in.",
     "anonDesc": "Some features may be limited (private repos disabled, 60 reqs/hr).",
     "networkError": "Network error",
-    "analyzeCtaAlt": "GitHub Logo"
+    "analyzeCtaAlt": "GitHub Logo",
+    "quickStartTitle": "Get started in 3 steps",
+    "quickStartSubtitle": "No setup: paste the GitHub URL, run the analysis, read the report",
+    "quickStep1Title": "Paste the repository URL",
+    "quickStep1Tip": "Format org/repo. Example: github.com/vercel/next.js",
+    "quickStep2Title": "Run the analysis",
+    "quickStep2Tip": "Read-only via the GitHub API, no cloning required",
+    "quickStep3Title": "Read the report",
+    "quickStep3Tip": "Dependencies, dead code, secrets, activity",
+    "examplesTitle": "Valid URL examples",
+    "githubRequired" : "(GitHub connection is required)",
+    "myReposTitle": "My GitHub repositories",
+    "browseRepos": "Browse my repositories",
+    "hide": "Hide",
+    "tips": {
+      "urlFormat": "URL format: https://github.com/org/repo",
+      "urlFormatTips": "The repository can be public or private (if GitHub connection is active).",
+      "readonly": "Read-only",
+      "readonlyTips": "DebtCheck only reads the GitHub API : no clone, no changes.",
+      "scopes": "Required scopes",
+      "scopesTips": "Minimal: repo:read. Private repos need the proper authorization."
+    }
   },
   "Repos": {
     "sectionTitle": "My Github repositories",
@@ -62,7 +85,7 @@
       "updatedAt": "Updated at",
       "pushedAt": "Pushed at",
       "sinceUpdate": "{count, plural, one {# day since last update} other {# days since last update}}",
-      "sincePush":   "{count, plural, one {# day since last push}   other {# days since last push}}",
+      "sincePush": "{count, plural, one {# day since last push}   other {# days since last push}}",
       "help": {
         "main": "Signals to detect inactivity or staleness in the repository.",
         "updatedAt": "Time since the default branch was updated (any ref update).",
@@ -169,6 +192,70 @@
       "createTickets": "Create tickets",
       "createdSummary": "{count, plural, one {# ticket created} other {# tickets created}}: {keys}",
       "createError": "{msg}{details, select, undefined {} other { – {details}}}"
+    }
+  },
+  "About": {
+    "title": "About Axel",
+    "subtitle": "Full-Stack Developer — creator of DebtCheck",
+    "ctaGitHub": "GitHub",
+    "ctaLinkedIn": "LinkedIn",
+    "ctaCv": "View my CV",
+    "whyTitle": "Why I built DebtCheck",
+    "techStackTitle": "Tech stack",
+    "techStackSubtitle": "Chosen for performance and security",
+    "visionTitle": "Vision & what's next",
+    "visionSubtitle": "Coming soon",
+    "featuresPreviewTitle": "Key features",
+    "viewAll": "View all",
+    "journeyTitle": "My journey",
+    "ctaFinalTitle": "Want to know more?",
+    "ctaFinalSubtitle": "Let’s talk technical debt, DX and roadmap — available from October 2025.",
+    "ctaExplore": "Explore features",
+    "ctaContact": "Contact me"
+  },
+  "Features": {
+    "headerTitle": "DebtCheck features",
+    "headerSubtitle": "Static analysis, read-only, clear and actionable report",
+    "toc": {
+      "deps": "Outdated dependencies",
+      "dead": "Dead code",
+      "secrets": "Secrets & keys",
+      "env": ".env files",
+      "activity": "Repository activity",
+      "readonly": "Read-only via GitHub API"
+    },
+    "deps": {
+      "title": "Outdated dependencies",
+      "rules": {
+        "ok": "Current version = latest",
+        "warnSameMajor": "Same major version",
+        "warnPlusOne": "+1 major version",
+        "errorTooOld": "More than 1 major behind"
+      },
+      "codeLabel": "Minimal example (package.json)",
+      "howLatest": "How is the latest version retrieved?"
+    },
+    "dead": {
+      "title": "Dead code (unused)",
+      "codeLabel": "Example (TypeScript)"
+    },
+    "secrets": {
+      "title": "Secrets & keys detection",
+      "codeLabel": "Example (JS)",
+      "noMutationTip": "Are files modified?"
+    },
+    "env": {
+      "title": "Presence of .env files"
+    },
+    "activity": {
+      "title": "Repository activity"
+    },
+    "readonly": {
+      "title": "Read-only via GitHub API"
+    },
+    "cta": {
+      "analyze": "Run an analysis",
+      "about": "Learn more"
     }
   }
 }

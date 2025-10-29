@@ -2,7 +2,9 @@
   "Nav": {
     "home": "Accueil",
     "title": "Rapport de dette technique",
-    "cta": "Analyser un dépôt"
+    "cta": "Analyser un dépôt",
+    "about": "À propos",
+    "features": "Fonctionnalités"
   },
   "Header": {
     "Auth": {
@@ -33,7 +35,28 @@
     "anonTitle": "Vous analysez sans vous connecter.",
     "anonDesc": "Certaines fonctionnalités peuvent être limitées (repos privés désactivés, 60 reqs/h).",
     "networkError": "Erreur réseau",
-    "analyzeCtaAlt": "Logo GitHub"
+    "analyzeCtaAlt": "Logo GitHub",
+    "quickStartTitle": "Démarrer en 3 étapes",
+    "quickStartSubtitle": "Aucune configuration : collez l’URL GitHub, lancez l’analyse, lisez le rapport",
+    "quickStep1Title": "Coller l’URL du dépôt",
+    "quickStep1Tip": "Format org/repo. Exemple : github.com/vercel/next.js",
+    "quickStep2Title": "Lancer l’analyse",
+    "quickStep2Tip": "Lecture seule via l’API GitHub, sans clonage",
+    "quickStep3Title": "Lire le rapport",
+    "quickStep3Tip": "Dépendances, code mort, secrets, activité",
+    "examplesTitle": "Exemples d’URL valides",
+    "githubRequired" : "(nécessite liaison GitHub)",
+    "myReposTitle": "Mes dépôts GitHub",
+    "browseRepos": "Parcourir mes dépôts",
+    "hide": "Masquer",
+    "tips": {
+      "urlFormat": "Format d’URL : https://github.com/org/repo",
+      "urlFormatTips": "Le dépôt peut être public ou privé (si liaison GitHub active).",
+      "readonly": "Lecture seule",
+      "readonlyTips": "DebtCheck lit uniquement via l’API GitHub, ne clone pas et ne modifie rien.",
+      "scopes": "Scopes nécessaires",
+      "scopesTips": "Minimal : repo:read. Les dépôts privés requièrent l’autorisation correspondante."
+    }
   },
   "Repos": {
     "sectionTitle": "Mes dépôts GitHub",
@@ -169,6 +192,70 @@
       "createTickets": "Créer les tickets",
       "createdSummary": "{count, plural, one {# ticket créé} other {# tickets créés}} : {keys}",
       "createError": "{msg}{details, select, undefined {} other { – {details}}}"
+    }
+  },
+  "About": {
+    "title": "À propos d’Axel",
+    "subtitle": "Développeur Full-Stack — créateur de DebtCheck",
+    "ctaGitHub": "GitHub",
+    "ctaLinkedIn": "LinkedIn",
+    "ctaCv": "Voir mon CV",
+    "whyTitle": "Pourquoi j’ai créé DebtCheck",
+    "techStackTitle": "Tech stack",
+    "techStackSubtitle": "Choisie pour la performance et la sécurité",
+    "visionTitle": "Vision & suite",
+    "visionSubtitle": "À venir",
+    "featuresPreviewTitle": "Fonctionnalités principales",
+    "viewAll": "Voir tout",
+    "journeyTitle": "Mon parcours",
+    "ctaFinalTitle": "Envie d’en savoir plus ?",
+    "ctaFinalSubtitle": "Parlons dette technique, DX et roadmap — disponible dès octobre 2025.",
+    "ctaExplore": "Explorer les fonctionnalités",
+    "ctaContact": "Me contacter"
+  },
+  "Features": {
+    "headerTitle": "Fonctionnalités de DebtCheck",
+    "headerSubtitle": "Analyse statique, lecture seule, rapport clair et actionnable",
+    "toc": {
+      "deps": "Dépendances obsolètes",
+      "dead": "Code mort",
+      "secrets": "Secrets & clés",
+      "env": "Fichiers .env",
+      "activity": "Activité du dépôt",
+      "readonly": "Lecture seule via l’API GitHub"
+    },
+    "deps": {
+      "title": "Dépendances obsolètes",
+      "rules": {
+        "ok": "Version courante = dernière",
+        "warnSameMajor": "Même version majeure",
+        "warnPlusOne": "+1 sur la version majeure",
+        "errorTooOld": "Plus d’une majeure de retard"
+      },
+      "codeLabel": "Exemple minimal (package.json)",
+      "howLatest": "Comment la dernière version est-elle récupérée ?"
+    },
+    "dead": {
+      "title": "Code mort (unused)",
+      "codeLabel": "Exemple (TypeScript)"
+    },
+    "secrets": {
+      "title": "Détection de secrets & clés",
+      "codeLabel": "Exemple (JS)",
+      "noMutationTip": "Les fichiers sont-ils modifiés ?"
+    },
+    "env": {
+      "title": "Présence de fichiers .env"
+    },
+    "activity": {
+      "title": "Activité du dépôt"
+    },
+    "readonly": {
+      "title": "Lecture seule via l’API GitHub"
+    },
+    "cta": {
+      "analyze": "Lancer une analyse",
+      "about": "En savoir plus"
     }
   }
 }
