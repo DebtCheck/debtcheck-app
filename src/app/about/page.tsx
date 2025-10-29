@@ -15,6 +15,7 @@ import {
 } from "@/app/components/ui/utilities";
 import { Header } from "../components/header";
 import { TechRow, TimelineCard } from "./aboutHelper";
+import { motion } from "framer-motion";
 
 export default function AboutPage() {
   const t = useTranslations("About");
@@ -97,15 +98,24 @@ export default function AboutPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-[180px,1fr] gap-6 items-center">
             <div className="mx-auto md:mx-0">
-              <div className="relative h-40 w-40 overflow-hidden rounded-2xl border border-(--line-neutral-20) shadow-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="flex items-center justify-center h-44 md:h-56 rounded-2xl border border-(--line-neutral-20)
+                  bg-linear-to-br from-[rgb(var(--surface-2))] via-[rgb(var(--color-primary)/0.04)] to-[rgb(var(--surface-3))] 
+                  dark:from-[rgb(var(--surface-1))] dark:via-[rgb(var(--color-primary)/0.05)] dark:to-[rgb(var(--surface-3))]"
+              >
                 <Image
-                  src="/images/axel.jpg"
-                  alt={t("heroImgAlt")}
-                  fill
-                  sizes="160px"
-                  className="object-cover"
+                  src="/icon0.svg"
+                  alt="DebtCheck logo"
+                  width={140}
+                  height={140}
+                  priority
+                  className="opacity-95"
+                  unoptimized
                 />
-              </div>
+              </motion.div>
             </div>
             <div className="space-y-4">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
