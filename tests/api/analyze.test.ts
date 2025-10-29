@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { POST } from "@/app/api/analyze/route";
 import type { Report } from "@/app/types/report";
 import { NextRequest } from "next/server";
+import { POST } from "@/app/api/analyze/route";
 
 // ---- Hoisted spies (must be declared with vi.hoisted) ----
 const getServerSessionMock = vi.hoisted(() => vi.fn());
