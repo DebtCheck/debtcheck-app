@@ -122,13 +122,9 @@ export default function BacklogModal({ open, onClose, report }: Props) {
       <div className="relative w-full max-w-3xl rounded-2xl bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-(--border-20) p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">{t("title")}</h2>
-          <button
-            onClick={onClose}
-            className="rounded-md px-2 py-1 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-800"
-            aria-label="Close"
-          >
+          <Button onClick={onClose} aria-label={t("close")}>
             ✕
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
