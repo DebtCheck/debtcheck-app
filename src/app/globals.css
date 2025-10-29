@@ -60,6 +60,8 @@
 /* Apply tokens globally */
 html, body {
   height: 100%;
+  scroll-padding-top: var(--appbar-h);
+  scroll-behavior: smooth;
 }
 body {
   background-color: rgb(var(--color-background));

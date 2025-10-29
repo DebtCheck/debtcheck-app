@@ -122,13 +122,9 @@ export default function BacklogModal({ open, onClose, report }: Props) {
       <div className="relative w-full max-w-3xl rounded-2xl bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-(--border-20) p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">{t("title")}</h2>
-          <button
-            onClick={onClose}
-            className="rounded-md px-2 py-1 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-800"
-            aria-label="Close"
-          >
+          <Button onClick={onClose} aria-label={t("close")}>
             ✕
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -186,7 +182,23 @@ export default function BacklogModal({ open, onClose, report }: Props) {
               ))}
             </div>
 
-            <div className="mt-6 flex items-center justify-between gap-2">
+            <div className="mt-6 flex justify-between flex-row-reverse gap-2">
+              <div className="flex flex-col justify-end">
+                <div className="flex items-center gap-2">
+                  <Button onClick={onClose}>{t("cancel")}</Button>
+                  <Button
+                    disabled={!selectedProjectId || submit.kind === "loading"}
+                    onClick={() =>
+                      selectedProjectId && createTickets(selectedProjectId)
+                    }
+                    className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
+                  >
+                    {submit.kind === "loading"
+                      ? t("creating")
+                      : t("createTickets")}
+                  </Button>
+                </div>
+              </div>
               {selectedProjectId && (
                 <div
                   className="
@@ -202,11 +214,15 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                       {t("createdBy")}
                       <span className="text-blue-600">DebtCheck</span>
                     </span>
-                    <span className="text-[10px] opacity-60">{t("recent")}</span>
+                    <span className="text-[10px] opacity-60">
+                      {t("recent")}
+                    </span>
                   </div>
 
                   {historyLoading && (
-                    <p className="text-[11px] opacity-70">{t("historyLoading")}</p>
+                    <p className="text-[11px] opacity-70">
+                      {t("historyLoading")}
+                    </p>
                   )}
                   {historyError && (
                     <p className="text-[11px] text-red-600 leading-snug">
@@ -214,7 +230,9 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                     </p>
                   )}
                   {history && history.length === 0 && (
-                    <p className="text-[11px] opacity-70">{t("historyEmpty")}</p>
+                    <p className="text-[11px] opacity-70">
+                      {t("historyEmpty")}
+                    </p>
                   )}
 
                   {history && history.length > 0 && (
@@ -238,32 +256,22 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                   )}
                 </div>
               )}
-
-              <div className="bottom-4 right-6 flex items-center gap-2">
-                <Button onClick={onClose}>{t("cancel")}</Button>
-                <Button
-                  disabled={!selectedProjectId || submit.kind === "loading"}
-                  onClick={() =>
-                    selectedProjectId && createTickets(selectedProjectId)
-                  }
-                  className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
-                >
-                  {submit.kind === "loading" ? t("creating") : t("createTickets")}
-                </Button>
-              </div>
             </div>
 
             {submit.kind === "ok" && (
               <p className="mt-3 text-sm text-green-600">
                 {t("createdSummary", {
                   count: submit.payload.created,
-                  keys: submit.payload.issues.map((i) => i.key).join(", ")
+                  keys: submit.payload.issues.map((i) => i.key).join(", "),
                 })}
               </p>
             )}
             {submit.kind === "error" && (
               <p className="mt-3 text-sm text-red-600">
-                {t("createError", { msg: submit.payload.error, details: submit.payload.details ?? "" })}
+                {t("createError", {
+                  msg: submit.payload.error,
+                  details: submit.payload.details ?? "",
+                })}
               </p>
             )}
           </div>

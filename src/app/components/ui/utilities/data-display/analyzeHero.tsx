@@ -18,7 +18,6 @@ export type AnalyzeHeroProps = {
   variant?: AnalyzeHeroVariant;
   size?: AnalyzeHeroSize;
   // header-only extras
-  showIcon?: boolean;            // show GH mark at start (header variant)
   ctaLabel?: string;             // default: "Analyze"
   loadingLabel?: string;         // default: "Analyzing…"
   className?: string;
@@ -88,7 +87,7 @@ export function AnalyzeHero({
           disabled={disabled || loading || value.length === 0}
           className={cn(
             buttonClasses,
-            "w-[120px]",
+            "w-[200px]",
           )}
         >
           {loading ? loadingLabel : ctaLabel}

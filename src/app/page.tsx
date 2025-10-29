@@ -11,13 +11,15 @@ import { ReposPage } from "./components/repos/reposPage";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
 import { ApiError } from "@/app/lib/http/response";
 import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
-import { ThemeToggle } from "./components/ui/header/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import { ReportPage } from "./components/report/reportPage";
 import { ChevronLeft } from "lucide-react";
-import { LocaleDropdown } from "./components/ui/header/lang/localeDropdown";
 import { useTranslations } from "next-intl";
+import { Section as BaseSection } from "./components/ui/utilities/base/section";
+import { Collapsible } from "./components/ui/utilities/data-display/collapsible";
+import { LabelWithTip } from "./components/ui/utilities/base/tip/labelWithTip";
+import { Header } from "./components/header";
 
 export default function Home() {
   const t = useTranslations("Home");
@@ -32,6 +34,7 @@ export default function Home() {
   const [uiError, setUiError] = useState<UiError | null>(null);
   const { resolvedTheme } = useTheme(); // "light" | "dark"
   const controllerRef = useRef<AbortController | null>(null);
+  const [showRepos, setShowRepos] = useState(false);
 
   useEffect(() => {
     if (githubLinked && withoutLog) setWithoutLog(false);
@@ -85,7 +88,7 @@ export default function Home() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             repoUrl,
-            demo: !githubLinked || withoutLog, // <-- add this
+            demo: !githubLinked || withoutLog,
           }),
           signal: controller.signal,
         }
@@ -128,7 +131,9 @@ export default function Home() {
       <main className="min-h-screen flex items-center justify-center p-8">
         <GitHubAuth />
         <Button onClick={handleWithoutLog} className="ml-4">
-          {withoutLog ? t("continueWithoutLoginDots") : t("continueWithoutLogin")}
+          {withoutLog
+            ? t("continueWithoutLoginDots")
+            : t("continueWithoutLogin")}
         </Button>
       </main>
     );
@@ -141,17 +146,11 @@ export default function Home() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-(--appbar-h)">
-        <div className="max-w-3xl mx-auto flex justify-between items-center h-full px-4">
-          <GitHubAuth />
-          <div className="flex items-center gap-2">
-            <LocaleDropdown />
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <Header />
+
       {!result && (
         <main className="min-h-screen space-y-8 mt-5 pt-(--appbar-h)">
+          {/* HERO CARD */}
           <section className="max-w-3xl mx-auto">
             <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
               <CardContent className="p-6 space-y-5">
@@ -185,8 +184,26 @@ export default function Home() {
                         : t("analyze")
                     }
                     loadingLabel={t("analyzing")}
-                    showIcon
+                    className="mb-2"
                   />
+
+                  {/* Inline tips under the input */}
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <LabelWithTip
+                      label={<span>{t("tips.urlFormat")}</span>}
+                      tip={<span>{t("tips.urlFormatTips")}</span>}
+                    />
+                    <span>•</span>
+                    <LabelWithTip
+                      label={<span>{t("tips.readonly")}</span>}
+                      tip={<span>{t("tips.readonlyTips")}</span>}
+                    />
+                    <span>•</span>
+                    <LabelWithTip
+                      label={<span>{t("tips.scopes")}</span>}
+                      tip={<span>{t("tips.scopesTips")}</span>}
+                    />
+                  </div>
                 </div>
 
                 {(uiError || cooldown > 0) && (
@@ -218,13 +235,64 @@ export default function Home() {
             </Card>
           </section>
 
+          {/* QUICK START (3 étapes) */}
+          <section className="max-w-5xl mx-auto">
+            <BaseSection
+              title={t("quickStartTitle")}
+              subtitle={t("quickStartSubtitle")}
+              padded
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <QuickStep
+                  n={1}
+                  title={t("quickStep1Title")}
+                  tip={t("quickStep1Tip")}
+                />
+                <QuickStep
+                  n={2}
+                  title={t("quickStep2Title")}
+                  tip={t("quickStep2Tip")}
+                />
+                <QuickStep
+                  n={3}
+                  title={t("quickStep3Title")}
+                  tip={t("quickStep3Tip")}
+                />
+              </div>
+
+              <div className="mt-4">
+                <Collapsible title={t("examplesTitle")} defaultOpen={false}>
+                  <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
+                    <li>https://github.com/vercel/next.js</li>
+                    <li>https://github.com/rust-lang/rust</li>
+                    <li>
+                      https://github.com/owner/private-repo{" "}
+                      {t("githubRequired")}
+                    </li>
+                  </ul>
+                </Collapsible>
+              </div>
+            </BaseSection>
+          </section>
+
+          {/* USER REPOS */}
           {!withoutLog && (
             <section className="max-w-5xl mx-auto">
-              <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-semibold">{t("myReposTitle")}</h2>
+                <Button onClick={() => setShowRepos((s) => !s)}>
+                  {showRepos ? t("hide") : t("browseRepos")}
+                </Button>
+              </div>
+
+              {showRepos && (
+                <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
+              )}
             </section>
           )}
         </main>
       )}
+
       {result && (
         <main className="pt-(--appbar-h)">
           <Button
@@ -235,11 +303,37 @@ export default function Home() {
               localStorage.removeItem("report");
             }}
           >
-            <ChevronLeft></ChevronLeft>
+            <ChevronLeft />
           </Button>
           <ReportPage report={result} />
         </main>
       )}
     </>
+  );
+}
+
+function QuickStep({
+  n,
+  title,
+  tip,
+}: {
+  n: number;
+  title: string;
+  tip: string;
+}) {
+  return (
+    <Card>
+      <CardContent className="p-5">
+        <div className="flex items-start gap-3">
+          <div className="h-8 w-8 shrink-0 rounded-full border border-(--line-neutral-20) flex items-center justify-center text-sm font-semibold">
+            {n}
+          </div>
+          <div>
+            <div className="text-sm font-medium">{title}</div>
+            <div className="mt-1 text-xs text-muted-foreground">{tip}</div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

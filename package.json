@@ -2,6 +2,7 @@
   "name": "debtcheck-app",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "prebuild": "prisma generate",
@@ -20,6 +21,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@vercel/kv": "^3.0.0",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.23.24",
     "lru-cache": "^11.2.2",
     "lucide-react": "^0.548.0",
     "next": "15.5.6",
@@ -45,11 +47,17 @@
     "@vitest/ui": "^4.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
-    "jsdom": "^27.0.1",
+    "happy-dom": "^20.0.10",
+    "jsdom": "27.0.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.0.3",
+    "vite": "^7.1.12",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.5",
     "whatwg-fetch": "^3.6.20"
+  },
+  "overrides": {
+    "parse5": "6.0.1"
   }
 }

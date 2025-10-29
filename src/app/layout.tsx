@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import ClientProviders from "./components/ClientProviders";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { icons } from "lucide-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

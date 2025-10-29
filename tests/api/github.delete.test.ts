@@ -1,5 +1,5 @@
+import { DELETE } from "@/app/api/github/route";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { DELETE as githubDELETE } from "@/app/api/github/route";
 
 // Hoisted mocks
 const getServerSessionMock = vi.hoisted(() => vi.fn());
@@ -55,13 +55,13 @@ function basicAuthFrom(headers?: HeadersInit) {
 describe("/api/github (DELETE)", () => {
   it("401 when no session", async () => {
     getServerSessionMock.mockResolvedValue(null);
-    const res = await githubDELETE();
+    const res = await DELETE();
     expect(res.status).toBe(401);
   });
 
   it("200 when no account found (idempotent)", async () => {
     prismaMock.account.findFirst.mockResolvedValue(null);
-    const res = await githubDELETE();
+    const res = await DELETE();
     expect(res.status).toBe(200);
     const j = await res.json();
     expect(j).toEqual({ ok: true });
@@ -78,7 +78,7 @@ describe("/api/github (DELETE)", () => {
     // Revoke call: respond 204 OK (GitHub returns 204 on success)
     fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
 
-    const res = await githubDELETE();
+    const res = await DELETE();
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
 
@@ -104,7 +104,7 @@ describe("/api/github (DELETE)", () => {
     });
     fetchMock.mockRejectedValueOnce(new Error("network down"));
 
-    const res = await githubDELETE();
+    const res = await DELETE();
     expect(res.status).toBe(200);
     expect(prismaMock.account.delete).toHaveBeenCalledWith({ where: { id: "acc1" } });
   });

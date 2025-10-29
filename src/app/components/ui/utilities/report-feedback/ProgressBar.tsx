@@ -22,7 +22,8 @@ export function ProgressBar({
       )}
       <div
         className={cn(
-          "w-full rounded-full overflow-hidden bg-gray-200 dark:bg-white/10",
+          "w-full rounded-full overflow-hidden",
+          "bg-[rgb(var(--surface-3))] border border-(--line-neutral-15)",
           height
         )}
         role="progressbar"
@@ -32,8 +33,10 @@ export function ProgressBar({
       >
         <div
           className={cn(
-            "h-full bg-black dark:bg-white transition-all",
-            indeterminate && "animate-pulse w-1/3"
+            "h-full transition-all",
+            indeterminate
+              ? "animate-pulse w-1/3 bg-[rgb(var(--accent-6))]"
+              : "bg-[rgb(var(--accent-10))]"
           )}
           style={indeterminate ? undefined : { width: `${clamped}%` }}
         />

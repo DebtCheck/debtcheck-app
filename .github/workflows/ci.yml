@@ -22,15 +22,42 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          clean: true
+          ref: ${{ github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 20.11.1
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: "Sanity: show manifest/lock & preact references"
+        run: |
+          echo "== CWD =="
+          pwd
+          echo "== Node/npm =="
+          node -v
+          npm -v
+          echo "== Files =="
+          ls -la
+          echo "== package.json path =="
+          node -e "console.log(require.resolve('./package.json'))"
+          echo "== deps from package.json =="
+          node -p "Object.keys(require('./package.json').dependencies||{})"
+          echo "== overrides =="
+          node -p "require('./package.json').overrides || null"
+          echo "== resolutions =="
+          node -p "require('./package.json').resolutions || null"
+          echo "== shrinkwrap present? =="
+          test -f npm-shrinkwrap.json && echo YES || echo NO
+          echo "== grep 'preact' across repo =="
+          git grep -n -i preact || true
 
       - name: Install deps
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       # (Optional) Prisma codegen if you use Prisma
       - name: Prisma generate
