@@ -35,7 +35,6 @@ export default function Home() {
   const { resolvedTheme } = useTheme(); // "light" | "dark"
   const controllerRef = useRef<AbortController | null>(null);
   const [showRepos, setShowRepos] = useState(false);
-  
 
   useEffect(() => {
     if (githubLinked && withoutLog) setWithoutLog(false);

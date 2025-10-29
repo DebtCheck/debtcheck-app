@@ -13,7 +13,6 @@ export function ProgressBar({
 }) {
   const height = { sm: "h-1.5", md: "h-2.5", lg: "h-3.5" }[size];
   const clamped = Math.max(0, Math.min(100, value));
-
   return (
     <div className="w-full">
       {label && (
