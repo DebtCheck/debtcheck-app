@@ -11,22 +11,18 @@ import { ReposPage } from "./components/repos/reposPage";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
 import { ApiError } from "@/app/lib/http/response";
 import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
-import { ThemeToggle } from "./components/ui/header/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import { ReportPage } from "./components/report/reportPage";
-import { ChevronLeft, Link, Sparkles, User } from "lucide-react";
-import { LocaleDropdown } from "./components/ui/header/lang/localeDropdown";
+import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Section as BaseSection } from "./components/ui/utilities/base/section";
 import { Collapsible } from "./components/ui/utilities/data-display/collapsible";
 import { LabelWithTip } from "./components/ui/utilities/base/tip/labelWithTip";
-import { usePathname, useRouter } from "next/navigation";
 import { Header } from "./components/header";
 
 export default function Home() {
   const t = useTranslations("Home");
-  const tHead = useTranslations("Header");
   const { data: session } = useSession();
   const githubLinked = !!session?.providers?.github;
 

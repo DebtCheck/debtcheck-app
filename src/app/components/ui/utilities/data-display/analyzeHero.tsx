@@ -18,7 +18,6 @@ export type AnalyzeHeroProps = {
   variant?: AnalyzeHeroVariant;
   size?: AnalyzeHeroSize;
   // header-only extras
-  showIcon?: boolean;            // show GH mark at start (header variant)
   ctaLabel?: string;             // default: "Analyze"
   loadingLabel?: string;         // default: "Analyzing…"
   className?: string;
