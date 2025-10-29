@@ -2,7 +2,8 @@
   "Nav": {
     "home": "Accueil",
     "title": "Rapport de dette technique",
-    "cta": "Analyser un dépôt"
+    "cta": "Analyser un dépôt",
+    "description": "Analyser la dette technique instantanément"
   },
   "Header": {
     "Auth": {

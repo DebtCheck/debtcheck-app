@@ -2,10 +2,27 @@
 import { useTheme } from "next-themes";
 import { Button } from "../utilities";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
   const t = useTranslations("Header.Theme");
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  if (!mounted) {
+    return (
+      <Button
+        aria-label="Toggle theme"
+        className="px-3 py-1.5 text-sm border-border/15"
+        disabled
+      >
+        {/* place holder stable pour l'hydratation */}
+        <span className="opacity-0">Theme</span>
+      </Button>
+    );
+  }
   const next = theme === "dark" ? "light" : "dark";
   return (
     <Button

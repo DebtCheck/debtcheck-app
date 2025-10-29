@@ -2,7 +2,8 @@
   "Nav": {
     "home": "Home",
     "title": "Technical Debt Report",
-    "cta": "Analyze a repository"
+    "cta": "Analyze a repository",
+    "description": "Analyze technical debt instantly"
   },
   "Header": {
     "Auth": {
