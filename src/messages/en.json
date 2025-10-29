@@ -291,7 +291,8 @@
     "ctaGitHub": "GitHub",
     "ctaLinkedIn": "LinkedIn",
     "ctaCv": "View my CV",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "ctaTryNow" : "Try it now"
   },
   "Features": {
     "introTagline": "A fast, read-only static analyzer that highlights hidden technical debt in any GitHub repository — without cloning a single line.",

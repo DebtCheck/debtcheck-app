@@ -291,7 +291,8 @@
     "ctaGitHub": "GitHub",
     "ctaLinkedIn": "LinkedIn",
     "ctaCv": "Voir mon CV",
-    "viewAll": "Voir tout"
+    "viewAll": "Voir tout",
+    "ctaTryNow" : "Essayer maintenant"
   },
   "Features": {
     "introTagline": "Un analyseur statique rapide et en lecture seule qui met en lumière la dette technique cachée de tout dépôt GitHub — sans aucun clonage.",

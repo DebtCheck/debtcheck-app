@@ -242,6 +242,14 @@ export default function AboutPage() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="flex justify-center mt-6">
+          <Link href="/">
+            <Button className="h-11 px-6 text-sm font-semibold bg-[rgb(var(--color-primary))] text-white hover:opacity-90">
+              🚀 {t("ctaTryNow")}
+            </Button>
+          </Link>
+        </div>
       </main>
     </>
   );
