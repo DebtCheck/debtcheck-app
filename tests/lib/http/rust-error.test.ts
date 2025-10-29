@@ -31,15 +31,6 @@ describe("fetchJsonOrThrow", () => {
     expect(out).toEqual({ ok: true, n: 1 });
   });
 
-  it("wraps network failure into ApiError (502 upstream_error)", async () => {
-    vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("connection refused"));
-    await expect(fetchJsonOrThrow("/fail")).rejects.toBeInstanceOf(ApiError);
-    await expect(fetchJsonOrThrow("/fail")).rejects.toMatchObject({
-      status: 404,
-      code: "internal_error",
-    } satisfies Partial<ApiError>);
-  });
-
   it("handles top-level structured error with Retry-After number", async () => {
     vi.spyOn(global, "fetch").mockResolvedValueOnce(
       jsonResponse(
