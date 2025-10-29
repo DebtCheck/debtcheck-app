@@ -2,9 +2,7 @@
   "Nav": {
     "home": "Accueil",
     "title": "Rapport de dette technique",
-    "cta": "Analyser un dépôt",
-    "about": "À propos",
-    "features": "Fonctionnalités"
+    "cta": "Analyser un dépôt"
   },
   "Header": {
     "Auth": {
@@ -22,7 +20,9 @@
     },
     "Locale": {
       "selectAria": "Choisir la langue"
-    }
+    },
+    "about": "À propos",
+    "features": "Fonctionnalités"
   },
   "Home": {
     "analyzeGithubRepo": "Analyser un dépôt GitHub",
@@ -45,7 +45,7 @@
     "quickStep3Title": "Lire le rapport",
     "quickStep3Tip": "Dépendances, code mort, secrets, activité",
     "examplesTitle": "Exemples d’URL valides",
-    "githubRequired" : "(nécessite liaison GitHub)",
+    "githubRequired": "(nécessite liaison GitHub)",
     "myReposTitle": "Mes dépôts GitHub",
     "browseRepos": "Parcourir mes dépôts",
     "hide": "Masquer",
@@ -85,7 +85,7 @@
       "updatedAt": "Mis à jour",
       "pushedAt": "Dernier push",
       "sinceUpdate": "{count, plural, one {il y a # jour} other {il y a # jours}} depuis la dernière mise à jour",
-      "sincePush":   "{count, plural, one {il y a # jour} other {il y a # jours}} depuis le dernier push",
+      "sincePush": "{count, plural, one {il y a # jour} other {il y a # jours}} depuis le dernier push",
       "help": {
         "main": "Indicateurs pour détecter l’inactivité ou l’obsolescence du dépôt.",
         "updatedAt": "Temps écoulé depuis la dernière mise à jour de la branche par défaut (toute mise à jour de référence).",
@@ -195,67 +195,182 @@
     }
   },
   "About": {
-    "title": "À propos d’Axel",
-    "subtitle": "Développeur Full-Stack — créateur de DebtCheck",
-    "ctaGitHub": "GitHub",
-    "ctaLinkedIn": "LinkedIn",
-    "ctaCv": "Voir mon CV",
+    "title": "À propos de moi, Axel",
+    "subtitle": "Développeur Full-Stack & créateur de DebtCheck",
+    "heroImgAlt": "Photo d’Axel Gil",
+    "heroTitle": "Salut, moi c’est Axel 👋",
+    "heroText": {
+      "1": "Je conçois des produits web performants et pragmatiques.",
+      "2": "est né pour rendre la",
+      "3": "santé technique",
+      "4": "d’un dépôt GitHub lisible d’un coup d’œil : rapide, fiable et 100% en lecture seule."
+    },
+    "badges": {
+      "fullstack": "Full Stack",
+      "qualityDx": "Qualité & DX"
+    },
     "whyTitle": "Pourquoi j’ai créé DebtCheck",
+    "whyText": {
+      "1": "Après des projets complexes (Angular, Java, PHP, etc.), j’ai souvent constaté un manque de visibilité sur la dette technique.",
+      "2": "vise à fournir une photo claire — dépendances, code mort, secrets, activité —",
+      "3": "sans cloner",
+      "4": "et en restant très rapide."
+    },
     "techStackTitle": "Tech stack",
     "techStackSubtitle": "Choisie pour la performance et la sécurité",
+    "tech": {
+      "frontendLabel": "Frontend",
+      "backendLabel": "Backend",
+      "platformLabel": "Plateforme",
+      "dataLabel": "Données & cache"
+    },
     "visionTitle": "Vision & suite",
     "visionSubtitle": "À venir",
+    "visionItem1": "Détection des duplications et « code smells » supplémentaires",
+    "visionItem2": "Analyse multi-langages (JS/TS étendu, CSS/SCSS, YAML…)",
+    "visionItem3": "Export de rapports et intégration CI/CD",
     "featuresPreviewTitle": "Fonctionnalités principales",
-    "viewAll": "Voir tout",
+    "featuresPreviewSubtitle": "Aperçu rapide — une page détaillée est dédiée",
     "journeyTitle": "Mon parcours",
+    "journeySubtitle": "Sélection de jalons pertinents",
+    "journey": {
+      "sacem": {
+        "title": "2024–2025 — Développeur Full Stack (alternance)",
+        "place": "Sacem",
+        "p1": "Angular + Java Spring Boot, gestion des retours de recette et démos",
+        "p2": "Tests unitaires & d’intégration, outillage interne (helper multi-store)"
+      },
+      "recrutimmo": {
+        "title": "2023–2024 — Développeur Full Stack (alternance)",
+        "place": "Recrutimmo",
+        "p1": "Angular & PHP, refontes et améliorations UI",
+        "p2": "Environnement Docker documenté, notifications push Firebase"
+      },
+      "adico": {
+        "title": "Janv–Juil 2023 — Développeur Web (CDD)",
+        "place": "Adico",
+        "p1": "Maintenance & évolutions d’un site de ticketing (jQuery, PHP)",
+        "p2": "Amélioration d’un chatbot + site de ticketing from scratch"
+      },
+      "schools": {
+        "title": "2019–2025 — Formations",
+        "place": "Web School Factory, IUT Amiens",
+        "p1": "Master Développement Web (React/Next.js, Express, gestion de projet, UX/UI)",
+        "p2": "Licence Pro RGI (Docker, C#, PHP, Java)",
+        "p3": "DUT Informatique (fondamentaux, BD, réseaux, IoT)"
+      }
+    },
+    "featuresPreview": {
+      "items": {
+        "deps": {
+          "title": "Dépendances obsolètes",
+          "desc": "Compare les versions déclarées aux dernières et classe par gravité."
+        },
+        "dead": {
+          "title": "Code mort",
+          "desc": "Détecte variables, fonctions, imports/exports non utilisés via analyse AST."
+        },
+        "secrets": {
+          "title": "Secrets & .env",
+          "desc": "Repère les fichiers .env et motifs de clés/tokens avec filtres anti-bruit."
+        },
+        "activity": {
+          "title": "Activité du dépôt",
+          "desc": "Synthèse des mises à jour, commits et PRs pour juger de la fraîcheur."
+        },
+        "readonly": {
+          "title": "Lecture seule",
+          "desc": "Analyse sans cloner — uniquement via l’API GitHub pour sécurité et vitesse."
+        }
+      }
+    },
     "ctaFinalTitle": "Envie d’en savoir plus ?",
     "ctaFinalSubtitle": "Parlons dette technique, DX et roadmap — disponible dès octobre 2025.",
     "ctaExplore": "Explorer les fonctionnalités",
-    "ctaContact": "Me contacter"
+    "ctaContact": "Me contacter",
+    "ctaGitHub": "GitHub",
+    "ctaLinkedIn": "LinkedIn",
+    "ctaCv": "Voir mon CV",
+    "viewAll": "Voir tout"
   },
   "Features": {
-    "headerTitle": "Fonctionnalités de DebtCheck",
-    "headerSubtitle": "Analyse statique, lecture seule, rapport clair et actionnable",
+    "introTagline": "Un analyseur statique rapide et en lecture seule qui met en lumière la dette technique cachée de tout dépôt GitHub — sans aucun clonage.",
+    "headerTitle": "Fonctionnalités du moteur DebtCheck",
+    "headerSubtitle": "Analyse statique, dépendances et santé du dépôt — le tout en lecture seule via l’API GitHub.",
+    "cta": {
+      "about": "À propos",
+      "analyze": "Essayer maintenant"
+    },
     "toc": {
       "deps": "Dépendances obsolètes",
       "dead": "Code mort",
-      "secrets": "Secrets & clés",
+      "secrets": "Secrets et clés",
       "env": "Fichiers .env",
       "activity": "Activité du dépôt",
-      "readonly": "Lecture seule via l’API GitHub"
+      "readonly": "Mode lecture seule"
     },
     "deps": {
       "title": "Dépendances obsolètes",
+      "intro": "DebtCheck compare les versions déclarées avec les dernières versions publiées pour évaluer l’urgence de mise à jour.",
       "rules": {
-        "ok": "Version courante = dernière",
-        "warnSameMajor": "Même version majeure",
-        "warnPlusOne": "+1 sur la version majeure",
-        "errorTooOld": "Plus d’une majeure de retard"
+        "ok": "Version actuelle = dernière → OK",
+        "warnSameMajor": "Même version majeure → mise à jour mineure disponible",
+        "warnPlusOne": "Différence majeure de +1 → mise à jour recommandée",
+        "errorTooOld": "Différence majeure >1 → obsolète (erreur)"
       },
-      "codeLabel": "Exemple minimal (package.json)",
-      "howLatest": "Comment la dernière version est-elle récupérée ?"
+      "codeLabel": "Extrait d’un package.json",
+      "howLatest": "Comment les dernières versions sont-elles déterminées ?"
     },
     "dead": {
-      "title": "Code mort (unused)",
-      "codeLabel": "Exemple (TypeScript)"
+      "title": "Détection de code mort",
+      "codeLabel": "Exemple : exports inutilisés vs utilisés",
+      "points": {
+        "fnsVars": "Fonctions ou variables jamais référencées",
+        "importsExports": "Imports ou exports inutilisés",
+        "crossFile": "Exports inter-fichiers pris en compte pour réduire les faux positifs",
+        "ignores": "Ignore les types, placeholders et fichiers de tests"
+      }
     },
     "secrets": {
-      "title": "Détection de secrets & clés",
-      "codeLabel": "Exemple (JS)",
-      "noMutationTip": "Les fichiers sont-ils modifiés ?"
+      "title": "Détection de secrets et clés",
+      "codeLabel": "Exemple de détection de clé",
+      "points": {
+        "names": "Noms suspects : token, api_key, secret…",
+        "patterns": "Vérifications de formats et longueurs de clés connues",
+        "noise": "Filtres anti faux positifs pour les placeholders et tests"
+      },
+      "noMutationTip": "L’analyse modifie-t-elle le code ?",
+      "noMutationAnswer": "Non. L’analyse est entièrement en lecture seule : aucun fichier source n’est modifié."
     },
     "env": {
-      "title": "Présence de fichiers .env"
+      "title": "Présence de fichiers .env",
+      "points": {
+        "detects": "Détecte tout fichier commençant par .env (ex. : .env, .env.local, .env.production)",
+        "advice": "Les configurations sensibles ne doivent pas être versionnées ; utilisez un gestionnaire de secrets."
+      }
     },
     "activity": {
-      "title": "Activité du dépôt"
+      "title": "Activité du dépôt",
+      "intro": "Indicateurs de fraîcheur basés sur le dernier commit, les pushs et les PR. Affichés sous forme de badges « Récent / Ancien » dans le rapport."
     },
     "readonly": {
-      "title": "Lecture seule via l’API GitHub"
+      "title": "Architecture en lecture seule",
+      "points": {
+        "rust": "Microservice Rust fonctionnant uniquement via l’API REST GitHub",
+        "concurrent": "Analyse statique concurrente multi-fichiers pour plus de rapidité et de précision",
+        "results": "Produit un rapport structuré et explicable sur la dette technique"
+      }
     },
-    "cta": {
-      "analyze": "Lancer une analyse",
-      "about": "En savoir plus"
+    "jira": {
+      "title": "Intégration Jira",
+      "intro": "Depuis n’importe quel rapport, vous pouvez créer un backlog Jira en un clic — directement relié aux problèmes ou dépendances détectés.",
+      "points": {
+        "create": "Création du backlog en un clic depuis le rapport de dette technique",
+        "autoMap": "Associe automatiquement les problèmes et dépendances à des tickets Jira",
+        "sync": "Synchronise le contexte du projet et du dépôt automatiquement"
+      },
+      "labelOneClick": "Comment fonctionne la création en un clic ?",
+      "tip": "DebtCheck utilise votre compte Jira connecté pour générer instantanément des tickets de backlog, avec priorité, labels et descriptions issues de l’analyse."
     }
   }
 }

@@ -2,9 +2,7 @@
   "Nav": {
     "home": "Home",
     "title": "Technical Debt Report",
-    "cta": "Analyze a repository",
-    "about": "About",
-    "features": "Features"
+    "cta": "Analyze a repository"
   },
   "Header": {
     "Auth": {
@@ -22,7 +20,9 @@
     },
     "Locale": {
       "selectAria": "Select language"
-    }
+    },
+    "about": "About",
+    "features": "Features"
   },
   "Home": {
     "analyzeGithubRepo": "Analyze a GitHub repo",
@@ -45,7 +45,7 @@
     "quickStep3Title": "Read the report",
     "quickStep3Tip": "Dependencies, dead code, secrets, activity",
     "examplesTitle": "Valid URL examples",
-    "githubRequired" : "(GitHub connection is required)",
+    "githubRequired": "(GitHub connection is required)",
     "myReposTitle": "My GitHub repositories",
     "browseRepos": "Browse my repositories",
     "hide": "Hide",
@@ -195,67 +195,182 @@
     }
   },
   "About": {
-    "title": "About Axel",
-    "subtitle": "Full-Stack Developer — creator of DebtCheck",
-    "ctaGitHub": "GitHub",
-    "ctaLinkedIn": "LinkedIn",
-    "ctaCv": "View my CV",
+    "title": "About me, Axel",
+    "subtitle": "Full-Stack Developer & creator of DebtCheck",
+    "heroImgAlt": "Photo of Axel Gil",
+    "heroTitle": "Hi, I’m Axel 👋",
+    "heroText": {
+      "1": "I build performant, pragmatic web products.",
+      "2": "was born to make a repository’s",
+      "3": "technical health",
+      "4": "clear at a glance: fast, reliable and 100% read-only."
+    },
+    "badges": {
+      "fullstack": "Full Stack",
+      "qualityDx": "Quality & DX"
+    },
     "whyTitle": "Why I built DebtCheck",
+    "whyText": {
+      "1": "After working on complex apps (Angular, Java, PHP, etc.), I often saw poor visibility on technical debt.",
+      "2": "aims to give a crisp snapshot — dependencies, dead code, secrets, activity —",
+      "3": "without cloning",
+      "4": "and while staying blazing fast."
+    },
     "techStackTitle": "Tech stack",
     "techStackSubtitle": "Chosen for performance and security",
+    "tech": {
+      "frontendLabel": "Frontend",
+      "backendLabel": "Backend",
+      "platformLabel": "Platform",
+      "dataLabel": "Data & cache"
+    },
     "visionTitle": "Vision & what's next",
     "visionSubtitle": "Coming soon",
+    "visionItem1": "Duplication detection and additional code smells",
+    "visionItem2": "Multi-language analysis (extended JS/TS, CSS/SCSS, YAML…)",
+    "visionItem3": "Report export and CI/CD integration",
     "featuresPreviewTitle": "Key features",
-    "viewAll": "View all",
+    "featuresPreviewSubtitle": "Quick glance — a detailed page is dedicated",
     "journeyTitle": "My journey",
+    "journeySubtitle": "A selection of relevant milestones",
+    "journey": {
+      "sacem": {
+        "title": "2024–2025 — Full-Stack Developer (apprenticeship)",
+        "place": "Sacem",
+        "p1": "Angular + Java Spring Boot, handling UAT feedback and demos",
+        "p2": "Unit & integration tests, internal tooling (multi-store helper)"
+      },
+      "recrutimmo": {
+        "title": "2023–2024 — Full-Stack Developer (apprenticeship)",
+        "place": "Recrutimmo",
+        "p1": "Angular & PHP, UI refactors and improvements",
+        "p2": "Documented Docker dev env, Firebase push notifications"
+      },
+      "adico": {
+        "title": "Jan–Jul 2023 — Web Developer (fixed-term)",
+        "place": "Adico",
+        "p1": "Maintenance & evolutions on a ticketing site (jQuery, PHP)",
+        "p2": "Chatbot improvements + ticketing site built from scratch"
+      },
+      "schools": {
+        "title": "2019–2025 — Education",
+        "place": "Web School Factory, IUT Amiens",
+        "p1": "Master in Web Dev (React/Next.js, Express, PM, UX/UI)",
+        "p2": "Professional Bachelor RGI (Docker, C#, PHP, Java)",
+        "p3": "DUT CS (foundations, DB, networks, IoT)"
+      }
+    },
+    "featuresPreview": {
+      "items": {
+        "deps": {
+          "title": "Outdated dependencies",
+          "desc": "Compares declared versions to the latest and classifies by severity."
+        },
+        "dead": {
+          "title": "Dead code",
+          "desc": "Finds unused variables, functions, imports/exports via AST analysis."
+        },
+        "secrets": {
+          "title": "Secrets & .env",
+          "desc": "Flags .env files and key/token patterns with noise-reduction filters."
+        },
+        "activity": {
+          "title": "Repository activity",
+          "desc": "Summarizes updates, commits and PRs to gauge freshness."
+        },
+        "readonly": {
+          "title": "Read-only",
+          "desc": "No clone — only GitHub API for faster and safer analysis."
+        }
+      }
+    },
     "ctaFinalTitle": "Want to know more?",
     "ctaFinalSubtitle": "Let’s talk technical debt, DX and roadmap — available from October 2025.",
     "ctaExplore": "Explore features",
-    "ctaContact": "Contact me"
+    "ctaContact": "Contact me",
+    "ctaGitHub": "GitHub",
+    "ctaLinkedIn": "LinkedIn",
+    "ctaCv": "View my CV",
+    "viewAll": "View all"
   },
   "Features": {
-    "headerTitle": "DebtCheck features",
-    "headerSubtitle": "Static analysis, read-only, clear and actionable report",
+    "introTagline": "A fast, read-only static analyzer that highlights hidden technical debt in any GitHub repository — without cloning a single line.",
+    "headerTitle": "Features of the DebtCheck engine",
+    "headerSubtitle": "Static analysis, dependency insights and repository health — all read-only via the GitHub API.",
+    "cta": {
+      "about": "About",
+      "analyze": "Try it now"
+    },
     "toc": {
       "deps": "Outdated dependencies",
       "dead": "Dead code",
       "secrets": "Secrets & keys",
       "env": ".env files",
       "activity": "Repository activity",
-      "readonly": "Read-only via GitHub API"
+      "readonly": "Read-only mode"
     },
     "deps": {
       "title": "Outdated dependencies",
+      "intro": "DebtCheck compares declared versions with the latest published releases to assess upgrade urgency.",
       "rules": {
-        "ok": "Current version = latest",
-        "warnSameMajor": "Same major version",
-        "warnPlusOne": "+1 major version",
-        "errorTooOld": "More than 1 major behind"
+        "ok": "Current version equals latest → OK",
+        "warnSameMajor": "Same major version → minor update available",
+        "warnPlusOne": "Major +1 difference → update recommended",
+        "errorTooOld": "Major difference >1 → outdated (error)"
       },
-      "codeLabel": "Minimal example (package.json)",
-      "howLatest": "How is the latest version retrieved?"
+      "codeLabel": "Example package.json extract",
+      "howLatest": "How are latest versions determined?"
     },
     "dead": {
-      "title": "Dead code (unused)",
-      "codeLabel": "Example (TypeScript)"
+      "title": "Dead code detection",
+      "codeLabel": "Example: unused vs used exports",
+      "points": {
+        "fnsVars": "Functions or variables never referenced",
+        "importsExports": "Unused imports or exports",
+        "crossFile": "Cross-file exports considered to reduce false positives",
+        "ignores": "Ignores types, placeholders and test files"
+      }
     },
     "secrets": {
-      "title": "Secrets & keys detection",
-      "codeLabel": "Example (JS)",
-      "noMutationTip": "Are files modified?"
+      "title": "Secrets and key detection",
+      "codeLabel": "Example key detection",
+      "points": {
+        "names": "Suspicious identifiers: token, api_key, secret…",
+        "patterns": "Pattern and length checks for known key formats",
+        "noise": "False-positive filters for placeholders and tests"
+      },
+      "noMutationTip": "Does the analyzer modify the code?",
+      "noMutationAnswer": "No. The analysis is entirely read-only — no source files are ever written or changed."
     },
     "env": {
-      "title": "Presence of .env files"
+      "title": ".env file presence",
+      "points": {
+        "detects": "Detects any file starting with .env (e.g., .env, .env.local, .env.production)",
+        "advice": "Sensitive configs should never be committed; use a secrets manager instead."
+      }
     },
     "activity": {
-      "title": "Repository activity"
+      "title": "Repository activity",
+      "intro": "Freshness signals based on last commit, pushes and PRs. Shown as 'Fresh / Stale' badges in the report."
     },
     "readonly": {
-      "title": "Read-only via GitHub API"
+      "title": "Read-only architecture",
+      "points": {
+        "rust": "Rust microservice reads via GitHub REST API only",
+        "concurrent": "Concurrent multi-file static analysis for speed and precision",
+        "results": "Produces a structured, explainable technical debt report"
+      }
     },
-    "cta": {
-      "analyze": "Run an analysis",
-      "about": "Learn more"
+    "jira": {
+      "title": "Jira integration",
+      "intro": "From any report, you can instantly create a backlog in Jira — directly linked to your detected issues or dependencies.",
+      "points": {
+        "create": "One-click backlog creation from the technical debt report",
+        "autoMap": "Auto-maps issues and dependencies to Jira tickets",
+        "sync": "Syncs project and repository context automatically"
+      },
+      "labelOneClick": "How does one-click creation work?",
+      "tip": "DebtCheck uses your connected Jira account to generate backlog tickets instantly, including priority, labels and descriptions derived from the analysis."
     }
   }
 }

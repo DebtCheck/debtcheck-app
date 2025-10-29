@@ -10,24 +10,23 @@ import type { Report } from "@/app/types/report";
 import { ReposPage } from "./components/repos/reposPage";
 import { fetchJsonOrThrow } from "@/app/lib/http/rust-error";
 import { ApiError } from "@/app/lib/http/response";
-import {
-  AnalyzeHero,
-  InlineAlert,
-  ProgressBar,
-} from "./components/ui/utilities";
+import { AnalyzeHero, InlineAlert } from "./components/ui/utilities";
 import { ThemeToggle } from "./components/ui/header/theme-toggle";
 import { useTheme } from "next-themes";
 import { mapApiErrorToUi, UiError } from "./lib/http/ui-error";
 import { ReportPage } from "./components/report/reportPage";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Link, Sparkles, User } from "lucide-react";
 import { LocaleDropdown } from "./components/ui/header/lang/localeDropdown";
 import { useTranslations } from "next-intl";
 import { Section as BaseSection } from "./components/ui/utilities/base/section";
 import { Collapsible } from "./components/ui/utilities/data-display/collapsible";
 import { LabelWithTip } from "./components/ui/utilities/base/tip/labelWithTip";
+import { usePathname, useRouter } from "next/navigation";
+import { Header } from "./components/header";
 
 export default function Home() {
   const t = useTranslations("Home");
+  const tHead = useTranslations("Header");
   const { data: session } = useSession();
   const githubLinked = !!session?.providers?.github;
 
@@ -40,6 +39,7 @@ export default function Home() {
   const { resolvedTheme } = useTheme(); // "light" | "dark"
   const controllerRef = useRef<AbortController | null>(null);
   const [showRepos, setShowRepos] = useState(false);
+  
 
   useEffect(() => {
     if (githubLinked && withoutLog) setWithoutLog(false);
@@ -151,15 +151,7 @@ export default function Home() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-(--appbar-h)">
-        <div className="max-w-3xl mx-auto flex justify-between items-center h-full px-4">
-          <GitHubAuth />
-          <div className="flex items-center gap-2">
-            <LocaleDropdown />
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {!result && (
         <main className="min-h-screen space-y-8 mt-5 pt-(--appbar-h)">
@@ -279,7 +271,8 @@ export default function Home() {
                     <li>https://github.com/vercel/next.js</li>
                     <li>https://github.com/rust-lang/rust</li>
                     <li>
-                      https://github.com/owner/private-repo {t("githubRequired")}
+                      https://github.com/owner/private-repo{" "}
+                      {t("githubRequired")}
                     </li>
                   </ul>
                 </Collapsible>
