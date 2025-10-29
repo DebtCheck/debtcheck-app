@@ -47,13 +47,16 @@
     "@vitest/ui": "^4.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
-    "jsdom": "^27.0.1",
+    "jsdom": "27.0.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^7.1.12",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.3",
+    "vitest": "^4.0.5",
     "whatwg-fetch": "^3.6.20"
+  },
+  "overrides": {
+    "parse5": "6.0.1"
   }
 }
