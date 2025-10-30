@@ -24,7 +24,7 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-[calc(var(--appbar-h)+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)]">
+    <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-[calc(60px+env(safe-area-inset-top))] sm:h-[calc(var(--appbar-h)+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)]">
       <div className="max-w-5xl mx-auto flex items-center justify-between h-full px-3 sm:px-4">
         <GitHubAuth />
 

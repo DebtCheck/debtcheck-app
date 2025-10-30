@@ -76,7 +76,7 @@ body {
   --line-neutral-30: rgb(var(--line-neutral) / 0.30); /* even stronger version */
 
   /* --appbar-h: 120px; */
-  --appbar-h: clamp(48px, 6svh, 120px);
+  --appbar-h: clamp(120px, 6svh, 120px);
 }
 
 /* iOS notch safe area */
