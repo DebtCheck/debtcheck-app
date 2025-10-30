@@ -87,10 +87,12 @@ export default function AboutPage() {
                   >
                     <Button className="h-10">{t("ctaLinkedIn")}</Button>
                   </Link>
-                  {/* have to remake a fresh cv before en + fr */}
-                  {/* <Link href="/CV.pdf" target="_blank" rel="noreferrer">
-                    <Button className="h-10">{t("ctaCv")}</Button>
-                  </Link> */}
+                  <Link href="/cv/CVEN.pdf" target="_blank" rel="noopener noreferrer">
+                    <Button className="h-10">My CV</Button>
+                  </Link>
+                  <Link href="/cv/CVFR.pdf" target="_blank" rel="noopener noreferrer">
+                    <Button className="h-10">Mon CV</Button>
+                  </Link>
                 </div>
               }
             />
