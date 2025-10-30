@@ -213,7 +213,7 @@
     "whyTitle": "Why I built DebtCheck",
     "whyText": {
       "1": "After working on complex apps (Angular, Java, PHP, etc.), I often saw poor visibility on technical debt.",
-      "2": "aims to give a crisp snapshot — dependencies, dead code, secrets, activity —",
+      "2": "aims to give a crisp snapshot, dependencies, dead code, secrets, activity, ",
       "3": "without cloning",
       "4": "and while staying blazing fast."
     },
@@ -229,32 +229,32 @@
     "visionSubtitle": "Coming soon",
     "visionItem1": "Duplication detection and additional code smells",
     "visionItem2": "Multi-language analysis (extended JS/TS, CSS/SCSS, YAML…)",
-    "visionItem3": "Report export and CI/CD integration",
+    "visionItem3": "With more features, I'll implement a scoring system",
     "featuresPreviewTitle": "Key features",
-    "featuresPreviewSubtitle": "Quick glance — a detailed page is dedicated",
+    "featuresPreviewSubtitle": "Quick glance (a detailed page is dedicated)",
     "journeyTitle": "My journey",
     "journeySubtitle": "A selection of relevant milestones",
     "journey": {
       "sacem": {
-        "title": "2024–2025 — Full-Stack Developer (apprenticeship)",
+        "title": "2024–2025 -> Full-Stack Developer (apprenticeship)",
         "place": "Sacem",
         "p1": "Angular + Java Spring Boot, handling UAT feedback and demos",
         "p2": "Unit & integration tests, internal tooling (multi-store helper)"
       },
       "recrutimmo": {
-        "title": "2023–2024 — Full-Stack Developer (apprenticeship)",
+        "title": "2023–2024 -> Full-Stack Developer (apprenticeship)",
         "place": "Recrutimmo",
         "p1": "Angular & PHP, UI refactors and improvements",
         "p2": "Documented Docker dev env, Firebase push notifications"
       },
       "adico": {
-        "title": "Jan–Jul 2023 — Web Developer (fixed-term)",
+        "title": "Jan–Jul 2023 -> Web Developer (fixed-term)",
         "place": "Adico",
         "p1": "Maintenance & evolutions on a ticketing site (jQuery, PHP)",
         "p2": "Chatbot improvements + ticketing site built from scratch"
       },
       "schools": {
-        "title": "2019–2025 — Education",
+        "title": "2019–2025 -> Education",
         "place": "Web School Factory, IUT Amiens",
         "p1": "Master in Web Dev (React/Next.js, Express, PM, UX/UI)",
         "p2": "Professional Bachelor RGI (Docker, C#, PHP, Java)",
@@ -281,12 +281,12 @@
         },
         "readonly": {
           "title": "Read-only",
-          "desc": "No clone — only GitHub API for faster and safer analysis."
+          "desc": "No clone, only GitHub API for faster and safer analysis."
         }
       }
     },
     "ctaFinalTitle": "Want to know more?",
-    "ctaFinalSubtitle": "Let’s talk technical debt, DX and roadmap — available from October 2025.",
+    "ctaFinalSubtitle": "Let’s talk technical debt, DX and roadmap, available from October 2025.",
     "ctaExplore": "Explore features",
     "ctaContact": "Contact me",
     "ctaGitHub": "GitHub",
@@ -295,9 +295,9 @@
     "ctaTryNow": "Try it now"
   },
   "Features": {
-    "introTagline": "A fast, read-only static analyzer that highlights hidden technical debt in any GitHub repository — without cloning a single line.",
+    "introTagline": "A fast, read-only static analyzer that highlights hidden technical debt in any GitHub repository, without cloning a single line.",
     "headerTitle": "Features of the DebtCheck engine",
-    "headerSubtitle": "Static analysis, dependency insights and repository health — all read-only via the GitHub API.",
+    "headerSubtitle": "Static analysis, dependency insights and repository health, all read-only via the GitHub API.",
     "cta": {
       "about": "About",
       "analyze": "Try it now"
@@ -341,7 +341,7 @@
         "noise": "False-positive filters for placeholders and tests"
       },
       "noMutationTip": "Does the analyzer modify the code?",
-      "noMutationAnswer": "No. The analysis is entirely read-only — no source files are ever written or changed."
+      "noMutationAnswer": "No. The analysis is entirely read-only, no source files are ever written or changed."
     },
     "env": {
       "title": ".env file presence",
@@ -364,12 +364,13 @@
     },
     "jira": {
       "title": "Jira integration",
-      "intro": "From any report, you can instantly create a backlog in Jira — directly linked to your detected issues or dependencies.",
+      "intro": "From any report, you can instantly create a backlog in Jira, directly linked to your detected issues or dependencies.",
       "points": {
         "create": "One-click backlog creation from the technical debt report",
         "autoMap": "Auto-maps issues and dependencies to Jira tickets",
         "sync": "Syncs project and repository context automatically"
       },
+      "warningJira": "To connect to Jira, your account must have at least one project.",
       "labelOneClick": "How does one-click creation work?",
       "tip": "DebtCheck uses your connected Jira account to generate backlog tickets instantly, including priority, labels and descriptions derived from the analysis."
     }

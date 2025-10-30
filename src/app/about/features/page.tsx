@@ -183,6 +183,10 @@ const API_KEY = "AIzaSyD3Y4Z5xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";`}
             <li>{t("jira.points.sync")}</li>
           </ul>
 
+          <p className="text-sm text-yellow-600 mt-3">
+            ⚠️ {t("jira.warningJira")}
+          </p>
+
           <div className="mt-4">
             <LabelWithTip
               label={
