@@ -143,13 +143,6 @@ export function ButtonDropdown({
     }
   };
 
-  const menuPos = cn(
-    "mt-2 w-48 rounded-xl border border-border/15 bg-popover/95 backdrop-blur shadow-xl",
-    placement === "top" && "bottom-full mt-0 mb-2",
-    align === "start" ? "left-0" : "right-0",
-    menuClassName
-  );
-
   return (
     <>
       <Button
@@ -179,7 +172,7 @@ export function ButtonDropdown({
             tabIndex={-1}
             onKeyDown={handleMenuKeyDown}
             className={cn(
-              "z-301 w-48 rounded-xl border border-border/15 bg-popover/95 backdrop-blur shadow-xl",
+              "z-500 w-48 rounded-xl border border-border/15 bg-popover/95 backdrop-blur shadow-xl",
               "py-1",
               "pointer-events-auto"
             )}
