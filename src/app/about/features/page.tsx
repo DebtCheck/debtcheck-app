@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Section as BaseSection } from "@/app/components/ui/utilities/base/section";
-import {
-  Card,
-  CardContent,
-} from "@/app/components/ui/utilities/base/card";
+import { Card, CardContent } from "@/app/components/ui/utilities/base/card";
 import { Button } from "@/app/components/ui/utilities/buttons/button";
 import { LabelWithTip } from "@/app/components/ui/utilities/base/tip/labelWithTip";
 import { Header } from "@/app/components/header";
@@ -18,13 +15,23 @@ export default function FeaturesPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-6xl min-h-screen space-y-8 mt-5 pt-(--appbar-h) pb-10">
+      <main
+        className="mx-auto w-full max-w-6xl min-h-screen space-y-8
+                 mt-3 sm:mt-5
+                 pt-[calc(var(--appbar-h)+env(safe-area-inset-top))]
+                 pb-10 px-3 sm:px-4"
+      >
         {/* Header */}
         <BaseSection
           title={t("headerTitle")}
           subtitle={t("headerSubtitle")}
           actions={
-            <div className="flex gap-2">
+            <div
+              className="flex flex-col-reverse sm:flex-row
+        items-end sm:items-center
+        justify-end sm:justify-normal
+        gap-2"
+            >
               <Link href="/about">
                 <Button>{t("cta.about")}</Button>
               </Link>

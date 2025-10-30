@@ -72,7 +72,12 @@ export default function AboutPage() {
           actions={
             <Toolbar
               right={
-                <div className="flex gap-2">
+                <div
+                  className="flex flex-col-reverse sm:flex-row
+        items-end sm:items-center
+        justify-end sm:justify-normal
+        gap-2"
+                >
                   <Link
                     href="https://github.com/AxelGil"
                     target="_blank"
@@ -87,12 +92,22 @@ export default function AboutPage() {
                   >
                     <Button className="h-10">{t("ctaLinkedIn")}</Button>
                   </Link>
-                  <Link href="/cv/CVEN.pdf" target="_blank" rel="noopener noreferrer">
-                    <Button className="h-10">My CV</Button>
-                  </Link>
-                  <Link href="/cv/CVFR.pdf" target="_blank" rel="noopener noreferrer">
-                    <Button className="h-10">Mon CV</Button>
-                  </Link>
+                  <div className="hidden sm:flex gap-2">
+                    <Link
+                      href="/cv/CVEN.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button className="h-10">My CV</Button>
+                    </Link>
+                    <Link
+                      href="/cv/CVFR.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button className="h-10">Mon CV</Button>
+                    </Link>
+                  </div>
                 </div>
               }
             />
@@ -104,7 +119,7 @@ export default function AboutPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex items-center justify-center h-44 md:h-56 rounded-2xl border border-(--line-neutral-20)
+                className="flex items-center justify-center h-44 w-44 md:h-56 md:w-auto rounded-2xl border border-(--line-neutral-20)
                   bg-linear-to-br from-[rgb(var(--surface-2))] via-[rgb(var(--color-primary)/0.04)] to-[rgb(var(--surface-3))] 
                   dark:from-[rgb(var(--surface-1))] dark:via-[rgb(var(--color-primary)/0.05)] dark:to-[rgb(var(--surface-3))]"
               >
