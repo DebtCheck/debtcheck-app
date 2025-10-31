@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    if (!process.env.RUST_URL) {
+      // Pas de proxy en build CI -> aucune rewrite (évite l'erreur)
+      return [];
+    }
     return [
       { source: "/api/analyze/:path*", destination: `${process.env.RUST_URL}/:path*` }
     ];
