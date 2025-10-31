@@ -329,7 +329,7 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
             }
             subtitle={t("deadSummarySub")}
           >
-            <div className="flex flex-wrap gap-4 sm:flex-row flex-col">
+            <div className="flex gap-4 sm:flex-row flex-col">
               <div className="min-w-0 w-full max-w-full">
                 <StatBadge
                   label={
