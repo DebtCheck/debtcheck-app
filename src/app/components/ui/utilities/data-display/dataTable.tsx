@@ -45,7 +45,7 @@ function ColGroup<T>({ columns }: { columns: Column<T>[] }) {
           style={{
             width:
               toCssWidth(c.width) ??
-              (i === 0 ? "34%" : i === 1 ? "34%" : i === 2 ? "14%" : "18%"),
+              (i === 0 ? "34%" : i === 1 ? "34%" : i === 2 ? "25%" : i === 3 ? "25%" : "13%"),
           }}
         />
       ))}
@@ -168,14 +168,14 @@ export function DataTable<T>({
             )}
             style={{ boxShadow: "inset 0 -1px 0 var(--line-06)" }}
           >
-            <table className="w-full min-w-[720px] sm:min-w-0 table-fixed border-collapse">
+            <table className="w-full min-w-[640px] sm:min-w-0 table-fixed border-collapse">
               <ColGroup columns={columns} />
               {Thead}
             </table>
           </div>
 
           {/* body */}
-          <table className="w-full min-w-[720px] sm:min-w-0 table-fixed border-collapse">
+          <table className="w-full min-w-[640px] sm:min-w-0 table-fixed border-collapse">
             <ColGroup columns={columns} />
             {/* hidden for a11y association */}
             <thead className="sr-only">{Thead.props.children}</thead>
@@ -223,16 +223,25 @@ export function DataTable<T>({
                           return (
                             <td
                               key={String(c.key)}
-                              className={cn(cellPad, "align-top", align)}
+                              className={cn(
+                                cellPad,
+                                "align-top",
+                                align,
+                                "min-w-0"
+                              )}
                               title={
                                 typeof (row as any)[String(c.key)] === "string"
                                   ? String((row as any)[String(c.key)])
                                   : undefined
                               }
                             >
-                              {c.render
-                                ? c.render(row)
-                                : String((row as any)[String(c.key)] ?? "")}
+                              {c.render ? (
+                                c.render(row)
+                              ) : (
+                                <div className="wrap-break-word sm:break-normal sm:whitespace-normal">
+                                  {String((row as any)[String(c.key)] ?? "")}
+                                </div>
+                              )}
                             </td>
                           );
                         })}
