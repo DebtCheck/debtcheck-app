@@ -7,8 +7,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write         # <-- required to push tags/commits
-      pull-requests: write    # optional
+      contents: write          # push tags / CHANGELOG
+      pull-requests: write     # add PR labels & comments
+      issues: write            # comment/label issues if referenced
     steps:
       - uses: actions/checkout@v4
         with:
