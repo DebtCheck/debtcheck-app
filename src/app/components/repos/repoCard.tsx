@@ -36,17 +36,16 @@ export function RepoCard({
       onClick={() => onSelect?.(r.html_url, r)}
       aria-label={t("ariaChoose", { fullName: r.full_name })}
       className={cn(
-        "text-left rounded-2xl border p-4 transition group",
-        "cursor-pointer",
-        "bg-card/5 hover:shadow-md hover:-translate-y-px",
-        "border-border/10",
+        "w-full text-left rounded-2xl border p-4 sm:p-5 transition group",
+        "bg-card/5 hover:shadow-md hover:-translate-y-px border-border/10 cursor-pointer",
+        "active:scale-[0.995]",
         disabled && "opacity-60 cursor-not-allowed",
         className
       )}
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div className="h-9 w-9 rounded-full bg-foreground/10 flex items-center justify-center overflow-hidden">
+        <div className="h-9 w-9 shrink-0 rounded-full bg-foreground/10 flex items-center justify-center overflow-hidden">
           {r.owner?.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -61,11 +60,18 @@ export function RepoCard({
 
         {/* Texts */}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="truncate font-medium group-hover:underline cursor-pointer">
+          {/* FIRST ROW */}
+          <div className="min-w-0 flex items-center gap-2">
+            {/* repo name */}
+            <span
+              className="min-w-0 flex-1 truncate font-medium leading-tight group-hover:underline"
+              title={r.full_name}
+            >
               {r.full_name}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] opacity-80 border-border/10">
+
+            {/* privacy pill */}
+            <span className="shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] opacity-80 border-border/10">
               {r.private ? (
                 <Shield className="h-3 w-3" />
               ) : (
@@ -75,12 +81,14 @@ export function RepoCard({
             </span>
           </div>
 
+          {/* SECOND ROW */}
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs opacity-80">
-            <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 border-border/10">
+            <span className="shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 border-border/10">
               {r.language ?? t("noLang")}
             </span>
-            <span className="inline-flex items-center gap-1">
-              <Clock className="h-3 w-3" /> {t("pushed", { when: timeAgo(r.pushed_at) })}
+            <span className="shrink-0 inline-flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {t("pushed", { when: timeAgo(r.pushed_at) })}
             </span>
           </div>
         </div>

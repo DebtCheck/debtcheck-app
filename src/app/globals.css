@@ -75,7 +75,16 @@ body {
   --line-neutral-20: rgb(var(--line-neutral) / 0.20); /* stronger version */
   --line-neutral-30: rgb(var(--line-neutral) / 0.30); /* even stronger version */
 
-  --appbar-h: 120px;
+  /* --appbar-h: 120px; */
+  --appbar-h: clamp(120px, 6svh, 120px);
+}
+
+/* iOS notch safe area */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.h-appbar {
+  height: calc(var(--appbar-h) + env(safe-area-inset-top));
 }
 
 /* Optional helpers for subtle alphas */

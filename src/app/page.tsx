@@ -20,6 +20,12 @@ import { Section as BaseSection } from "./components/ui/utilities/base/section";
 import { Collapsible } from "./components/ui/utilities/data-display/collapsible";
 import { LabelWithTip } from "./components/ui/utilities/base/tip/labelWithTip";
 import { Header } from "./components/header";
+import {
+  loadReportFromStorage,
+  saveReportToStorage,
+} from "./lib/report-storage";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { LastReportButton } from "./components/ui/lastReportButton";
 
 export default function Home() {
   const t = useTranslations("Home");
@@ -32,27 +38,29 @@ export default function Home() {
   const [withoutLog, setWithoutLog] = useState(false);
   const [cooldown, setCooldown] = useState<number>(0);
   const [uiError, setUiError] = useState<UiError | null>(null);
-  const { resolvedTheme } = useTheme(); // "light" | "dark"
+  const { resolvedTheme } = useTheme();
   const controllerRef = useRef<AbortController | null>(null);
   const [showRepos, setShowRepos] = useState(false);
+  const router = useRouter();
+  const search = useSearchParams();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (githubLinked && withoutLog) setWithoutLog(false);
   }, [githubLinked, withoutLog]);
 
   useEffect(() => {
-    const stored = withoutLog
-      ? sessionStorage.getItem("report")
-      : localStorage.getItem("report");
-    if (stored) {
-      try {
-        const parsed: Report = JSON.parse(stored);
-        setResult(parsed);
-      } catch {
-        // ignore parse errors
-      }
+    const id = search.get("r");
+    if (!id) return;
+
+    const loaded = loadReportFromStorage(id);
+    if (loaded) {
+      setResult(loaded);
+    } else {
+      // clean bad id from URL
+      router.replace(pathname, { scroll: false });
     }
-  }, [withoutLog]);
+  }, [pathname, router, search]);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -76,7 +84,6 @@ export default function Home() {
     setResult(null);
 
     controllerRef.current?.abort();
-
     const controller = new AbortController();
     controllerRef.current = controller;
 
@@ -94,13 +101,17 @@ export default function Home() {
         }
       );
 
-      if (withoutLog) {
-        sessionStorage.setItem("report", JSON.stringify(data.data));
-      } else {
-        localStorage.setItem("report", JSON.stringify(data.data));
-      }
+      const id = crypto.randomUUID();
+
+      saveReportToStorage(id, data.data, {
+        ephemeral: !githubLinked || withoutLog,
+      });
 
       setResult(data.data);
+
+      router.replace(`${pathname}?r=${encodeURIComponent(id)}`, {
+        scroll: false,
+      });
     } catch (err) {
       if (err instanceof ApiError) {
         const mapped = mapApiErrorToUi(err, {
@@ -120,11 +131,9 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [cooldown, repoUrl, githubLinked, withoutLog]);
+  }, [cooldown, repoUrl, githubLinked, withoutLog, router, pathname]);
 
-  const handleWithoutLog = () => {
-    setWithoutLog(true);
-  };
+  const handleWithoutLog = () => setWithoutLog(true);
 
   if (!githubLinked && !withoutLog) {
     return (
@@ -143,14 +152,13 @@ export default function Home() {
     resolvedTheme === "dark"
       ? "/github-mark-white.svg"
       : "/github-mark-dark.svg";
-
   return (
     <>
       <Header />
 
       {!result && (
-        <main className="min-h-screen space-y-8 mt-5 pt-(--appbar-h)">
-          {/* HERO CARD */}
+        <main className="min-h-screen space-y-8 mt-15 sm:pt-(--appbar-h) sm:mt-5">
+          {/* HERO */}
           <section className="max-w-3xl mx-auto">
             <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
               <CardContent className="p-6 space-y-5">
@@ -187,8 +195,13 @@ export default function Home() {
                     className="mb-2"
                   />
 
-                  {/* Inline tips under the input */}
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  {/* Open last report — inline next to the hero */}
+                  <div className="flex items-center justify-center">
+                    <LastReportButton />
+                  </div>
+
+                  {/* Tips */}
+                  <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
                     <LabelWithTip
                       label={<span>{t("tips.urlFormat")}</span>}
                       tip={<span>{t("tips.urlFormatTips")}</span>}
@@ -294,13 +307,13 @@ export default function Home() {
       )}
 
       {result && (
-        <main className="pt-(--appbar-h)">
+        <main className="mt-15 sm:pt-(--appbar-h) sm:mt-5">
           <Button
             className="mt-4 ml-4"
             onClick={() => {
-              setResult(null);
-              sessionStorage.removeItem("report");
-              localStorage.removeItem("report");
+              setResult(null); // just hide
+              router.replace(pathname, { scroll: false }); // clean URL
+              // NOTE: do NOT clear storage here.
             }}
           >
             <ChevronLeft />

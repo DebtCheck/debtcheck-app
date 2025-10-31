@@ -57,7 +57,11 @@
       "readonlyTips": "DebtCheck lit uniquement via l’API GitHub, ne clone pas et ne modifie rien.",
       "scopes": "Scopes nécessaires",
       "scopesTips": "Minimal : repo:read. Les dépôts privés requièrent l’autorisation correspondante."
-    }
+    },
+    "lastReportBtn": "Dernier rapport",
+    "lastReportPill": "Dernier rapport : il y a {ago}",
+    "lastReportTitle": "Ouvrir le dernier rapport (il y a {ago})",
+    "lastReportNone": "Aucun rapport pour le moment"
   },
   "Repos": {
     "sectionTitle": "Mes dépôts GitHub",
@@ -199,7 +203,7 @@
     "title": "À propos de moi, Axel",
     "subtitle": "Développeur Full-Stack & créateur de DebtCheck",
     "heroImgAlt": "Photo d’Axel Gil",
-    "heroTitle": "Salut, moi c’est Axel 👋",
+    "heroTitle": "Salut, moi c’est Axel",
     "heroText": {
       "1": "Je conçois des produits web performants et pragmatiques.",
       "2": "est né pour rendre la",
@@ -213,7 +217,7 @@
     "whyTitle": "Pourquoi j’ai créé DebtCheck",
     "whyText": {
       "1": "Après des projets complexes (Angular, Java, PHP, etc.), j’ai souvent constaté un manque de visibilité sur la dette technique.",
-      "2": "vise à fournir une photo claire — dépendances, code mort, secrets, activité —",
+      "2": "vise à fournir une photo claire, dépendances, code mort, secrets, activité, ",
       "3": "sans cloner",
       "4": "et en restant très rapide."
     },
@@ -229,32 +233,32 @@
     "visionSubtitle": "À venir",
     "visionItem1": "Détection des duplications et « code smells » supplémentaires",
     "visionItem2": "Analyse multi-langages (JS/TS étendu, CSS/SCSS, YAML…)",
-    "visionItem3": "Export de rapports et intégration CI/CD",
+    "visionItem3": "Avec plus de fonctionnalités, j’implémenterai un système de scoring",
     "featuresPreviewTitle": "Fonctionnalités principales",
-    "featuresPreviewSubtitle": "Aperçu rapide — une page détaillée est dédiée",
+    "featuresPreviewSubtitle": "Aperçu rapide (une page détaillée est dédiée)",
     "journeyTitle": "Mon parcours",
     "journeySubtitle": "Sélection de jalons pertinents",
     "journey": {
       "sacem": {
-        "title": "2024–2025 — Développeur Full Stack (alternance)",
+        "title": "2024–2025 -> Développeur Full Stack (alternance)",
         "place": "Sacem",
         "p1": "Angular + Java Spring Boot, gestion des retours de recette et démos",
         "p2": "Tests unitaires & d’intégration, outillage interne (helper multi-store)"
       },
       "recrutimmo": {
-        "title": "2023–2024 — Développeur Full Stack (alternance)",
+        "title": "2023–2024 -> Développeur Full Stack (alternance)",
         "place": "Recrutimmo",
         "p1": "Angular & PHP, refontes et améliorations UI",
         "p2": "Environnement Docker documenté, notifications push Firebase"
       },
       "adico": {
-        "title": "Janv–Juil 2023 — Développeur Web (CDD)",
+        "title": "Janv–Juil 2023 -> Développeur Web (CDD)",
         "place": "Adico",
         "p1": "Maintenance & évolutions d’un site de ticketing (jQuery, PHP)",
         "p2": "Amélioration d’un chatbot + site de ticketing from scratch"
       },
       "schools": {
-        "title": "2019–2025 — Formations",
+        "title": "2019–2025 -> Formations",
         "place": "Web School Factory, IUT Amiens",
         "p1": "Master Développement Web (React/Next.js, Express, gestion de projet, UX/UI)",
         "p2": "Licence Pro RGI (Docker, C#, PHP, Java)",
@@ -281,24 +285,23 @@
         },
         "readonly": {
           "title": "Lecture seule",
-          "desc": "Analyse sans cloner — uniquement via l’API GitHub pour sécurité et vitesse."
+          "desc": "Analyse sans cloner, uniquement via l’API GitHub pour sécurité et vitesse."
         }
       }
     },
     "ctaFinalTitle": "Envie d’en savoir plus ?",
-    "ctaFinalSubtitle": "Parlons dette technique, DX et roadmap — disponible dès octobre 2025.",
+    "ctaFinalSubtitle": "Parlons dette technique, DX et roadmap, disponible dès octobre 2025.",
     "ctaExplore": "Explorer les fonctionnalités",
     "ctaContact": "Me contacter",
     "ctaGitHub": "GitHub",
     "ctaLinkedIn": "LinkedIn",
-    "ctaCv": "Voir mon CV",
     "viewAll": "Voir tout",
     "ctaTryNow": "Essayer maintenant"
   },
   "Features": {
-    "introTagline": "Un analyseur statique rapide et en lecture seule qui met en lumière la dette technique cachée de tout dépôt GitHub — sans aucun clonage.",
+    "introTagline": "Un analyseur statique rapide et en lecture seule qui met en lumière la dette technique cachée de tout dépôt GitHub, sans aucun clonage.",
     "headerTitle": "Fonctionnalités du moteur DebtCheck",
-    "headerSubtitle": "Analyse statique, dépendances et santé du dépôt — le tout en lecture seule via l’API GitHub.",
+    "headerSubtitle": "Analyse statique, dépendances et santé du dépôt, le tout en lecture seule via l’API GitHub.",
     "cta": {
       "about": "À propos",
       "analyze": "Essayer maintenant"
@@ -365,12 +368,13 @@
     },
     "jira": {
       "title": "Intégration Jira",
-      "intro": "Depuis n’importe quel rapport, vous pouvez créer un backlog Jira en un clic — directement relié aux problèmes ou dépendances détectés.",
+      "intro": "Depuis n’importe quel rapport, vous pouvez créer un backlog Jira en un clic, directement relié aux problèmes ou dépendances détectés.",
       "points": {
         "create": "Création du backlog en un clic depuis le rapport de dette technique",
         "autoMap": "Associe automatiquement les problèmes et dépendances à des tickets Jira",
         "sync": "Synchronise le contexte du projet et du dépôt automatiquement"
       },
+      "warningJira": "Pour se connecter à Jira, votre compte doit avoir au moins un projet.",
       "labelOneClick": "Comment fonctionne la création en un clic ?",
       "tip": "DebtCheck utilise votre compte Jira connecté pour générer instantanément des tickets de backlog, avec priorité, labels et descriptions issues de l’analyse."
     }
