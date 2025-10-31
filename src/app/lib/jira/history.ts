@@ -38,7 +38,6 @@ export function buildJql(opts: {
   repo?: string;
   category?: string;
 }): { primary: string; fallback: string } {
-  const clauses: string[] = [`project = ${opts.projectKey}`];
 
   // Base filter: our labels always include "debtcheck"
   const base = [`project = ${opts.projectKey}`, `labels in (debtcheck)`];

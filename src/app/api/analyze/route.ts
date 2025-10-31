@@ -172,28 +172,3 @@ function isGitHubApiError(err: unknown): err is GitHubApiError {
     typeof (err as { githubError?: unknown }).githubError === "object"
   );
 }
-
-function retryAfterSecondsFromHeaders(h: Headers): number {
-  // 1) Prefer Retry-After if present
-  const ra = h.get("Retry-After");
-  if (ra) {
-    const n = Number(ra);
-    if (Number.isFinite(n)) return Math.max(0, Math.ceil(n)); // delta-seconds
-    const d = Date.parse(ra); // HTTP-date
-    if (!Number.isNaN(d))
-      return Math.max(0, Math.ceil((d - Date.now()) / 1000));
-  }
-
-  // 2) Fallback to X-RateLimit-Reset (UNIX seconds)
-  const reset = h.get("X-RateLimit-Reset");
-  if (reset) {
-    const until = parseInt(reset, 10);
-    if (Number.isFinite(until)) {
-      const secs = until - Math.floor(Date.now() / 1000);
-      return Math.max(0, Math.ceil(secs));
-    }
-  }
-
-  // 3) Sensible default
-  return 60;
-}
