@@ -27,8 +27,6 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LastReportButton } from "./components/ui/lastReportButton";
 
-const MAX_AGE = 1000 * 60 * 60 * 24 * 14;
-
 export default function Home() {
   const t = useTranslations("Home");
   const { data: session } = useSession();
@@ -103,7 +101,7 @@ export default function Home() {
         }
       );
 
-      const id = (data.data as any)?.id ?? crypto.randomUUID();
+      const id = crypto.randomUUID();
 
       saveReportToStorage(id, data.data, {
         ephemeral: !githubLinked || withoutLog,
