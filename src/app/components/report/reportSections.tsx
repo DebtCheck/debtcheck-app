@@ -280,35 +280,42 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
       right={<StatusPill status={overall} />}
     >
       <div className="grid gap-4">
+        {/* alerts — allow wrapping on small screens */}
         {hasSecretsReport &&
           (secretsArray.length > 0 ? (
-            <div className="flex items-start gap-2">
-              <InlineAlert
-                variant="warning"
-                title={t("secretsFound", { count: secretsArray.length })}
-                description={t("secretsAdvice")}
-              />
-              <HelpTip content={t("help.secretsFound")} />
+            <div className="flex items-start gap-2 min-w-0 w-full max-w-full">
+              <div className="min-w-0 flex-1">
+                <InlineAlert
+                  variant="warning"
+                  title={t("secretsFound", { count: secretsArray.length })}
+                  description={t("secretsAdvice")}
+                />
+              </div>
+              <HelpTip className="shrink-0" content={t("help.secretsFound")} />
             </div>
           ) : (
-            <div className="flex items-start gap-2">
-              <InlineAlert
-                variant="success"
-                title={t("noSecretsTitle")}
-                description={t("noSecretsDesc")}
-              />
+            <div className="flex flex-wrap items-start gap-2 w-70 sm:w-auto">
+              <div className="min-w-0 flex-1">
+                <InlineAlert
+                  variant="success"
+                  title={t("noSecretsTitle")}
+                  description={t("noSecretsDesc")}
+                />
+              </div>
               <HelpTip content={t("help.noSecrets")} />
             </div>
           ))}
 
         {env && (
-          <div className="flex items-start gap-2">
-            <InlineAlert
-              variant="info"
-              title={t("envTitle")}
-              description={t("envDesc")}
-            />
-            <HelpTip content={t("help.envPresent")} />
+          <div className="flex flex-wrap items-start gap-2 min-w-0 w-full max-w-full">
+            <div className="min-w-0 flex-1">
+              <InlineAlert
+                variant="info"
+                title={t("envTitle")}
+                description={t("envDesc")}
+              />
+            </div>
+            <HelpTip className="shrink-0" content={t("help.envPresent")} />
           </div>
         )}
 
@@ -322,37 +329,48 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
             }
             subtitle={t("deadSummarySub")}
           >
-            <div className="grid grid-cols-3 gap-4">
-              <StatBadge
-                label={
-                  <LabelWithTip
-                    label={t("unusedDecl")}
-                    tip={t("help.unusedDecl")}
-                  />
-                }
-                value={deadArray.length}
-                variant={deadArray.length > 0 ? "warning" : "success"}
-              />
-              <StatBadge
-                label={
-                  <LabelWithTip
-                    label={t("secrets")}
-                    tip={t("help.secretsStat")}
-                  />
-                }
-                value={secretsArray.length}
-                variant={secretsArray.length > 0 ? "danger" : "success"}
-              />
-              <StatBadge
-                label={
-                  <LabelWithTip
-                    label={t("envPresent")}
-                    tip={t("help.envStat")}
-                  />
-                }
-                value={env ? "yes" : "no"}
-                variant={env ? "info" : "neutral"}
-              />
+            <div className="flex flex-wrap gap-4 sm:flex-row flex-col">
+              <div className="min-w-0 w-full max-w-full">
+                <StatBadge
+                  label={
+                    <LabelWithTip
+                      label={t("unusedDecl")}
+                      tip={t("help.unusedDecl")}
+                    />
+                  }
+                  value={deadArray.length}
+                  variant={deadArray.length > 0 ? "warning" : "success"}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="min-w-0 w-full max-w-full">
+                <StatBadge
+                  label={
+                    <LabelWithTip
+                      label={t("secrets")}
+                      tip={t("help.secretsStat")}
+                    />
+                  }
+                  value={secretsArray.length}
+                  variant={secretsArray.length > 0 ? "danger" : "success"}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="min-w-0 w-full max-w-full">
+                <StatBadge
+                  label={
+                    <LabelWithTip
+                      label={t("envPresent")}
+                      tip={t("help.envStat")}
+                    />
+                  }
+                  value={env ? "yes" : "no"}
+                  variant={env ? "info" : "neutral"}
+                  className="w-full"
+                />
+              </div>
             </div>
           </Section>
         )}
@@ -361,6 +379,7 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
           <Collapsible
             title={t("secretsDetails")}
             defaultOpen={hasSecretsReport ? true : false}
+            className="min-w-0 w-full max-w-full"
           >
             <DataTable
               columns={[
@@ -398,6 +417,7 @@ export function RisksSection({ rust }: { rust?: RustAnalysisReport }) {
           <Collapsible
             title={t("deadDetails")}
             defaultOpen={hasDeadReport ? true : false}
+            className="min-w-0 w-full max-w-full"
           >
             <DataTable
               columns={[
