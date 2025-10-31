@@ -57,7 +57,11 @@
       "readonlyTips": "DebtCheck lit uniquement via l’API GitHub, ne clone pas et ne modifie rien.",
       "scopes": "Scopes nécessaires",
       "scopesTips": "Minimal : repo:read. Les dépôts privés requièrent l’autorisation correspondante."
-    }
+    },
+    "lastReportBtn": "Dernier rapport",
+    "lastReportPill": "Dernier rapport : il y a {ago}",
+    "lastReportTitle": "Ouvrir le dernier rapport (il y a {ago})",
+    "lastReportNone": "Aucun rapport pour le moment"
   },
   "Repos": {
     "sectionTitle": "Mes dépôts GitHub",

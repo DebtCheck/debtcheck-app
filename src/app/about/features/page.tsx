@@ -17,8 +17,7 @@ export default function FeaturesPage() {
       <Header />
       <main
         className="mx-auto w-full max-w-6xl min-h-screen space-y-8
-                 mt-3 sm:mt-5
-                 pt-[calc(var(--appbar-h)+env(safe-area-inset-top))]
+                 mt-15 sm:pt-(--appbar-h) sm:mt-5
                  pb-10 px-3 sm:px-4"
       >
         {/* Header */}

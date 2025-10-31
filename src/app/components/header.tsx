@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 export function Header() {
   const t = useTranslations("Header");
@@ -24,9 +25,37 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06) h-[calc(60px+env(safe-area-inset-top))] sm:h-[calc(var(--appbar-h)+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)]">
+    <header
+      className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06)
+  h-[calc(56px+env(safe-area-inset-top))] sm:h-[calc(var(--appbar-h)+env(safe-area-inset-top))]
+  pt-[env(safe-area-inset-top)]"
+    >
       <div className="max-w-5xl mx-auto flex items-center justify-between h-full px-3 sm:px-4">
-        <GitHubAuth />
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {/* Logo → navigate to "/" */}
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center gap-2 sm:gap-2 hover:opacity-80 transition cursor-pointer shrink-0"
+          >
+            <div className="relative h-8 w-8 sm:h-[50px] sm:w-[50px]">
+              <Image
+                src="/icon0.svg"
+                alt="DebtCheck Logo"
+                fill
+                priority
+                className="object-contain select-none pointer-events-none"
+              />
+            </div>
+            <span className="font-semibold text-sm sm:text-base hidden sm:inline leading-none">
+              DebtCheck
+            </span>
+          </button>
+
+          {/* Keep this from growing the row */}
+          <div className="shrink-0">
+            <GitHubAuth />
+          </div>
+        </div>
 
         {/* Desktop */}
         <div className="hidden sm:flex items-center gap-2">
@@ -49,7 +78,7 @@ export function Header() {
         </div>
 
         {/* Mobile */}
-        <div className="sm:hidden">
+        <div className="sm:hidden shrink-0">
           <Button
             aria-label="Open menu"
             className="px-2 py-1.5 bg-transparent hover:bg-[rgb(var(--color-primary))/10] text-[rgb(var(--color-primary))]"

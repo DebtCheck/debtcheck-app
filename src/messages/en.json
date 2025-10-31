@@ -57,7 +57,11 @@
       "readonlyTips": "DebtCheck only reads the GitHub API : no clone, no changes.",
       "scopes": "Required scopes",
       "scopesTips": "Minimal: repo:read. Private repos need the proper authorization."
-    }
+    },
+    "lastReportBtn": "Last report",
+    "lastReportPill": "Last report: {ago} ago",
+    "lastReportTitle": "Open last report ({ago} ago)",
+    "lastReportNone": "No report yet"
   },
   "Repos": {
     "sectionTitle": "My Github repositories",
