@@ -1,5 +1,4 @@
 export interface Report {
-  id: string;
   updatedAtReport: AnalyzeStaleness;
   pushedAtReport: AnalyzeStaleness;
   issuesReport: AnalyzeIssues;
