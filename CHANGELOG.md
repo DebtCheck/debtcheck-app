@@ -1,3 +1,8 @@
+## 1.2.0 (2025-11-01)
+
+* Merge pull request #45 from DebtCheck/dev ([9f4245b](https://github.com/DebtCheck/debtcheck-app/commit/9f4245b)), closes [#45](https://github.com/DebtCheck/debtcheck-app/issues/45)
+* feat: implement middleware for www to non-www redirection; clean up Home component by removing unuse ([234c529](https://github.com/DebtCheck/debtcheck-app/commit/234c529))
+
 ## 1.1.0 (2025-11-01)
 
 * Merge pull request #43 from DebtCheck/42-front-create-legal-elements ([77015b3](https://github.com/DebtCheck/debtcheck-app/commit/77015b3)), closes [#43](https://github.com/DebtCheck/debtcheck-app/issues/43)
