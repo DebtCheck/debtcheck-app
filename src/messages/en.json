@@ -23,9 +23,13 @@
       "selectAria": "Select language"
     },
     "about": "About",
-    "features": "Features"
+    "features": "Features",
+    "legal": "Legal Notice",
+    "cgu": "Terms of Use",
+    "privacy": "Privacy Policy"
   },
   "Home": {
+    "title": "Instant Technical Debt Analysis for GitHub Repositories",
     "analyzeGithubRepo": "Analyze a GitHub repo",
     "continueWithoutLogin": "Continue without login",
     "continueWithoutLoginDots": "Continue without login…",
@@ -299,6 +303,7 @@
     "ctaTryNow": "Try it now"
   },
   "Features": {
+    "title": "Features",
     "introTagline": "A fast, read-only static analyzer that highlights hidden technical debt in any GitHub repository, without cloning a single line.",
     "headerTitle": "Features of the DebtCheck engine",
     "headerSubtitle": "Static analysis, dependency insights and repository health, all read-only via the GitHub API.",
@@ -377,6 +382,65 @@
       "warningJira": "To connect to Jira, your account must have at least one project.",
       "labelOneClick": "How does one-click creation work?",
       "tip": "DebtCheck uses your connected Jira account to generate backlog tickets instantly, including priority, labels and descriptions derived from the analysis."
+    }
+  },
+  "Legal": {
+    "title": "Legal Notice",
+    "intro": "Legal information and terms of use for DebtCheck.",
+    "editor": {
+      "title": "Publisher",
+      "name": "Name / Company: Axel GIL",
+      "address": "Address: 11 rue Carnot, 78210 Saint-Cyr-l'École, France",
+      "contact": "Contact: axel.gil.dev@proton.me",
+      "responsible": "Publication Director: Axel GIL"
+    },
+    "hosts": {
+      "title": "Hosting",
+      "frontend": "Frontend: Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA",
+      "backend": "Backend: Koyeb SAS, 10 Rue de Penthièvre, 75008 Paris, France"
+    },
+    "ip": {
+      "title": "Intellectual Property",
+      "desc": "The DebtCheck name, logo, and interface are protected by copyright law. Any reproduction or adaptation without authorization is prohibited."
+    },
+    "contact": {
+      "title": "Contact",
+      "desc": "For any inquiries, please email axel.gil.dev@proton.me."
+    },
+    "links": {
+      "cgu": "Terms of Use",
+      "privacy": "Privacy Policy"
+    },
+    "cgu": {
+      "title": "Terms of Use",
+      "sections": {
+        "1": "DebtCheck is a technical analysis application for GitHub repositories, operating in read-only mode through the GitHub API. It generates summary reports on complexity, duplication, dead code, outdated dependencies, and more.",
+        "2": "Access requires GitHub OAuth authentication. The user must have sufficient rights on the repositories analyzed.",
+        "3": "DebtCheck processes GitHub profile information (ID, username, avatar) and repository metadata. OAuth tokens are used solely for analysis and never shared.",
+        "4": "Reports are provided for informational purposes only. DebtCheck does not guarantee completeness or accuracy.",
+        "5": "The website owner retains all rights over DebtCheck’s code and content. Users remain owners of their repositories.",
+        "6": "Fair use: do not bypass authentication, analyze unauthorized repositories, or submit illegal content.",
+        "7": "These terms are governed by French law. Jurisdiction: Paris, France."
+      },
+      "links": {
+        "legal": "Legal Notice",
+        "privacy": "Privacy Policy"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "controller": "Data Controller: Axel GIL -- axel.gil.dev@proton.me",
+      "data": "Data collected: GitHub profile (ID, username, avatar), Jira (issue keys, summaries), repository metadata, technical logs (errors, performance).",
+      "purpose": "Purpose: provide the analysis service, ensure security, improve the product with anonymized statistics.",
+      "legal": "Legal basis: execution of the requested service (Art. 6.1.b GDPR) and legitimate interest in securing the platform (Art. 6.1.f).",
+      "retention": "Retention: OAuth tokens (session duration), caches (temporary), logs (30 days).",
+      "share": "Sharing: data processed only by technical providers, no commercial transfer.",
+      "rights": "Rights: access, rectification, erasure, restriction, objection via axel.gil.dev@proton.me.",
+      "cookies": "Cookies: only those necessary for authentication and preferences (language, theme).",
+      "links": {
+        "legal": "Legal Notice",
+        "cgu": "Terms of Use"
+      }
     }
   }
 }

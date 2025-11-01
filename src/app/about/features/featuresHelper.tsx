@@ -9,24 +9,6 @@ import {
 export type FeatureKey = "deps" | "dead" | "secrets" | "env" | "activity" | "readonly" | "jira";
 
 
-// export function TocItem({
-//   href,
-//   label,
-// }: {
-//   href: `#${FeatureKey}` | string;
-//   label: string;
-// }) {
-//   return (
-//     <Link
-//       href={href}
-//       className="inline-block rounded-lg border border-(--line-neutral-20) px-3 py-2 hover:bg-foreground/5"
-//     >
-//       {label}
-//     </Link>
-//   );
-// }
-
-
 export function FeatureSection({
   id,
   title,

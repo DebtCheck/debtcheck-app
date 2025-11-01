@@ -1,7 +1,7 @@
 "use client";
 import GitHubAuth from "./ui/header/githubAuth";
 import { Button } from "./ui/utilities";
-import { Sparkles, User, Menu } from "lucide-react";
+import { Sparkles, User, Menu, Scale } from "lucide-react";
 import { LocaleDropdown } from "./ui/header/lang/localeDropdown";
 import { ThemeToggle } from "./ui/header/theme-toggle";
 import { useTranslations } from "next-intl";
@@ -26,9 +26,12 @@ export function Header() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-300 bg-background/80 backdrop-blur border-b border-(--line-06)
-  h-[calc(56px+env(safe-area-inset-top))] sm:h-[calc(var(--appbar-h)+env(safe-area-inset-top))]
-  pt-[env(safe-area-inset-top)]"
+      className="
+    fixed inset-x-0 top-0 z-300
+    bg-background/80 backdrop-blur border-b border-(--line-06)
+    h-(--header-h-mobile) sm:h-(--header-h-desktop)
+    pt-[env(safe-area-inset-top)]
+  "
     >
       <div className="max-w-5xl mx-auto flex items-center justify-between h-full px-3 sm:px-4">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
