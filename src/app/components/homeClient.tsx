@@ -38,7 +38,6 @@ export default function Home() {
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Report | null>(null);
-  const [withoutLog, setWithoutLog] = useState(false);
   const [cooldown, setCooldown] = useState<number>(0);
   const [uiError, setUiError] = useState<UiError | null>(null);
   const { resolvedTheme } = useTheme();
@@ -49,10 +48,6 @@ export default function Home() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (githubLinked && withoutLog) setWithoutLog(false);
-  }, [githubLinked, withoutLog]);
-
-  useEffect(() => {
     const id = search.get("r");
     if (!id) setResult(null);
   }, [search]);
@@ -60,12 +55,10 @@ export default function Home() {
   useEffect(() => {
     const id = search.get("r");
     if (!id) return;
-
     const loaded = loadReportFromStorage(id);
     if (loaded) {
       setResult(loaded);
     } else {
-      // clean bad id from URL
       router.replace(pathname, { scroll: false });
     }
   }, [pathname, router, search]);
@@ -103,20 +96,15 @@ export default function Home() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             repoUrl,
-            demo: !githubLinked || withoutLog,
+            demo: !githubLinked, // demo si pas connecté
           }),
           signal: controller.signal,
         }
       );
 
       const id = crypto.randomUUID();
-
-      saveReportToStorage(id, data.data, {
-        ephemeral: !githubLinked || withoutLog,
-      });
-
+      saveReportToStorage(id, data.data, { ephemeral: !githubLinked }); // éphemeral si pas connecté
       setResult(data.data);
-
       router.replace(`${pathname}?r=${encodeURIComponent(id)}`, {
         scroll: false,
       });
@@ -139,27 +127,13 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [cooldown, repoUrl, githubLinked, withoutLog, router, pathname]);
-
-  const handleWithoutLog = () => setWithoutLog(true);
-
-  if (!githubLinked && !withoutLog) {
-    return (
-      <main className="min-h-screen flex items-center justify-center p-8">
-        <GitHubAuth />
-        <Button onClick={handleWithoutLog} className="ml-4">
-          {withoutLog
-            ? t("continueWithoutLoginDots")
-            : t("continueWithoutLogin")}
-        </Button>
-      </main>
-    );
-  }
+  }, [cooldown, repoUrl, githubLinked, router, pathname]);
 
   const logoSrc =
     resolvedTheme === "dark"
       ? "/github-mark-white.svg"
       : "/github-mark-dark.svg";
+
   return (
     <>
       {!result && (
@@ -201,12 +175,10 @@ export default function Home() {
                     className="mb-2"
                   />
 
-                  {/* Open last report — inline next to the hero */}
                   <div className="flex items-center justify-center">
                     <LastReportButton />
                   </div>
 
-                  {/* Tips */}
                   <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
                     <LabelWithTip
                       label={<span>{t("tips.urlFormat")}</span>}
@@ -242,7 +214,7 @@ export default function Home() {
                   />
                 )}
 
-                {withoutLog && (
+                {!githubLinked && (
                   <InlineAlert
                     variant="warning"
                     title={t("anonTitle")}
@@ -254,7 +226,7 @@ export default function Home() {
             </Card>
           </section>
 
-          {/* QUICK START (3 étapes) */}
+          {/* QUICK START */}
           <section className="max-w-5xl mx-auto">
             <BaseSection
               title={t("quickStartTitle")}
@@ -295,7 +267,7 @@ export default function Home() {
           </section>
 
           {/* USER REPOS */}
-          {!withoutLog && (
+          {githubLinked && (
             <section className="max-w-5xl mx-auto">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-base font-semibold">{t("myReposTitle")}</h2>
@@ -303,7 +275,6 @@ export default function Home() {
                   {showRepos ? t("hide") : t("browseRepos")}
                 </Button>
               </div>
-
               {showRepos && (
                 <ReposPage onSelectRepo={(url) => setRepoUrl(url)} />
               )}
