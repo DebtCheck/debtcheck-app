@@ -23,7 +23,10 @@
       "selectAria": "Choisir la langue"
     },
     "about": "À propos",
-    "features": "Fonctionnalités"
+    "features": "Fonctionnalités",
+    "legal": "Mentions légales",
+    "cgu": "CGU",
+    "privacy": "Politique de confidentialité"
   },
   "Home": {
     "analyzeGithubRepo": "Analyser un dépôt GitHub",
@@ -377,6 +380,65 @@
       "warningJira": "Pour se connecter à Jira, votre compte doit avoir au moins un projet.",
       "labelOneClick": "Comment fonctionne la création en un clic ?",
       "tip": "DebtCheck utilise votre compte Jira connecté pour générer instantanément des tickets de backlog, avec priorité, labels et descriptions issues de l’analyse."
+    }
+  },
+  "Legal": {
+    "title": "Mentions légales",
+    "intro": "Informations légales et conditions d’utilisation de DebtCheck.",
+    "editor": {
+      "title": "Éditeur",
+      "name": "Nom / Raison sociale : Axel GIL",
+      "address": "Adresse : 11 rue Carnot, 78210 Saint-Cyr-l'École, France",
+      "contact": "Contact : axel.gil.dev@proton.me",
+      "responsible": "Responsable de la publication : Axel GIL"
+    },
+    "hosts": {
+      "title": "Hébergeurs",
+      "frontend": "Frontend : Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA",
+      "backend": "Backend : Koyeb SAS, 10 Rue de Penthièvre, 75008 Paris, France"
+    },
+    "ip": {
+      "title": "Propriété intellectuelle",
+      "desc": "Le nom, le logo et l’interface de DebtCheck sont protégés par le droit d’auteur. Toute reproduction, représentation ou adaptation sans autorisation est interdite."
+    },
+    "contact": {
+      "title": "Contact",
+      "desc": "Pour toute question, écrivez à axel.gil.dev@proton.me."
+    },
+    "links": {
+      "cgu": "Conditions d’utilisation",
+      "privacy": "Politique de confidentialité"
+    },
+    "cgu": {
+      "title": "Conditions Générales d’Utilisation",
+      "sections": {
+        "1": "DebtCheck est une application d’analyse technique de dépôts GitHub, opérant en lecture seule via l’API GitHub. Elle génère un rapport synthétique (complexité, duplications, code mort, dépendances obsolètes, etc.).",
+        "2": "L’accès nécessite une authentification via GitHub OAuth. L’utilisateur doit disposer des droits nécessaires sur les dépôts qu’il analyse.",
+        "3": "DebtCheck traite des informations de profil GitHub (identifiant, pseudo, avatar) et des métadonnées de dépôts. Aucun clonage local n’est effectué. Les jetons OAuth sont utilisés uniquement pour exécuter l’analyse et ne sont pas partagés.",
+        "4": "Les rapports sont fournis à titre indicatif. DebtCheck ne garantit ni l’exhaustivité ni l’absence d’erreurs. L’utilisateur reste responsable de l’usage des résultats.",
+        "5": "L’éditeur du site reste propriétaire du code et des contenus de DebtCheck. L’utilisateur reste propriétaire des dépôts analysés.",
+        "6": "Bon usage : ne pas contourner les authentifications, ne pas analyser sans autorisation, ne pas soumettre de contenus illicites.",
+        "7": "Les CGU sont régies par le droit français. Juridiction compétente : Paris."
+      },
+      "links": {
+        "legal": "Mentions légales",
+        "privacy": "Politique de confidentialité"
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "controller": "Responsable de traitement : Axel GIL -- axel.gil.dev@proton.me",
+      "data": "Données collectées : profil GitHub (ID, pseudo, avatar), métadonnées des dépôts, journaux techniques (logs, performances).",
+      "purpose": "Finalités : fournir le service d’analyse, assurer la sécurité, améliorer le produit via statistiques anonymisées.",
+      "legal": "Base légale : exécution du service demandé (art. 6.1.b RGPD) et intérêt légitime à sécuriser la plateforme (art. 6.1.f).",
+      "retention": "Durées de conservation : jetons OAuth (durée de session), caches (temporaire), logs (30 jours).",
+      "share": "Partage : données traitées uniquement par les prestataires techniques nécessaires, aucun transfert commercial.",
+      "rights": "Droits : accès, rectification, effacement, limitation, opposition via axel.gil.dev@proton.me.",
+      "cookies": "Cookies : uniquement ceux nécessaires à l’authentification et aux préférences (langue, thème).",
+      "links": {
+        "legal": "Mentions légales",
+        "cgu": "Conditions Générales d’Utilisation"
+      }
     }
   }
 }

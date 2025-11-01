@@ -110,105 +110,107 @@ export default function BacklogModal({ open, onClose, report }: Props) {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-400 flex items-center justify-center"
+      className="fixed inset-0 z-500 flex items-center justify-center p-3 sm:p-6"
     >
       {/* Backdrop */}
-      <div
+      <button
         className="absolute inset-0 bg-black/50 dark:bg-black/60"
         onClick={onClose}
+        aria-label={t("close")}
       />
 
       {/* Panel */}
-      <div className="relative w-full max-w-3xl rounded-2xl bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-(--border-20) p-6 shadow-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">{t("title")}</h2>
+      <div className="relative w-full max-w-3xl rounded-2xl bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))] border-(--border-20) shadow-xl overflow-hidden max-h-[calc(100svh-2rem)] sm:max-h-[calc(100svh-4rem)]">
+        {/* Header (fixed inside the modal) */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-(--border-20)">
+          <h2 className="text-lg sm:text-xl font-semibold">{t("title")}</h2>
           <Button onClick={onClose} aria-label={t("close")}>
             ✕
           </Button>
         </div>
 
-        {/* Body */}
-        {state.kind === "loading" && (
-          <p className="text-sm text-gray-500">{t("loading")}</p>
-        )}
-        {state.kind === "error" && (
-          <p className="text-sm text-red-600">
-            {t("error", { msg: state.message })}
-          </p>
-        )}
-        {state.kind === "loaded" && values.length === 0 && (
-          <p className="text-sm text-gray-600">{t("empty")}</p>
-        )}
+        {/* Scrollable body */}
+        <div className="min-h-0 overflow-y-auto px-6 py-4">
+          {/* State blocks (unchanged) */}
+          {state.kind === "loading" && (
+            <p className="text-sm opacity-70">{t("loading")}</p>
+          )}
+          {state.kind === "error" && (
+            <p className="text-sm text-red-600">
+              {t("error", { msg: state.message })}
+            </p>
+          )}
+          {state.kind === "loaded" && values.length === 0 && (
+            <p className="text-sm opacity-80">{t("empty")}</p>
+          )}
 
-        {values.length > 0 && (
-          <div className="mt-3 flex flex-col">
-            <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
-              {values.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => {
-                    setSelectedProjectId(p.id);
-                    loadHistory(p.id);
-                    setSubmit({ kind: "idle" });
-                  }}
-                  className={[
-                    "text-left rounded-xl border p-4 shadow transition",
-                    selectedProjectId === p.id
-                      ? "ring-2 ring-blue-600 border-blue-600"
-                      : "hover:border-neutral-400",
-                  ].join(" ")}
-                >
-                  <div className="flex items-center gap-3">
-                    {p.avatarUrls?.["24x24"] && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={p.avatarUrls["24x24"]}
-                        alt={`${p.name} avatar`}
-                        className="w-6 h-6 rounded"
-                      />
-                    )}
-                    <div>
-                      <div className="font-medium">{p.name}</div>
-                      <div className="text-xs text-gray-500">
-                        {t("key", { key: p.key })}
+          {/* Content when we have projects */}
+          {values.length > 0 && (
+            <div className="mt-3 grid gap-4 md:grid-cols-[1fr_260px]">
+              {/* Left: projects list */}
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-1">
+                  {values.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => {
+                        setSelectedProjectId(p.id);
+                        loadHistory(p.id);
+                        setSubmit({ kind: "idle" });
+                      }}
+                      className={[
+                        "text-left rounded-xl border p-4 shadow transition",
+                        selectedProjectId === p.id
+                          ? "ring-2 ring-blue-600 border-blue-600"
+                          : "hover:border-neutral-400",
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center gap-3">
+                        {p.avatarUrls?.["24x24"] && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={p.avatarUrls["24x24"]}
+                            alt={`${p.name} avatar`}
+                            className="w-6 h-6 rounded"
+                          />
+                        )}
+                        <div>
+                          <div className="font-medium">{p.name}</div>
+                          <div className="text-xs opacity-70">
+                            {t("key", { key: p.key })}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="mt-2 text-xs text-gray-600">
-                    {p.projectTypeKey} • {p.style} •{" "}
-                    {p.isPrivate ? t("privacyPrivate") : t("privacyPublic")}
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-6 flex justify-between flex-row-reverse gap-2">
-              <div className="flex flex-col justify-end">
-                <div className="flex items-center gap-2">
-                  <Button onClick={onClose}>{t("cancel")}</Button>
-                  <Button
-                    disabled={!selectedProjectId || submit.kind === "loading"}
-                    onClick={() =>
-                      selectedProjectId && createTickets(selectedProjectId)
-                    }
-                    className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
-                  >
-                    {submit.kind === "loading"
-                      ? t("creating")
-                      : t("createTickets")}
-                  </Button>
+                      <div className="mt-2 text-xs opacity-70">
+                        {p.projectTypeKey} • {p.style} •{" "}
+                        {p.isPrivate ? t("privacyPrivate") : t("privacyPublic")}
+                      </div>
+                    </button>
+                  ))}
                 </div>
+
+                {/* Result messages */}
+                {submit.kind === "ok" && (
+                  <p className="text-sm text-green-600">
+                    {t("createdSummary", {
+                      count: submit.payload.created,
+                      keys: submit.payload.issues.map((i) => i.key).join(", "),
+                    })}
+                  </p>
+                )}
+                {submit.kind === "error" && (
+                  <p className="text-sm text-red-600">
+                    {t("createError", {
+                      msg: submit.payload.error,
+                      details: submit.payload.details ?? "",
+                    })}
+                  </p>
+                )}
               </div>
+
+              {/* Right: History – full-width on mobile, sticky side on md+ */}
               {selectedProjectId && (
-                <div
-                  className="
-                    bottom-4 left-4 z-10
-                    w-64 max-w-[80%]
-                    rounded-lg border-(--border-20)
-                    bg-[rgb(var(--color-card))] text-[rgb(var(--color-foreground))]
-                    shadow-md p-3
-                  "
-                >
+                <aside className="order-first md:order-0 md:sticky md:top-2 w-full md:w-[260px] rounded-lg border-(--border-20) bg-[rgb(var(--color-card))] shadow p-3">
                   <div className="mb-2 flex items-center justify-between">
                     <span className="text-xs font-semibold">
                       {t("createdBy")}
@@ -236,7 +238,7 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                   )}
 
                   {history && history.length > 0 && (
-                    <ul className="max-h-32 overflow-auto">
+                    <ul className="max-h-40 overflow-auto">
                       {history.slice(0, 5).map((i) => (
                         <li
                           key={i.id}
@@ -254,28 +256,27 @@ export default function BacklogModal({ open, onClose, report }: Props) {
                       ))}
                     </ul>
                   )}
-                </div>
+                </aside>
               )}
             </div>
+          )}
+        </div>
 
-            {submit.kind === "ok" && (
-              <p className="mt-3 text-sm text-green-600">
-                {t("createdSummary", {
-                  count: submit.payload.created,
-                  keys: submit.payload.issues.map((i) => i.key).join(", "),
-                })}
-              </p>
-            )}
-            {submit.kind === "error" && (
-              <p className="mt-3 text-sm text-red-600">
-                {t("createError", {
-                  msg: submit.payload.error,
-                  details: submit.payload.details ?? "",
-                })}
-              </p>
-            )}
+        {/* Sticky action row inside the modal (always visible) */}
+        <div className="sticky bottom-0 px-6 py-4 border-t border-(--border-20) bg-[rgb(var(--color-card))/0.9] backdrop-blur">
+          <div className="flex justify-end gap-2">
+            <Button onClick={onClose}>{t("cancel")}</Button>
+            <Button
+              disabled={!selectedProjectId || submit.kind === "loading"}
+              onClick={() =>
+                selectedProjectId && createTickets(selectedProjectId)
+              }
+              className="bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-700"
+            >
+              {submit.kind === "loading" ? t("creating") : t("createTickets")}
+            </Button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

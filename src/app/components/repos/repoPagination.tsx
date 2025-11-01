@@ -19,7 +19,12 @@ export function RepoPagination({
 }: RepoPaginationProps) {
   const t = useTranslations("Repos");
   return (
-    <div className="sticky bottom-3 mt-6 flex items-center justify-between rounded-2xl border bg-foreground/5 p-2 backdrop-blur border-border/10">
+    <div className="
+        sticky
+        bottom-[calc(var(--footer-h)+env(safe-area-inset-bottom)+12px)]
+        mt-6
+        flex items-center justify-between
+        rounded-2xl border bg-foreground/5 p-2 backdrop-blur border-border/10">
       <Button disabled={page <= 1 || Boolean(loading)} onClick={onPrev}>
         <ChevronLeft className="h-4 w-4 mr-1" /> {t("prev")}
       </Button>

@@ -1,3 +1,8 @@
+## <small>1.0.1 (2025-10-31)</small>
+
+* fix: update pull request trigger to include dev branch ([b58e43d](https://github.com/DebtCheck/debtcheck-app/commit/b58e43d))
+* chore: update permissions in release workflow to include issues write access ([fb88f21](https://github.com/DebtCheck/debtcheck-app/commit/fb88f21))
+
 ## 1.0.0 (2025-10-31)
 
 * chore: add semantic release dependencies for automated versioning and changelog generation ([be022e2](https://github.com/DebtCheck/debtcheck-app/commit/be022e2))
