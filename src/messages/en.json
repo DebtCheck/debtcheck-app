@@ -29,6 +29,7 @@
     "privacy": "Privacy Policy"
   },
   "Home": {
+    "title": "Instant Technical Debt Analysis for GitHub Repositories",
     "analyzeGithubRepo": "Analyze a GitHub repo",
     "continueWithoutLogin": "Continue without login",
     "continueWithoutLoginDots": "Continue without login…",
@@ -302,6 +303,7 @@
     "ctaTryNow": "Try it now"
   },
   "Features": {
+    "title": "Features",
     "introTagline": "A fast, read-only static analyzer that highlights hidden technical debt in any GitHub repository, without cloning a single line.",
     "headerTitle": "Features of the DebtCheck engine",
     "headerSubtitle": "Static analysis, dependency insights and repository health, all read-only via the GitHub API.",
@@ -428,7 +430,7 @@
     "privacy": {
       "title": "Privacy Policy",
       "controller": "Data Controller: Axel GIL -- axel.gil.dev@proton.me",
-      "data": "Data collected: GitHub profile (ID, username, avatar), repository metadata, technical logs (errors, performance).",
+      "data": "Data collected: GitHub profile (ID, username, avatar), Jira (issue keys, summaries), repository metadata, technical logs (errors, performance).",
       "purpose": "Purpose: provide the analysis service, ensure security, improve the product with anonymized statistics.",
       "legal": "Legal basis: execution of the requested service (Art. 6.1.b GDPR) and legitimate interest in securing the platform (Art. 6.1.f).",
       "retention": "Retention: OAuth tokens (session duration), caches (temporary), logs (30 days).",

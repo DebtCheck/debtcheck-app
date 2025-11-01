@@ -1,9 +1,14 @@
+import { Metadata } from "next";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export const metadata = {
-  title: "Politique de confidentialité | DebtCheck",
-  robots: { index: true, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Legal.privacy");
+  return {
+    title: `${t("title")} | DebtCheck`,
+    robots: { index: true, follow: true },
+  };
+}
 
 export default function ConfidentialitePage() {
   const t = useTranslations("Legal.privacy");

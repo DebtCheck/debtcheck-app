@@ -1,9 +1,14 @@
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Mentions légales | DebtCheck",
-  robots: { index: true, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Legal");
+  return {
+    title: `${t("title")} | DebtCheck`,
+    robots: { index: true, follow: true },
+  };
+}
 
 export default function MentionsLegalesPage() {
   const t = useTranslations("Legal");

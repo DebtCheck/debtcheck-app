@@ -1,9 +1,14 @@
+import { Metadata } from "next";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export const metadata = {
-  title: "Conditions Générales d’Utilisation | DebtCheck",
-  robots: { index: true, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Legal.cgu");
+  return {
+    title: `${t("title")} | DebtCheck`,
+    robots: { index: true, follow: true },
+  };
+}
 
 export default function CGUPage() {
   const t = useTranslations("Legal.cgu");

@@ -29,6 +29,7 @@
     "privacy": "Politique de confidentialité"
   },
   "Home": {
+    "title": "Analyse instantanée de la dette technique des dépôts GitHub",
     "analyzeGithubRepo": "Analyser un dépôt GitHub",
     "continueWithoutLogin": "Continuer sans connexion",
     "continueWithoutLoginDots": "Continuer sans connexion…",
@@ -302,6 +303,7 @@
     "ctaTryNow": "Essayer maintenant"
   },
   "Features": {
+    "title": "Fonctionnalités",
     "introTagline": "Un analyseur statique rapide et en lecture seule qui met en lumière la dette technique cachée de tout dépôt GitHub, sans aucun clonage.",
     "headerTitle": "Fonctionnalités du moteur DebtCheck",
     "headerSubtitle": "Analyse statique, dépendances et santé du dépôt, le tout en lecture seule via l’API GitHub.",
@@ -428,7 +430,7 @@
     "privacy": {
       "title": "Politique de confidentialité",
       "controller": "Responsable de traitement : Axel GIL -- axel.gil.dev@proton.me",
-      "data": "Données collectées : profil GitHub (ID, pseudo, avatar), métadonnées des dépôts, journaux techniques (logs, performances).",
+      "data": "Données collectées : profil GitHub (ID, pseudo, avatar), Jira (clés de tickets, résumés), métadonnées des dépôts, journaux techniques (logs, performances).",
       "purpose": "Finalités : fournir le service d’analyse, assurer la sécurité, améliorer le produit via statistiques anonymisées.",
       "legal": "Base légale : exécution du service demandé (art. 6.1.b RGPD) et intérêt légitime à sécuriser la plateforme (art. 6.1.f).",
       "retention": "Durées de conservation : jetons OAuth (durée de session), caches (temporaire), logs (30 jours).",
