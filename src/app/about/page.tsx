@@ -13,7 +13,6 @@ import {
   Toolbar,
   Button,
 } from "@/app/components/ui/utilities";
-import { Header } from "../components/header";
 import { TechRow, TimelineCard } from "./aboutHelper";
 import { motion } from "framer-motion";
 
@@ -63,8 +62,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <Header />
-      <main className="mx-auto w-full max-w-6xl min-h-screen space-y-8 mt-15 sm:pt-(--appbar-h) sm:mt-5 pb-10">
+      <main className="mx-auto max-w-6xl space-y-8 pb-15">
         {/* HERO */}
         <Section
           title={<span className="flex items-center gap-3">{t("title")}</span>}

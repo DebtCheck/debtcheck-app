@@ -76,7 +76,11 @@ body {
   --line-neutral-30: rgb(var(--line-neutral) / 0.30); /* even stronger version */
 
   /* --appbar-h: 120px; */
-  --appbar-h: clamp(120px, 6svh, 120px);
+  --appbar-h: 120px;
+  --header-h-mobile: calc(56px + env(safe-area-inset-top));
+  --header-h-desktop: calc(var(--appbar-h) + env(safe-area-inset-top));
+  --header-main-padding: 150px;
+  --footer-h: 36px;
 }
 
 /* iOS notch safe area */

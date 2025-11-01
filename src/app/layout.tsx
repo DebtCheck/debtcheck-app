@@ -6,6 +6,8 @@ import ClientProviders from "./components/ClientProviders";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { icons } from "lucide-react";
+import { Footer } from "./components/footer";
+import { Header } from "./components/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +32,15 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ClientProviders>{children}</ClientProviders>
+          <ClientProviders>
+            <Header />
+            <main className="min-h-[calc(100svh-var(--footer-h))]
+                pt-(--header-h-mobile) sm:pt-(--header-main-padding)
+                pb-[calc(var(--footer-h)+env(safe-area-inset-bottom))]">
+              {children}
+            </main>
+            <Footer fixed />
+          </ClientProviders>
         </NextIntlClientProvider>
       </body>
     </html>

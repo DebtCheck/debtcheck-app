@@ -19,7 +19,6 @@ import { useTranslations } from "next-intl";
 import { Section as BaseSection } from "./components/ui/utilities/base/section";
 import { Collapsible } from "./components/ui/utilities/data-display/collapsible";
 import { LabelWithTip } from "./components/ui/utilities/base/tip/labelWithTip";
-import { Header } from "./components/header";
 import {
   loadReportFromStorage,
   saveReportToStorage,
@@ -154,10 +153,9 @@ export default function Home() {
       : "/github-mark-dark.svg";
   return (
     <>
-      <Header />
 
       {!result && (
-        <main className="min-h-screen space-y-8 mt-15 sm:pt-(--appbar-h) sm:mt-5">
+        <main className="space-y-8">
           {/* HERO */}
           <section className="max-w-3xl mx-auto">
             <Card className="shadow-2xl backdrop-blur border border-border/10 [background:var(--card-80)]">
@@ -291,7 +289,7 @@ export default function Home() {
           {/* USER REPOS */}
           {!withoutLog && (
             <section className="max-w-5xl mx-auto">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-8">
                 <h2 className="text-base font-semibold">{t("myReposTitle")}</h2>
                 <Button onClick={() => setShowRepos((s) => !s)}>
                   {showRepos ? t("hide") : t("browseRepos")}

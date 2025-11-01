@@ -6,7 +6,6 @@ import { Section as BaseSection } from "@/app/components/ui/utilities/base/secti
 import { Card, CardContent } from "@/app/components/ui/utilities/base/card";
 import { Button } from "@/app/components/ui/utilities/buttons/button";
 import { LabelWithTip } from "@/app/components/ui/utilities/base/tip/labelWithTip";
-import { Header } from "@/app/components/header";
 import { FeatureSection, RulesList, CodeSample } from "./featuresHelper";
 
 export default function FeaturesPage() {
@@ -14,11 +13,9 @@ export default function FeaturesPage() {
 
   return (
     <>
-      <Header />
       <main
-        className="mx-auto w-full max-w-6xl min-h-screen space-y-8
-                 mt-15 sm:pt-(--appbar-h) sm:mt-5
-                 pb-10 px-3 sm:px-4"
+        className="mx-auto w-full max-w-6xl space-y-8
+                 pb-15 px-3 sm:px-4"
       >
         {/* Header */}
         <BaseSection
