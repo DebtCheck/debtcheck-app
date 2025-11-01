@@ -1,3 +1,11 @@
+## 1.1.0 (2025-11-01)
+
+* Merge pull request #43 from DebtCheck/42-front-create-legal-elements ([77015b3](https://github.com/DebtCheck/debtcheck-app/commit/77015b3)), closes [#43](https://github.com/DebtCheck/debtcheck-app/issues/43)
+* Merge pull request #44 from DebtCheck/dev ([feba4d0](https://github.com/DebtCheck/debtcheck-app/commit/feba4d0)), closes [#44](https://github.com/DebtCheck/debtcheck-app/issues/44)
+* Refactor About and Home pages to use client components and improve metadata generation ([5b4c0a9](https://github.com/DebtCheck/debtcheck-app/commit/5b4c0a9))
+* fix: adjust layout of BacklogModal and Home components for improved responsiveness ([ee0c885](https://github.com/DebtCheck/debtcheck-app/commit/ee0c885))
+* feat: add legal pages and footer component; update translations and layout ([7d73da2](https://github.com/DebtCheck/debtcheck-app/commit/7d73da2))
+
 ## <small>1.0.1 (2025-10-31)</small>
 
 * fix: update pull request trigger to include dev branch ([b58e43d](https://github.com/DebtCheck/debtcheck-app/commit/b58e43d))
