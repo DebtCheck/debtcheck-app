@@ -305,7 +305,7 @@ export default function Home() {
       )}
 
       {result && (
-        <main className="mt-15 sm:pt-(--appbar-h) sm:mt-5">
+        <main>
           <Button
             className="mt-4 ml-4"
             onClick={() => {
