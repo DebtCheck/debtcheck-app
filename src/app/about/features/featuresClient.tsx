@@ -1,4 +1,4 @@
-import { Button, Card, CardContent } from "@/app/components/ui/utilities";
+import { Button, Callout, Card, CardContent } from "@/app/components/ui/utilities";
 import { LabelWithTip } from "@/app/components/ui/utilities/base/tip/labelWithTip";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -41,6 +41,16 @@ export default function FeaturesClient() {
           <p className="text-sm text-muted-foreground mt-2">
             {t("introTagline")}
           </p>
+
+          <div className="mt-3">
+            <Callout variant="warning">
+              <strong>⚠ {t("limits.title")}</strong>{" "}
+              {t("limits.desc")}
+              <ul className="list-disc pl-5 mt-1 space-y-1">
+                <li>{t("limits.monorepo")}</li>
+              </ul>
+            </Callout>
+          </div>
         </BaseSection>
 
         {/* Table of contents TO KEEP FOR WHEN I'LL HAVE MORE FEATURES */}

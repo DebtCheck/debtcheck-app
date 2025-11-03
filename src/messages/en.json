@@ -392,6 +392,11 @@
       "warningJira": "To connect to Jira, your account must have at least one project.",
       "labelOneClick": "How does one-click creation work?",
       "tip": "DebtCheck uses your connected Jira account to generate backlog tickets instantly, including priority, labels and descriptions derived from the analysis."
+    },
+    "limits": {
+      "title": "Current limitations",
+      "desc": "DebtCheck is optimized for single-package repositories. Support for workspaces will come later.",
+      "monorepo": "Monorepos / workspaces (pnpm/yarn workspaces, turbo, nx, lerna) are not supported yet; results can be incomplete or wrong."
     }
   },
   "Legal": {
