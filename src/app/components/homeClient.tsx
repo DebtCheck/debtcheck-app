@@ -29,6 +29,7 @@ import {
 import { LabelWithTip } from "./ui/utilities/base/tip/labelWithTip";
 import { Collapsible } from "./ui/utilities/data-display/collapsible";
 import { Section as BaseSection } from "./ui/utilities/base/section";
+import { SiteBanners } from "./ui/site-banners";
 
 export default function Home() {
   const t = useTranslations("Home");
@@ -46,6 +47,8 @@ export default function Home() {
   const router = useRouter();
   const search = useSearchParams();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const id = search.get("r");
@@ -130,12 +133,13 @@ export default function Home() {
   }, [cooldown, repoUrl, githubLinked, router, pathname]);
 
   const logoSrc =
-    resolvedTheme === "dark"
+    mounted && resolvedTheme === "dark"
       ? "/github-mark-white.svg"
       : "/github-mark-dark.svg";
 
   return (
     <>
+      <SiteBanners showUnderConstruction showMobileAdvice />
       {!result && (
         <main className="space-y-8">
           {/* HERO */}

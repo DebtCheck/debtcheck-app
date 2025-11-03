@@ -1,5 +1,6 @@
 import type { JiraAccessibleResource, JiraAccount, Projects as JiraProjectsType } from "@/app/types/jira";
 import { prisma } from "../prisma";
+import { maybeDecrypt, encryptToken } from "../crypto/token-crypto";
 
 const JIRA_PROVIDERS = ["atlassian", "jira"] as const;
 type JiraProvider = (typeof JIRA_PROVIDERS)[number];
@@ -20,7 +21,8 @@ export async function getJiraAccount(userId: string): Promise<JiraAccount | null
 }
 
 export async function refreshJira(account: JiraAccount): Promise<JiraAccount | null> {
-  if (!account.refresh_token) return null;
+  const refreshPlain = maybeDecrypt(account.refresh_token);
+  if (!refreshPlain) return null;
 
   const res = await fetch("https://auth.atlassian.com/oauth/token", {
     method: "POST",
@@ -29,10 +31,9 @@ export async function refreshJira(account: JiraAccount): Promise<JiraAccount | n
       grant_type: "refresh_token",
       client_id: process.env.JIRA_CLIENT_ID,
       client_secret: process.env.JIRA_CLIENT_SECRET,
-      refresh_token: account.refresh_token,
+      refresh_token: refreshPlain,
     }),
   });
-
   if (!res.ok) return null;
 
   const d: { access_token: string; refresh_token?: string; expires_in: number } = await res.json();
@@ -41,8 +42,8 @@ export async function refreshJira(account: JiraAccount): Promise<JiraAccount | n
   const updated = await prisma.account.update({
     where: { id: account.id },
     data: {
-      access_token: d.access_token,
-      refresh_token: d.refresh_token ?? account.refresh_token,
+      access_token: encryptToken(d.access_token),
+      refresh_token: d.refresh_token ? encryptToken(d.refresh_token) : account.refresh_token,
       expires_at,
     },
     select: {
@@ -64,23 +65,22 @@ export async function ensureFreshJiraAccessToken(userId: string): Promise<{
   account: JiraAccount;
 }> {
   const acc = await getJiraAccount(userId);
-  if (!acc || !acc.access_token) {
-    throw new Error("Jira not linked");
-  }
+  if (!acc || !acc.access_token) throw new Error("Jira not linked");
 
   const now = Math.floor(Date.now() / 1000);
   const expired = typeof acc.expires_at === "number" && acc.expires_at > 0 && acc.expires_at <= now;
 
   if (!expired) {
-    return { accessToken: acc.access_token, account: acc };
+    const accessPlain = maybeDecrypt(acc.access_token);
+    if (!accessPlain) throw new Error("Jira token missing");
+    return { accessToken: accessPlain, account: acc };
   }
 
   const refreshed = await refreshJira(acc);
-  if (!refreshed || !refreshed.access_token) {
-    throw new Error("Jira refresh failed");
-  }
-
-  return { accessToken: refreshed.access_token, account: refreshed };
+  if (!refreshed || !refreshed.access_token) throw new Error("Jira refresh failed");
+  const accessPlain = maybeDecrypt(refreshed.access_token);
+  if (!accessPlain) throw new Error("Jira token missing after refresh");
+  return { accessToken: accessPlain, account: refreshed };
 }
 
 export async function fetchAccessibleResources(accessToken: string)  {
