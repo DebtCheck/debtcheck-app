@@ -3,6 +3,7 @@ import GitHub from "next-auth/providers/github";
 import { OAuthConfig } from "next-auth/providers/oauth";
 import { prisma } from "@/app/lib/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { SecurePrismaAdapter } from "./secure-adapter";
 
 type JiraProfile = {
   account_id: string;
@@ -38,7 +39,7 @@ export const JiraProvider: OAuthConfig<JiraProfile> = {
 };
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: SecurePrismaAdapter(prisma),
   session: { strategy: "database" }, // small cookie, accounts stored in DB
   providers: [
     GitHub({
