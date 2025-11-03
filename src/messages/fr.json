@@ -84,6 +84,16 @@
     "prev": "Précédent",
     "next": "Suivant"
   },
+  "Banners": {
+    "wip": {
+      "title": "Cette application est en cours de construction.",
+      "desc": "Certaines fonctionnalités peuvent changer ou être instables."
+    },
+    "mobile": {
+      "title": "Meilleur sur ordinateur.",
+      "desc": "Pour une analyse plus fluide et une mise en page de rapport plus large, essayez sur un ordinateur."
+    }
+  },
   "Report": {
     "title": "Rapport de dette technique",
     "copy": { "btn": "Copier le JSON", "copied": "Copié !" },
@@ -382,6 +392,11 @@
       "warningJira": "Pour se connecter à Jira, votre compte doit avoir au moins un projet.",
       "labelOneClick": "Comment fonctionne la création en un clic ?",
       "tip": "DebtCheck utilise votre compte Jira connecté pour générer instantanément des tickets de backlog, avec priorité, labels et descriptions issues de l’analyse."
+    },
+    "limits": {
+      "title": "Limitations actuelles",
+      "desc": "DebtCheck est optimisé pour les dépôts à package unique. Le support des workspaces viendra plus tard.",
+      "monorepo": "Les monorepos / workspaces (pnpm/yarn workspaces, turbo, nx, lerna) ne sont pas encore pris en charge ; les résultats peuvent être incomplets ou erronés."
     }
   },
   "Legal": {

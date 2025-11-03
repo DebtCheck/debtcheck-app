@@ -3,6 +3,7 @@ import { prisma } from "@/app/lib/prisma";
 import { GithubAccount } from "@/app/types/github";
 import { githubFetch } from "@/app/lib/github/http";
 import { shouldIgnore } from "./files-to-ignore";
+import { maybeDecrypt, encryptToken } from "../crypto/token-crypto";
 
 const GITHUB_PROVIDER = "github";
 
@@ -28,19 +29,19 @@ export async function getGithubAccount(
 export async function refreshGithub(
   account: GithubAccount
 ): Promise<GithubAccount | null> {
-  if (!account.refresh_token) return null;
+  const refreshPlain = maybeDecrypt(account.refresh_token);
+  if (!refreshPlain) return null;
 
   const res = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
       grant_type: "refresh_token",
-      refresh_token: account.refresh_token,
+      refresh_token: refreshPlain,
       client_id: process.env.GITHUB_ID,
       client_secret: process.env.GITHUB_SECRET,
     }),
   });
-
   if (!res.ok) return null;
 
   const d: {
@@ -48,8 +49,8 @@ export async function refreshGithub(
     token_type?: string;
     scope?: string;
     refresh_token?: string;
-    expires_in?: number; // seconds
-    refresh_token_expires_in?: number; // seconds
+    expires_in?: number;
+    refresh_token_expires_in?: number;
     error?: string;
     error_description?: string;
   } = await res.json();
@@ -61,11 +62,12 @@ export async function refreshGithub(
       ? Math.floor(Date.now() / 1000) + d.expires_in - 60
       : account.expires_at ?? null;
 
+  // CHIFFRER ce qu’on stocke
   const updated = await prisma.account.update({
     where: { id: account.id },
     data: {
-      access_token: d.access_token,
-      refresh_token: d.refresh_token ?? account.refresh_token,
+      access_token: encryptToken(d.access_token),
+      refresh_token: d.refresh_token ? encryptToken(d.refresh_token) : account.refresh_token, // déjà chiffré
       token_type: d.token_type ?? account.token_type,
       scope: d.scope ?? account.scope,
       expires_at: expires_at ?? account.expires_at ?? null,
@@ -91,9 +93,7 @@ export async function ensureFreshGithubAccessToken(userId: string): Promise<{
   account: GithubAccount;
 }> {
   const acc = await getGithubAccount(userId);
-  if (!acc || !acc.access_token) {
-    throw new Error("GitHub not linked");
-  }
+  if (!acc || !acc.access_token) throw new Error("GitHub not linked");
 
   const now = Math.floor(Date.now() / 1000);
   const isExpired =
@@ -102,16 +102,19 @@ export async function ensureFreshGithubAccessToken(userId: string): Promise<{
     acc.expires_at <= now;
 
   if (!isExpired) {
-    return { accessToken: acc.access_token, account: acc };
+    // DECRYPTER pour usage
+    const accessPlain = maybeDecrypt(acc.access_token);
+    if (!accessPlain) throw new Error("GitHub token missing");
+    return { accessToken: accessPlain, account: acc };
   }
 
-  // Try to refresh (works only if your OAuth app has expiring tokens enabled)
   const refreshed = await refreshGithub(acc);
   if (!refreshed || !refreshed.access_token) {
     throw new Error("GitHub refresh not available; please reconnect GitHub");
   }
-
-  return { accessToken: refreshed.access_token, account: refreshed };
+  const accessPlain = maybeDecrypt(refreshed.access_token);
+  if (!accessPlain) throw new Error("GitHub token missing after refresh");
+  return { accessToken: accessPlain, account: refreshed };
 }
 
 export async function fetchRepoMetadata(

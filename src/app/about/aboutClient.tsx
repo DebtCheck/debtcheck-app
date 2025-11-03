@@ -1,13 +1,21 @@
-"use client"
+"use client";
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import { Toolbar, Button, Card, CardHeader, CardTitle, CardContent } from "../components/ui/utilities";
+import {
+  Toolbar,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../components/ui/utilities";
 import { TechRow, TimelineCard } from "./aboutHelper";
 import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/app/components/ui/utilities";
+import { SiteBanners } from "../components/ui/site-banners";
 
 export default function AboutClient() {
   const t = useTranslations("About");
@@ -53,8 +61,13 @@ export default function AboutClient() {
     [t]
   );
 
+  const badge = "rounded-lg border border-[rgb(var(--color-primary)/0.25)] bg-[rgb(var(--color-primary)/0.08)] text-[rgb(var(--color-primary))] px-2 py-1";
+  const paragraph = "text-sm md:text-base text-muted-foreground text-justify leading-relaxed";
+  const highlight = "text-[rgb(var(--color-primary))] font-medium";
+
   return (
     <>
+      <SiteBanners showUnderConstruction showMobileAdvice />
       <main className="mx-auto max-w-6xl space-y-8 pb-15">
         {/* HERO */}
         <Section
@@ -63,39 +76,18 @@ export default function AboutClient() {
           actions={
             <Toolbar
               right={
-                <div
-                  className="flex flex-col-reverse sm:flex-row
-        items-end sm:items-center
-        justify-end sm:justify-normal
-        gap-2"
-                >
-                  <Link
-                    href="https://github.com/AxelGil"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                <div className="flex flex-col-reverse sm:flex-row items-end sm:items-center justify-end sm:justify-normal gap-2">
+                  <Link href="https://github.com/AxelGil" target="_blank" rel="noreferrer">
                     <Button className="h-10">{t("ctaGitHub")}</Button>
                   </Link>
-                  <Link
-                    href="https://www.linkedin.com/in/axel-gil"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                  <Link href="https://www.linkedin.com/in/axel-gil" target="_blank" rel="noreferrer">
                     <Button className="h-10">{t("ctaLinkedIn")}</Button>
                   </Link>
                   <div className="hidden sm:flex gap-2">
-                    <Link
-                      href="/cv/CVEN.pdf"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link href="/cv/CVEN.pdf" target="_blank" rel="noopener noreferrer">
                       <Button className="h-10">My CV</Button>
                     </Link>
-                    <Link
-                      href="/cv/CVFR.pdf"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link href="/cv/CVFR.pdf" target="_blank" rel="noopener noreferrer">
                       <Button className="h-10">Mon CV</Button>
                     </Link>
                   </div>
@@ -129,23 +121,15 @@ export default function AboutClient() {
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
                 {t("heroTitle")}
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground">
-                {t("heroText.1")} <strong>DebtCheck</strong> {t("heroText.2")}{" "}
+              <p className={paragraph}>
+                {t("heroText.1")} <span className={highlight}>DebtCheck</span> {t("heroText.2")}{" "}
                 <em>{t("heroText.3")}</em> {t("heroText.4")}
               </p>
               <div className="flex flex-wrap gap-2 text-xs">
-                <span className="rounded-lg border border-(--line-neutral-20) px-2 py-1">
-                  {t("badges.fullstack")}
-                </span>
-                <span className="rounded-lg border border-(--line-neutral-20) px-2 py-1">
-                  {t("badges.qualityDx")}
-                </span>
-                <span className="rounded-lg border border-(--line-neutral-20) px-2 py-1">
-                  Rust
-                </span>
-                <span className="rounded-lg border border-(--line-neutral-20) px-2 py-1">
-                  Next.js
-                </span>
+                <span className={badge}>{t("badges.fullstack")}</span>
+                <span className={badge}>{t("badges.qualityDx")}</span>
+                <span className={badge}>Rust</span>
+                <span className={badge}>Next.js</span>
               </div>
             </div>
           </div>
@@ -154,17 +138,14 @@ export default function AboutClient() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           {/* Pourquoi DebtCheck */}
           <Section title={t("whyTitle")}>
-            <p className="text-sm text-muted-foreground">
-              {t("whyText.1")} <strong>DebtCheck</strong> {t("whyText.2")}{" "}
+            <p className={paragraph}>
+              {t("whyText.1")} <span className={highlight}>DebtCheck</span> {t("whyText.2")}{" "}
               <em>{t("whyText.3")}</em> {t("whyText.4")}
             </p>
           </Section>
 
           {/* Tech stack */}
-          <Section
-            title={t("techStackTitle")}
-            subtitle={t("techStackSubtitle")}
-          >
+          <Section title={t("techStackTitle")} subtitle={t("techStackSubtitle")}>
             <div className="space-y-3">
               <TechRow label={t("tech.frontendLabel")} items={tech.frontend} />
               <TechRow label={t("tech.backendLabel")} items={tech.backend} />
@@ -175,7 +156,7 @@ export default function AboutClient() {
 
           {/* Vision */}
           <Section title={t("visionTitle")} subtitle={t("visionSubtitle")}>
-            <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
+            <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1 text-justify">
               <li>{t("visionItem1")}</li>
               <li>{t("visionItem2")}</li>
               <li>{t("visionItem3")}</li>
@@ -183,7 +164,7 @@ export default function AboutClient() {
           </Section>
         </div>
 
-        {/* Fonctionnalités (aperçu) */}
+        {/* Fonctionnalités */}
         <Section
           className="mt-6"
           title={t("featuresPreviewTitle")}
@@ -201,7 +182,7 @@ export default function AboutClient() {
                   <CardTitle>{f.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">{f.desc}</p>
+                  <p className={`${paragraph} text-sm`}>{f.desc}</p>
                 </CardContent>
               </Card>
             ))}
