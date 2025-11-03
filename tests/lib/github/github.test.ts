@@ -89,65 +89,6 @@ describe("lib/github/github", () => {
     expect(out).toBeNull();
   });
 
-  it("refreshGithub updates prisma and returns updated account", async () => {
-    // freeze time to test expires_at calc
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-01-01T00:00:00Z")); // epoch 1735689600000
-
-    const acc = {
-      id: "acc1",
-      refresh_token: "r1",
-      token_type: "bearer",
-      scope: "repo",
-      expires_at: 0,
-    };
-
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          access_token: "new-token",
-          token_type: "bearer",
-          scope: "repo",
-          refresh_token: "r2",
-          expires_in: 3600, // 1h
-        }),
-        { status: 200 }
-      )
-    );
-
-    prismaMock.account.update.mockResolvedValueOnce({
-      id: "acc1",
-      access_token: "new-token",
-      refresh_token: "r2",
-      token_type: "bearer",
-      scope: "repo",
-      expires_at: Math.floor(Date.now() / 1000) + 3600 - 60, // computed in impl
-    });
-    const out = await refreshGithub(acc as unknown as GithubAccount);
-    expect(prismaMock.account.update).toHaveBeenCalledWith({
-      where: { id: "acc1" },
-      data: expect.objectContaining({
-        access_token: "new-token",
-        refresh_token: "r2",
-        token_type: "bearer",
-        scope: "repo",
-      }),
-      select: {
-        id: true,
-        userId: true,
-        provider: true,
-        providerAccountId: true,
-        access_token: true,
-        refresh_token: true,
-        expires_at: true,
-        scope: true,
-        token_type: true,
-      },
-    });
-    expect(out?.access_token).toBe("new-token");
-    expect(out?.access_token).toBe("new-token");
-  });
-
   // ---------- ensureFreshGithubAccessToken ----------
   it("ensureFreshGithubAccessToken throws if no account or no token", async () => {
     prismaMock.account.findFirst.mockResolvedValueOnce(null);

@@ -1,33 +1,56 @@
-// lib/crypto/token-crypto.ts
-import crypto from "node:crypto";
+import crypto from "crypto";
 
-const secret = process.env.TOKEN_ENC_KEY;
-if (!secret) throw new Error("TOKEN_ENC_KEY must be set");
+function deriveKey(secret: string): Buffer {
+  return crypto.createHash("sha256").update(secret, "utf8").digest(); // 32 bytes
+}
 
-const KEY = crypto.createHash("sha256").update(secret, "utf8").digest(); // 32 bytes
+let cachedKey: Buffer | null = null;
+
+function getKey(): Buffer {
+  if (cachedKey) return cachedKey;
+  const secret = process.env.TOKEN_ENC_KEY;
+  if (!secret) {
+    // Allow tests to run without failing imports; still fail on real usage
+    if (process.env.NODE_ENV === "test") {
+      // deterministic key for tests; change if you prefer to throw
+      cachedKey = deriveKey("test-secret");
+      return cachedKey;
+    }
+    throw new Error("TOKEN_ENC_KEY must be set");
+  }
+  cachedKey = deriveKey(secret);
+  return cachedKey;
+}
 
 export function encryptToken(plain: string): string {
-  const iv = crypto.randomBytes(12); // 96-bit IV for GCM
-  const cipher = crypto.createCipheriv("aes-256-gcm", KEY, iv);
-  const ct = Buffer.concat([cipher.update(plain, "utf8"), cipher.final()]);
+  const key = getKey();
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+  const enc = Buffer.concat([cipher.update(plain, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
-  return `${iv.toString("base64")}:${ct.toString("base64")}:${tag.toString("base64")}`;
+  return Buffer.concat([iv, tag, enc]).toString("base64");
 }
 
-export function decryptToken(payload: string): string {
-  const [ivB64, ctB64, tagB64] = payload.split(":");
-  if (!ivB64 || !ctB64 || !tagB64) throw new Error("Invalid encrypted token format");
-  const iv = Buffer.from(ivB64, "base64");
-  const ct = Buffer.from(ctB64, "base64");
-  const tag = Buffer.from(tagB64, "base64");
-  const decipher = crypto.createDecipheriv("aes-256-gcm", KEY, iv);
+export function decryptToken(encoded: string): string {
+  const key = getKey();
+  const buf = Buffer.from(encoded, "base64");
+  const iv = buf.subarray(0, 12);
+  const tag = buf.subarray(12, 28);
+  const data = buf.subarray(28);
+  const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
   decipher.setAuthTag(tag);
-  const pt = Buffer.concat([decipher.update(ct), decipher.final()]);
-  return pt.toString("utf8");
+  const dec = Buffer.concat([decipher.update(data), decipher.final()]);
+  return dec.toString("utf8");
 }
 
-// rétro-compat: si la valeur n’est pas chiffrée, on renvoie telle quelle
-export function maybeDecrypt(payload?: string | null): string | null {
-  if (!payload) return null;
-  try { return decryptToken(payload); } catch { return payload; }
+export function maybeDecrypt(
+  value: string | null | undefined
+): string | null {
+  if (typeof value !== "string" || value.length === 0) return value ?? null;
+  try {
+    return decryptToken(value);
+  } catch {
+    // not our ciphertext or wrong key — treat as plain
+    return value;
+  }
 }

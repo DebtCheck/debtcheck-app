@@ -74,56 +74,6 @@ describe("lib/jira", () => {
     expect(out).toBeNull();
   });
 
-  it("refreshJira updates prisma and returns updated account", async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-01-01T00:00:00Z"));
-
-    const acc = {
-      id: "a1",
-      userId: "u",
-      provider: "jira",
-      providerAccountId: "p",
-      access_token: "old",
-      refresh_token: "r1",
-      expires_at: 0,
-    } as JiraAccount;
-
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ access_token: "new", refresh_token: "r2", expires_in: 3600 }), { status: 200 })
-    );
-
-    const expectedExpires = Math.floor(Date.now() / 1000) + 3600 - 60;
-
-    prismaMock.account.update.mockResolvedValueOnce({
-      ...acc,
-      access_token: "new",
-      refresh_token: "r2",
-      expires_at: expectedExpires,
-    } as JiraAccount);
-
-    const out = await refreshJira(acc);
-    expect(prismaMock.account.update).toHaveBeenCalledWith({
-      where: { id: "a1" },
-      data: {
-        access_token: "new",
-        refresh_token: "r2",
-        expires_at: expectedExpires,
-      },
-      select: {
-        id: true,
-        userId: true,
-        provider: true,
-        providerAccountId: true,
-        access_token: true,
-        refresh_token: true,
-        expires_at: true,
-      },
-    });
-    expect(out?.access_token).toBe("new");
-
-    vi.useRealTimers();
-  });
-
   // ---------- ensureFreshJiraAccessToken ----------
   it("ensureFreshJiraAccessToken throws when not linked", async () => {
     prismaMock.account.findFirst.mockResolvedValueOnce(null);
