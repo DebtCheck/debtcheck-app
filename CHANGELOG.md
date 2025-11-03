@@ -1,3 +1,13 @@
+## 1.3.0 (2025-11-03)
+
+* Merge pull request #47 from DebtCheck/46-front-finalize-mvp ([8878b40](https://github.com/DebtCheck/debtcheck-app/commit/8878b40)), closes [#47](https://github.com/DebtCheck/debtcheck-app/issues/47)
+* Merge pull request #48 from DebtCheck/dev ([fb44c37](https://github.com/DebtCheck/debtcheck-app/commit/fb44c37)), closes [#48](https://github.com/DebtCheck/debtcheck-app/issues/48)
+* refactor: improve token encryption and decryption logic; enhance testability with deterministic keys ([618e1d4](https://github.com/DebtCheck/debtcheck-app/commit/618e1d4))
+* feat: add Callout component and integrate it into FeaturesClient; update translations for limitation ([4e49440](https://github.com/DebtCheck/debtcheck-app/commit/4e49440))
+* feat: add SiteBanners component and integrate it into About, Features, and Home pages; update transl ([a6e0b5b](https://github.com/DebtCheck/debtcheck-app/commit/a6e0b5b))
+* feat: implement secure token handling for GitHub and Jira accounts; add encryption and decryption fo ([551f380](https://github.com/DebtCheck/debtcheck-app/commit/551f380))
+* feat: refactor AboutClient and FeaturesClient components for improved styling and readability; intro ([0250654](https://github.com/DebtCheck/debtcheck-app/commit/0250654))
+
 ## 1.2.0 (2025-11-01)
 
 * Merge pull request #45 from DebtCheck/dev ([9f4245b](https://github.com/DebtCheck/debtcheck-app/commit/9f4245b)), closes [#45](https://github.com/DebtCheck/debtcheck-app/issues/45)
