@@ -67,6 +67,16 @@
     "lastReportTitle": "Open last report ({ago} ago)",
     "lastReportNone": "No report yet"
   },
+  "Banners": {
+    "wip": {
+      "title": "This app is under active construction.",
+      "desc": "Some features may change or be unstable."
+    },
+    "mobile": {
+      "title": "Best on desktop.",
+      "desc": "For a smoother analysis and large report layout, try on a computer."
+    }
+  },
   "Repos": {
     "sectionTitle": "My Github repositories",
     "sectionSubtitle": "Select a repository to analyze its technical debt.",

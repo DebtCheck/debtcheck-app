@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { FeatureSection, RulesList, CodeSample } from "./featuresHelper";
 import { Section as BaseSection } from "@/app/components/ui/utilities/base/section";
+import { SiteBanners } from "@/app/components/ui/site-banners";
 
 export default function FeaturesClient() {
   const t = useTranslations("Features");
 
   return (
     <>
+      <SiteBanners showUnderConstruction showMobileAdvice />
       <main
         className="mx-auto w-full max-w-6xl space-y-8
                  pb-15 px-3 sm:px-4"

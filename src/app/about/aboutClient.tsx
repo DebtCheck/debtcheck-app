@@ -1,13 +1,21 @@
-"use client"
+"use client";
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import { Toolbar, Button, Card, CardHeader, CardTitle, CardContent } from "../components/ui/utilities";
+import {
+  Toolbar,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../components/ui/utilities";
 import { TechRow, TimelineCard } from "./aboutHelper";
 import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/app/components/ui/utilities";
+import { SiteBanners } from "../components/ui/site-banners";
 
 export default function AboutClient() {
   const t = useTranslations("About");
@@ -55,6 +63,7 @@ export default function AboutClient() {
 
   return (
     <>
+      <SiteBanners showUnderConstruction showMobileAdvice />
       <main className="mx-auto max-w-6xl space-y-8 pb-15">
         {/* HERO */}
         <Section

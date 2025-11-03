@@ -84,6 +84,16 @@
     "prev": "Précédent",
     "next": "Suivant"
   },
+  "Banners": {
+    "wip": {
+      "title": "Cette application est en cours de construction.",
+      "desc": "Certaines fonctionnalités peuvent changer ou être instables."
+    },
+    "mobile": {
+      "title": "Meilleur sur ordinateur.",
+      "desc": "Pour une analyse plus fluide et une mise en page de rapport plus large, essayez sur un ordinateur."
+    }
+  },
   "Report": {
     "title": "Rapport de dette technique",
     "copy": { "btn": "Copier le JSON", "copied": "Copié !" },
